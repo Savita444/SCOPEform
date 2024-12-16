@@ -131,6 +131,7 @@ const ViewCompletionFrom = () => {
           <Card>
             <Card.Header>
               <Row>
+              <Col className="d-flex align-items-center"><h5 >Completion Details</h5></Col>
                 <Col className="d-flex justify-content-end align-items-center">
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
                 </Col>

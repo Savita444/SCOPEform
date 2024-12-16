@@ -1,32 +1,4 @@
-
-
-////sos
-////logout without logout api . remove token
-// import { useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { toast } from "react-toastify";
-// import { confirmAlert } from "react-confirm-alert";
-// import "react-confirm-alert/src/react-confirm-alert.css";
-
-// const Logout = () => {
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const token = localStorage.getItem("accessToken");
-//     if (token) {
-//       localStorage.removeItem("accessToken");
-//       toast.success("Logged out successfully.");
-//     } 
-//     navigate("/");
-//   }, [navigate]);
-
-//   return null;
-// };
-
-// export default Logout;
-
-////confirmaiton
-import { useCallback ,useEffect} from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
@@ -62,12 +34,13 @@ const Logout = () => {
               style={{ marginRight: "10px" }}
               className="btn btn-primary"
               onClick={() => {
-                const token = localStorage.getItem("accessToken");
+                const token = localStorage.getItem("remember_token");
+
                 if (token) {
-                  localStorage.removeItem("accessToken");
+                  localStorage.removeItem("remember_token");
                   toast.success("Logged out successfully.");
+                  navigate("/");  // Navigate to the login page
                 }
-                // navigate("/");
                 onClose();
               }}
             >
@@ -76,7 +49,6 @@ const Logout = () => {
             <button
               className="btn btn-secondary"
               onClick={() => {
-                // navigate("/headercontact");
                 onClose();
               }}
             >
@@ -88,7 +60,6 @@ const Logout = () => {
     });
   }, [navigate]);
 
-  
   useEffect(() => {
     handleLogout();
   }, [handleLogout]);

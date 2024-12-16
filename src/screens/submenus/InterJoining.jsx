@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react'
 import './completion.css'
 import logo1 from '../imgs/SCOPE FINAL LOGO Black.png';
 import logo2 from '../imgs/SUMAGO Logo (2) (1).png';
+import { useNavigate } from "react-router-dom";
 import corner from '../imgs/file (28).png';
 import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 
 function InterJoining() {
-
+    const navigate = useNavigate();
     const [fname, setfname] = useState('')
     const [mname, setmname] = useState('')
     const [fathername, setfathername] = useState('')
@@ -730,9 +731,14 @@ function InterJoining() {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
     
-        const token = localStorage.getItem("remember_token");
+        // Validation (you can add your validation logic here)
+        const isValid = validateForm();
+        if (!isValid) {
+            alert("Please fill in all the required fields correctly.");
+            return; // Exit the function if validation fails
+        }
     
-        
+        const token = localStorage.getItem("remember_token");
     
         // Prepare the form data
         const newData = {
@@ -792,8 +798,6 @@ function InterJoining() {
             buttom_place,
         };
     
-
-        
         try {
             const response = await fetch("https://api.sumagotraining.in/public/api/intern-joining/add", {
                 method: "POST",
@@ -811,6 +815,7 @@ function InterJoining() {
             if (response.ok) {
                 // If submission is successful
                 alert("Data submitted successfully!");
+                navigate("/viewinterjoining"); // Navigate after success
                 console.log("Response Data:", responseData);
             } else {
                 // Handle validation errors or other issues from the server
@@ -830,6 +835,7 @@ function InterJoining() {
             console.error("Error:", error);
         }
     };
+    
 
   
     return (
