@@ -192,22 +192,22 @@ function InterJoining() {
             errors.aadhar = 'Aadhar is required';
             isValid = false;
         }
-        if (!linkdin.trim()) {
-            errors.linkdin = 'linkdin address is required';
-            isValid = false;
-        }
-        if (!facebook.trim()) {
-            errors.facebook = ' facebook address is required';
-            isValid = false;
-        }
-        if (!youtube.trim()) {
-            errors.youtube = ' youtube address is required';
-            isValid = false;
-        }
-        if (!anyother_add.trim()) {
-            errors.anyother_add = ' anyother address is required';
-            isValid = false;
-        }
+        // if (!linkdin.trim()) {
+        //     errors.linkdin = 'linkdin address is required';
+        //     isValid = false;
+        // }
+        // if (!facebook.trim()) {
+        //     errors.facebook = ' facebook address is required';
+        //     isValid = false;
+        // }
+        // if (!youtube.trim()) {
+        //     errors.youtube = ' youtube address is required';
+        //     isValid = false;
+        // }
+        // if (!anyother_add.trim()) {
+        //     errors.anyother_add = ' anyother address is required';
+        //     isValid = false;
+        // }
 
         if (!school_name.trim()) {
             errors.school_name = 'School name is required';
@@ -1206,7 +1206,7 @@ function InterJoining() {
                                                     value={linkdin} onChange={(e) => setlinkdin(e.target.value)}
                                                 />
                                             </Form.Group>
-                                            {errors.linkdin && <span className="error text-danger">{errors.linkdin}</span>}
+                                            {/* {errors.linkdin && <span className="error text-danger">{errors.linkdin}</span>} */}
                                         </Col>
                                         <Col lg={4} md={4} sm={12}><b style={{ fontFamily: 'Century gothic' }} >Facebook Address</b></Col>
                                         <Col lg={8} md={8} sm={12} className='mb-3'>
@@ -1218,7 +1218,7 @@ function InterJoining() {
                                                     value={facebook} onChange={(e) => setfacebook(e.target.value)}
                                                 />
                                             </Form.Group>
-                                            {errors.facebook && <span className="error text-danger">{errors.facebook}</span>}
+                                            {/* {errors.facebook && <span className="error text-danger">{errors.facebook}</span>} */}
                                         </Col>
                                         <Col lg={4} md={4} sm={12}><b style={{ fontFamily: 'Century gothic' }} >YouTube Address</b></Col>
                                         <Col lg={8} md={8} sm={12} className='mb-3'>
@@ -1230,7 +1230,7 @@ function InterJoining() {
                                                     value={youtube} onChange={(e) => setyoutube(e.target.value)}
                                                 />
                                             </Form.Group>
-                                            {errors.youtube && <span className="error text-danger">{errors.youtube}</span>}
+                                            {/* {errors.youtube && <span className="error text-danger">{errors.youtube}</span>} */}
                                         </Col>
                                         <Col lg={4} md={4} sm={12}><b style={{ fontFamily: 'Century gothic' }} >Any Other Address</b></Col>
                                         <Col lg={8} md={8} sm={12} className='mb-3'>
@@ -1242,7 +1242,7 @@ function InterJoining() {
                                                     value={anyother_add} onChange={(e) => setanyother_add(e.target.value)}
                                                 />
                                             </Form.Group>
-                                            {errors.anyother_add && <span className="error text-danger">{errors.anyother_add}</span>}
+                                            {/* {errors.anyother_add && <span className="error text-danger">{errors.anyother_add}</span>} */}
                                         </Col>
 
                                     </Row>
@@ -2218,18 +2218,26 @@ function InterJoining() {
                                         </Col>
 
 
-                                        <Col lg={2} md={2} sm={12} ><b style={{ fontFamily: 'Century gothic' }} >Name of Applicant : </b></Col>
+                                        {/* <Col lg={2} md={2} sm={12} ><b style={{ fontFamily: 'Century gothic' }} >Name of Applicant : </b></Col>
                                         <Col lg={4} md={4} sm={12} className='mb-3'>
                                             <Form.Group className="fname mb-2" controlId="exampleForm.ControlInput1">
                                                 <Form.Control type="date" className='FormStyeling transparent-input' as="textarea" rows={4} value={applicant_name} onChange={(e) => setapplicant_name(e.target.value)}></Form.Control>
-                                            </Form.Group>
+                                            </Form.Group> */}
+
+<Col lg={2} md={2} sm={12} className="m-0">
+                                            <b style={{ fontFamily: 'Century Gothic' }}>Date Signed by Applicant:</b>
+                                        </Col>
+                                        <Col lg={4} md={4} sm={12} className="mb-3">
+                                            <div className="box"></div>
+                                        </Col>
+                                          
                                             {/* <Form.Control
                                                     type="date"
                                                     placeholder="Enter date"
                                                     className=' transparent-input'  rows={4}
                                                     
                                                 /> */}
-                                        </Col>
+                                        {/* </Col> */}
                                         {/* <Col lg={2} md={2} sm={12} className="m-0">
                                             <b className="single-line1" style={{ fontFamily: 'Century Gothic' }}>
                                                 Applicant Signature:
