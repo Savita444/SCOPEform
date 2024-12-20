@@ -159,11 +159,30 @@ const CompletionFrom = () => {
       errors.employer_name = "employer name is required";
     if (!formData.designation_in_current_company)
       errors.designation_in_current_company = "Designation is required";
-    if (!formData.package_in_lpa) errors.package_in_lpa = "Package is required";
-    if (!formData.project_github)
+    if (!formData.package_in_lpa) {
+      errors.package_in_lpa = "Package is required";
+  } else if (isNaN(formData.package_in_lpa) || formData.package_in_lpa <= 0) {
+      errors.package_in_lpa = "Please provide a valid number for the package (LPA)";
+  }
+  
+    if (!formData.project_github) {
       errors.project_github = "GitHub link is required";
-    if (!formData.final_year_project_link)
-      errors.final_year_project_link = "Final year project link is required";
+  } else {
+      const githubUrlPattern = /^(https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)(\.git)?$/;
+      if (!githubUrlPattern.test(formData.project_github)) {
+          errors.project_github = "Please provide a valid GitHub repository URL";
+      }
+  }
+  
+  if (!formData.final_year_project_link) {
+    errors.final_year_project_link = "Final year project link is required";
+} else {
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}([\/\w .-]*)*\/?$/;
+    if (!urlPattern.test(formData.final_year_project_link)) {
+        errors.final_year_project_link = "Please provide a valid URL for the final year project";
+    }
+}
+
     if (!formData.name_contact_of_first_candidate)
       errors.name_contact_of_first_candidate =
         "Name Contact of first candidate is required.";
@@ -234,7 +253,7 @@ const CompletionFrom = () => {
       designationInCurrentCompanyRef.current.focus();
     } else if (errors.package_in_lpa) {
       packageInLPARef.current.focus();
-    }else if (errors.project_github) {
+    } else if (errors.project_github) {
       projectGithubRef.current.focus();
     } else if (errors.final_year_project_link) {
       finalYearProjectLinkRef.current.focus();
@@ -294,7 +313,10 @@ const CompletionFrom = () => {
             },
           }
         );
-        console.log("API Response:", response.data);
+       // If successful, show the success alert
+       alert("Data submitted successfully!");
+
+       console.log("API Response:", response.data);
 
         navigate("/viewcompletion");
       } catch (error) {
@@ -812,9 +834,9 @@ const CompletionFrom = () => {
                       )}
                     </Col>
                     <Col lg={2} md={3} sm={12}>
-                      <b style={{ fontFamily: "Century Gothic" }}>
-                        Package in LPA (If no, Enter NA):{" "}
-                      </b>
+                      <b style={{ fontFamily: "Century gothic" }}>
+                        Package in LPA(If no, Enter NA):{" "}
+                      </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
                       <Form.Group
@@ -1164,7 +1186,7 @@ const CompletionFrom = () => {
                           name="review_image"
                           accept="image/*"
                           onChange={handleFileChange}
-                          className="FormStyeling transparent-input"
+                           className="FormStyeling transparent-input"
                         />
                       </Form.Group>
 

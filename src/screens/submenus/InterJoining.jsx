@@ -19,7 +19,7 @@ function InterJoining() {
   const [whatsappno, setwhatsappno] = useState("");
   const [dob, setdob] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setgender] = useState("");
+  const [selected_gender, setselected_gender] = useState("");
   const [blood, setblood] = useState("");
   const [aadhar, setaadhar] = useState("");
   const [linkdin, setlinkdin] = useState("");
@@ -35,7 +35,6 @@ function InterJoining() {
   const [post_graduation_per, setPostGraduationPer] = useState("");
   const [anyother_cirt, setanyother_cirt] = useState("");
   const [selected_branches, setselected_branches] = useState("");
-  const [selected_gender, setselected_gender] = useState("");
 
   const [other_branch, setother_branch] = useState(""); // To track 'Other' branch input
 
@@ -86,6 +85,7 @@ function InterJoining() {
   const [place, setplace] = useState("");
 
   const [refrance, setRefrance] = useState([]);
+  const [scoperefer, setscoperefer] = useState([]);
   const [refereance_name1, setRefereance_name1] = useState("");
   const [refereance_name2, setRefereance_name2] = useState("");
   const [conatct_number, setconatct_number] = useState("");
@@ -193,6 +193,12 @@ function InterJoining() {
       errors.dob = "You must be at least 18 years old";
       isValid = false;
     }
+    if (!selected_gender) {
+      setError("Please select your Gender.");
+      isValid = false;
+    } else {
+      setError("");
+    }
     if (!blood.trim()) {
       errors.blood = "Blood group is required";
       isValid = false;
@@ -201,22 +207,61 @@ function InterJoining() {
       errors.aadhar = "Aadhar is required";
       isValid = false;
     }
-    if (!linkdin.trim()) {
-      errors.linkdin = "linkdin address is required";
+    // if (!linkdin.trim()) {
+    //     errors.linkdin = 'linkdin address is required';
+    //     isValid = false;
+    // }
+    // if (!facebook.trim()) {
+    //     errors.facebook = ' facebook address is required';
+    //     isValid = false;
+    // }
+    // if (!youtube.trim()) {
+    //     errors.youtube = ' youtube address is required';
+    //     isValid = false;
+    // }
+    // if (!anyother_add.trim()) {
+    //     errors.anyother_add = ' anyother address is required';
+    //     isValid = false;
+    // }
+    if (!whatsappno) {
+      errors.whatsappno = "WhatsApp number is required";
+      isValid = false;
+    } else if (!/^\+91\d{10}$/.test(whatsappno)) {
+      errors.whatsappno =
+        "WhatsApp number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-    if (!facebook.trim()) {
-      errors.facebook = " facebook address is required";
+    if (!dob) {
+      errors.dob = "Date of Birth is required";
+      isValid = false;
+    } else if (!isAgeValid()) {
+      errors.dob = "You must be at least 18 years old";
       isValid = false;
     }
-    if (!youtube.trim()) {
-      errors.youtube = " youtube address is required";
+    if (!blood.trim()) {
+      errors.blood = "Blood group is required";
       isValid = false;
     }
-    if (!anyother_add.trim()) {
-      errors.anyother_add = " anyother address is required";
+    if (!aadhar.trim()) {
+      errors.aadhar = "Aadhar is required";
       isValid = false;
     }
+    // if (!linkdin.trim()) {
+    //   errors.linkdin = "linkdin address is required";
+    //   isValid = false;
+    // }
+    // if (!facebook.trim()) {
+    //   errors.facebook = " facebook address is required";
+    //   isValid = false;
+    // }
+    // if (!youtube.trim()) {
+    //   errors.youtube = " youtube address is required";
+    //   isValid = false;
+    // }
+    // if (!anyother_add.trim()) {
+    //   errors.anyother_add = " anyother address is required";
+    //   isValid = false;
+    // }
 
     if (!school_name.trim()) {
       errors.school_name = "School name is required";
@@ -302,7 +347,8 @@ function InterJoining() {
       isValid = false;
     }
     if (!anyother_cirt.trim()) {
-      errors.anyother_cirt = "AnyOther Certification is required (If no, Enter NA)";
+      errors.anyother_cirt =
+        "AnyOther Certification is required (If no, Enter NA)";
       isValid = false;
     } else if (anyother_cirt.length > 255) {
       errors.anyother_cirt =
@@ -382,7 +428,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!intern_experience.trim()) {
-      errors.intern_experience = "Experience Feild is required";
+      errors.intern_experience = "Experience Field is required";
       isValid = false;
     }
     if (experince.length > 255) {
@@ -455,36 +501,36 @@ function InterJoining() {
       isValid = false;
     }
 
-    if (!guardian_name.trim()) {
-      errors.guardian_name = "Guardian name is required";
-      isValid = false;
-    } else if (guardian_name.length > 50) {
-      errors.guardian_name =
-        "Guardian name pareant gauaradian details must be less than or equal to 50 characters";
-      isValid = false;
-    }
+    // if (!guardian_name.trim()) {
+    //   errors.guardian_name = "Guardian name is required";
+    //   isValid = false;
+    // } else if (guardian_name.length > 50) {
+    //   errors.guardian_name =
+    //     "Guardian name pareant gauaradian details must be less than or equal to 50 characters";
+    //   isValid = false;
+    // }
 
-    if (!GuardianOccupation.trim()) {
-      errors.GuardianOccupation = "Guardian Occupation is required";
-      isValid = false;
-    } else if (GuardianOccupation.length > 50) {
-      errors.GuardianOccupation =
-        "Guardian Occupation must be less than or equal to 50 characters";
-      isValid = false;
-    }
+    // if (!GuardianOccupation.trim()) {
+    //   errors.GuardianOccupation = "Guardian Occupation is required";
+    //   isValid = false;
+    // } else if (GuardianOccupation.length > 50) {
+    //   errors.GuardianOccupation =
+    //     "Guardian Occupation must be less than or equal to 50 characters";
+    //   isValid = false;
+    // }
 
-    if (!Guardian_contactdetails) {
-      errors.Guardian_contactdetails = "Guardian Contact number is required";
-      isValid = false;
-    } else if (!/^\+91\d{10}$/.test(Guardian_contactdetails)) {
-      errors.Guardian_contactdetails =
-        "Guardian Contact number must start with +91 and be followed by exactly 10 digits";
-      isValid = false;
-    }
-    if (!Guardian_aadharno.trim()) {
-      errors.Guardian_aadharno = "Guardian Aadhar is required";
-      isValid = false;
-    }
+    // if (!Guardian_contactdetails) {
+    //   errors.Guardian_contactdetails = "Guardian Contact number is required";
+    //   isValid = false;
+    // } else if (!/^\+91\d{10}$/.test(Guardian_contactdetails)) {
+    //   errors.Guardian_contactdetails =
+    //     "Guardian Contact number must start with +91 and be followed by exactly 10 digits";
+    //   isValid = false;
+    // }
+    // if (!Guardian_aadharno.trim()) {
+    //   errors.Guardian_aadharno = "Guardian Aadhar is required";
+    //   isValid = false;
+    // }
 
     if (!technology_name.trim()) {
       errors.technology_name = "Technology name is required";
@@ -812,7 +858,7 @@ function InterJoining() {
       contact_details,
       dob,
       age,
-      gender,
+      selected_gender,
       blood,
       aadhar,
       linkdin,
@@ -853,6 +899,7 @@ function InterJoining() {
       applicant_name,
       place,
       refrance,
+      scoperefer,
       refereance_name1,
       refereance_name2,
       conatct_number,
@@ -1493,11 +1540,7 @@ function InterJoining() {
                           onChange={(e) => setlinkdin(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.linkdin && (
-                        <span className="error text-danger">
-                          {errors.linkdin}
-                        </span>
-                      )}
+                      {/* {errors.linkdin && <span className="error text-danger">{errors.linkdin}</span>} */}
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -1517,11 +1560,7 @@ function InterJoining() {
                           onChange={(e) => setfacebook(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.facebook && (
-                        <span className="error text-danger">
-                          {errors.facebook}
-                        </span>
-                      )}
+                      {/* {errors.facebook && <span className="error text-danger">{errors.facebook}</span>} */}
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -1541,11 +1580,7 @@ function InterJoining() {
                           onChange={(e) => setyoutube(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.youtube && (
-                        <span className="error text-danger">
-                          {errors.youtube}
-                        </span>
-                      )}
+                      {/* {errors.youtube && <span className="error text-danger">{errors.youtube}</span>} */}
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -1565,11 +1600,7 @@ function InterJoining() {
                           onChange={(e) => setanyother_add(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.anyother_add && (
-                        <span className="error text-danger">
-                          {errors.anyother_add}
-                        </span>
-                      )}
+                      {/* {errors.anyother_add && <span className="error text-danger">{errors.anyother_add}</span>} */}
                     </Col>
                   </Row>
                 </Card.Text>
@@ -2371,11 +2402,11 @@ function InterJoining() {
                           onChange={(e) => setguardian_name(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.guardian_name && (
+                      {/* {errors.guardian_name && (
                         <span className="error text-danger">
                           {errors.guardian_name}
                         </span>
-                      )}
+                      )} */}
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -2397,11 +2428,11 @@ function InterJoining() {
                           }
                         ></Form.Control>
                       </Form.Group>
-                      {errors.GuardianOccupation && (
+                      {/* {errors.GuardianOccupation && (
                         <span className="error text-danger">
                           {errors.GuardianOccupation}
                         </span>
-                      )}
+                      )} */}
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
@@ -2422,11 +2453,11 @@ function InterJoining() {
                           onChange={handle_GuardianPhoneChange}
                         />
                       </Form.Group>
-                      {errors.Guardian_contactdetails && (
+                      {/* {errors.Guardian_contactdetails && (
                         <span className="error text-danger">
                           {errors.Guardian_contactdetails}
                         </span>
-                      )}
+                      )} */}
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -2446,11 +2477,11 @@ function InterJoining() {
                           onChange={handle_GuardianAadharChange}
                         ></Form.Control>
                       </Form.Group>
-                      {errors.Guardian_aadharno && (
+                      {/* {errors.Guardian_aadharno && (
                         <span className="error text-danger">
                           {errors.Guardian_aadharno}
                         </span>
-                      )}
+                      )} */}
                     </Col>
                   </Row>
                 </Card.Text>
@@ -3016,10 +3047,26 @@ function InterJoining() {
                       </b>
                     </Col>
                     <Col lg={1} md={1} sm={12} className="mb-5">
-                      <Form.Check type="radio" label="Yes" name="refrance" />
+                      <Form.Check
+                        type="radio"
+                        label="Yes"
+                        name="scoperefer"
+                        value="Yes"
+                        onChange={(e) => setscoperefer(e.target.value)}
+                      />
                     </Col>
                     <Col lg={1} md={2} sm={12}>
-                      <Form.Check type="radio" label="no" name="refrance" />
+                      <Form.Check
+                        type="radio"
+                        label="no"
+                        name="scoperefer"
+                        onChange={(e) => setscoperefer(e.target.value)}
+                      />
+                      {errors.scoperefer && (
+                        <div className="text-danger">
+                          {errors.scoperefer}
+                        </div>
+                      )}
                     </Col>
                     <bt />
                     <Col lg={2} md={2} sm={12}>
@@ -3182,6 +3229,22 @@ function InterJoining() {
                       )}
                     </Col>
 
+                    {/* <Col lg={2} md={2} sm={12} ><b style={{ fontFamily: 'Century gothic' }} >Name of Applicant : </b></Col>
+                                        <Col lg={4} md={4} sm={12} className='mb-3'>
+                                            <Form.Group className="fname mb-2" controlId="exampleForm.ControlInput1">
+                                                <Form.Control type="date" className='FormStyeling transparent-input' as="textarea" rows={4} value={applicant_name} onChange={(e) => setapplicant_name(e.target.value)}></Form.Control>
+                                            </Form.Group> */}
+
+                    <Col lg={2} md={2} sm={12} className="m-0">
+                      <b style={{ fontFamily: "Century Gothic" }}>
+                        Date Signed by Applicant:
+                      </b>
+                    </Col>
+                    <Col lg={4} md={4} sm={12} className="mb-3">
+                      <div className="box"></div>
+                    </Col>
+
+                    {/* <Form.Control
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
                         Name of Applicant :{" "}
@@ -3207,6 +3270,8 @@ function InterJoining() {
                                                     className=' transparent-input'  rows={4}
                                                     
                                                 /> */}
+                    {/* </Col> */}
+                    {/* <Col lg={2} md={2} sm={12} className="m-0">
                     </Col>
                     {/* <Col lg={2} md={2} sm={12} className="m-0">
                                             <b className="single-line1" style={{ fontFamily: 'Century Gothic' }}>
