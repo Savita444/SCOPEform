@@ -234,7 +234,7 @@ const CompletionFrom = () => {
       designationInCurrentCompanyRef.current.focus();
     } else if (errors.package_in_lpa) {
       packageInLPARef.current.focus();
-    } else if (errors.project_github) {
+    }else if (errors.project_github) {
       projectGithubRef.current.focus();
     } else if (errors.final_year_project_link) {
       finalYearProjectLinkRef.current.focus();
@@ -812,9 +812,9 @@ const CompletionFrom = () => {
                       )}
                     </Col>
                     <Col lg={2} md={3} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>
-                        Package in LPA(If no, Enter NA):{" "}
-                      </b>{" "}
+                      <b style={{ fontFamily: "Century Gothic" }}>
+                        Package in LPA (If no, Enter NA):{" "}
+                      </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
                       <Form.Group
@@ -1164,7 +1164,7 @@ const CompletionFrom = () => {
                           name="review_image"
                           accept="image/*"
                           onChange={handleFileChange}
-                           className="FormStyeling transparent-input"
+                          className="FormStyeling transparent-input"
                         />
                       </Form.Group>
 
