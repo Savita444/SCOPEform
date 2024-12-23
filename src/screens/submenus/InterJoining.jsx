@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./completion.css";
+import "./InterJoining.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +79,7 @@ function InterJoining() {
   const [selectedtraining_mode, setSelectedtraining_mode] = useState("");
 
   const [intern_experience, setintern_experience] = useState("");
-  const [experince, setexprience] = useState("");
+  const [experience_description, setexperience_description] = useState("");
   const [characteristics_describe, setcharacteristics_describe] = useState("");
   const [applicant_name, setapplicant_name] = useState("");
   const [place, setplace] = useState("");
@@ -129,20 +129,20 @@ function InterJoining() {
     let isValid = true;
 
     if (!fname.trim()) {
-      errors.fname = "first Name is required";
+      errors.fname = "First Name is required";
       isValid = false;
     }
     if (!mname.trim()) {
-      errors.mname = "mother Name is required";
+      errors.mname = "Mother Name is required";
       isValid = false;
     }
 
     if (!fathername.trim()) {
-      errors.fathername = "father name is required";
+      errors.fathername = "Father Name is required";
       isValid = false;
     }
     if (!lname.trim()) {
-      errors.lname = "last name is required";
+      errors.lname = "Last Name is required";
       isValid = false;
     }
     if (!email.trim()) {
@@ -153,7 +153,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!parmanenat_address.trim()) {
-      errors.parmanenat_address = "parmanenat address is required";
+      errors.parmanenat_address = "Permanent address is required";
       isValid = false;
     } else if (parmanenat_address.length > 255) {
       errors.parmanenat_address =
@@ -207,22 +207,7 @@ function InterJoining() {
       errors.aadhar = "Aadhar is required";
       isValid = false;
     }
-    // if (!linkdin.trim()) {
-    //     errors.linkdin = 'linkdin address is required';
-    //     isValid = false;
-    // }
-    // if (!facebook.trim()) {
-    //     errors.facebook = ' facebook address is required';
-    //     isValid = false;
-    // }
-    // if (!youtube.trim()) {
-    //     errors.youtube = ' youtube address is required';
-    //     isValid = false;
-    // }
-    // if (!anyother_add.trim()) {
-    //     errors.anyother_add = ' anyother address is required';
-    //     isValid = false;
-    // }
+    
     if (!whatsappno) {
       errors.whatsappno = "WhatsApp number is required";
       isValid = false;
@@ -246,23 +231,7 @@ function InterJoining() {
       errors.aadhar = "Aadhar is required";
       isValid = false;
     }
-    // if (!linkdin.trim()) {
-    //   errors.linkdin = "linkdin address is required";
-    //   isValid = false;
-    // }
-    // if (!facebook.trim()) {
-    //   errors.facebook = " facebook address is required";
-    //   isValid = false;
-    // }
-    // if (!youtube.trim()) {
-    //   errors.youtube = " youtube address is required";
-    //   isValid = false;
-    // }
-    // if (!anyother_add.trim()) {
-    //   errors.anyother_add = " anyother address is required";
-    //   isValid = false;
-    // }
-
+   
     if (!school_name.trim()) {
       errors.school_name = "School name is required";
       isValid = false;
@@ -371,16 +340,16 @@ function InterJoining() {
       isValid = false;
     } else if (father_name.length > 50) {
       errors.father_name =
-        "father name pareant gauaradian details must be less than or equal to 50 characters";
+        "Father name pareant gauaradian details must be less than or equal to 50 characters";
       isValid = false;
     }
 
     if (!fatherOccupation.trim()) {
-      errors.fatherOccupation = "father Occupation is required";
+      errors.fatherOccupation = "Father Occupation is required";
       isValid = false;
     } else if (fatherOccupation.length > 50) {
       errors.fatherOccupation =
-        "father Occupation must be less than or equal to 50 characters";
+        "Father Occupation must be less than or equal to 50 characters";
       isValid = false;
     }
 
@@ -392,10 +361,7 @@ function InterJoining() {
         "Father Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-    if (!father_aadharno.trim()) {
-      errors.father_aadharno = "Father Aadhar is required";
-      isValid = false;
-    }
+   
 
     if (!mother_name.trim()) {
       errors.mother_name = "mother name is required";
@@ -423,17 +389,14 @@ function InterJoining() {
         "mother Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-    if (!mother_aadharno.trim()) {
-      errors.mother_aadharno = "mother Aadhar is required";
-      isValid = false;
-    }
+   
     if (!intern_experience.trim()) {
       errors.intern_experience = "Experience Field is required";
       isValid = false;
     }
-    if (experince.length > 255) {
-      errors.experince =
-        "experince must be less than or equal to 255 characters";
+    if (experience_description.length > 255) {
+      errors.experience_description =
+        "experience_description must be less than or equal to 255 characters";
       isValid = false;
     }
     if (!characteristics_describe.trim()) {
@@ -441,7 +404,7 @@ function InterJoining() {
       isValid = false;
     } else if (characteristics_describe.length > 500) {
       errors.characteristics_describe =
-        "experince must be less than or equal to 500 characters";
+        "experience_description must be less than or equal to 500 characters";
       isValid = false;
     }
     if (!applicant_name.trim()) {
@@ -894,7 +857,7 @@ function InterJoining() {
       selectedModules,
       selectedtraining_mode,
       intern_experience,
-      experince,
+      experience_description,
       characteristics_describe,
       applicant_name,
       place,
@@ -992,6 +955,7 @@ function InterJoining() {
         <div style={{ margin: "40px" }}></div>
 
         {/* Form Personal Details */}
+        
         <Form onSubmit={handleSubmit}>
           <Container fluid>
             {/* <Card className="transparent-card">
@@ -2760,17 +2724,17 @@ function InterJoining() {
                           >
                             <Form.Control
                               type="text"
-                              placeholder="Enter experince"
+                              placeholder="Enter Previous Experience"
                               className="FormStyeling transparent-input"
-                              value={experince}
-                              onChange={(e) => setexprience(e.target.value)}
+                              value={experience_description}
+                              onChange={(e) => setexperience_description(e.target.value)}
                             ></Form.Control>
                           </Form.Group>
-                          {/* {errors.experince && <span className="error text-danger">{errors.experince}</span>} */}
+                          {/* {errors.experience_description && <span className="error text-danger">{errors.experience_description}</span>} */}
                           <Form.Label className="w-100 text-center">
-                            {errors.experince ? (
+                            {errors.experience_description ? (
                               <span className="error text-danger">
-                                {errors.experince}
+                                {errors.experience_description}
                               </span>
                             ) : (
                               "Please Mention Your Experinace"
@@ -3187,7 +3151,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Enter applicant name"
+                          placeholder="Enter Applicant Name"
                           className="FormStyeling transparent-input"
                           value={buttom_applicant_name}
                           onChange={(e) =>
@@ -3216,7 +3180,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Enter place"
+                          placeholder="Enter Place"
                           className="FormStyeling transparent-input"
                           value={buttom_place}
                           onChange={(e) => setbuttom_place(e.target.value)}
@@ -3286,7 +3250,7 @@ function InterJoining() {
                                         </Col> */}
                     <Col lg={2} md={2} sm={12} className="m-0">
                       <b style={{ fontFamily: "Century Gothic" }}>
-                        Aplicant Signature:
+                        Applicant Signature:
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">

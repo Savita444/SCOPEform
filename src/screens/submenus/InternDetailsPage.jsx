@@ -88,18 +88,18 @@ const InternDetailsPage = () => {
     technology_name = "",
     duration = "",
     selectedModules = "",
+    selectedtraining_mode = "",
     intern_experience = "",
-    experince = "",
+    experience_description = "",
     characteristics_describe = "",
     applicant_name = "",
     place = "",
     refrance = "",
     scoperefer = "",
-
-    refereance_name1 = "",
-    refereance_name2 = "",
-
-    conatct_number = "",
+    reference1Name = "",
+    reference2Name = "",
+    reference1Contact = "",
+    reference2Contact = "",
     buttom_applicant_name = "",
     buttom_place = "",
   } = internDetails;
@@ -325,7 +325,7 @@ const InternDetailsPage = () => {
                     />
                   </Form.Group>
                 </Col>
-                
+
                 <Col lg={1} md={1} sm={12} className="m-0">
                   <b
                     style={{ fontFamily: "Century gothic" }}
@@ -348,8 +348,27 @@ const InternDetailsPage = () => {
                     />
                   </Form.Group>
                 </Col>
-
-                
+                <Col lg={4} md={4} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Gender :
+                  </b>
+                </Col>
+                <Col lg={8} md={8} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${selected_gender}`}
+                    />
+                  </Form.Group>
+                </Col>
 
                 <Col lg={4} md={4} sm={12}>
                   <b
@@ -1079,12 +1098,30 @@ const InternDetailsPage = () => {
                     >
                       <Form.Control
                         type="text"
-                        placeholder="+91"
                         className="FormStyeling transparent-input"
                         value={`${selectedModules}`}
                       />
                     </Form.Group>
                   </Col>
+
+                  <Col lg={4} md={4} sm={12}>
+                    <b style={{ fontFamily: "Century gothic" }}>
+                      Training Mode :
+                    </b>
+                  </Col>
+                  <Col lg={8} md={8} sm={12} className="mb-3">
+                    <Form.Group
+                      className="duretion"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Control
+                        type="text"
+                        className="FormStyeling transparent-input"
+                        value={`${selectedtraining_mode}`}
+                      />
+                    </Form.Group>
+                  </Col>
+
                   <b style={{ fontFamily: "Century gothic" }} className="mb-3">
                     Do you have Previous Work , internship or Volunteer
                     Experience ?
@@ -1111,10 +1148,9 @@ const InternDetailsPage = () => {
                         >
                           <Form.Control
                             type="text"
-                            placeholder="Enter experince"
                             className="FormStyeling transparent-input"
-                            value={`${experince}`}
-                          ></Form.Control>
+                            value={`${experience_description}`}
+                          />
                         </Form.Group>
                       </div>
                     )}
@@ -1336,17 +1372,18 @@ const InternDetailsPage = () => {
                                             </Form.Label>
                                         </Col> */}
 
-                  <b style={{ fontFamily: "Century gothic" }} className="mb-3">
-                    Would you like to give reference about Scope / Sumago ? :
-                  </b>
-                  <Col lg={4} md={4} sm={12}>
+                  <Col lg={2} md={2} sm={12}>
+                    <b style={{ fontFamily: "Century gothic" }}>
+                      Would you like to give reference about Scope / Sumago ? :{" "}
+                    </b>
+                  </Col>
+                  <Col lg={5} md={5} sm={12} className="mb-5">
                     <Form.Group
-                      className="scoperefer"
+                      className="fname"
                       controlId="exampleForm.ControlInput1"
                     >
                       <Form.Control
                         type="text"
-                        placeholder=""
                         className="FormStyeling transparent-input"
                         value={`${scoperefer}`}
                       />
@@ -1367,7 +1404,7 @@ const InternDetailsPage = () => {
                       <Form.Control
                         type="text"
                         className="FormStyeling transparent-input"
-                        value={`${refereance_name1}`}
+                        value={`${reference1Name}`}
                       />
                     </Form.Group>
                     <Form.Label className="w-100 text-center"></Form.Label>
@@ -1380,7 +1417,7 @@ const InternDetailsPage = () => {
                       <Form.Control
                         type="text"
                         className="FormStyeling transparent-input"
-                        value={`${refereance_name2}`}
+                        value={`${reference2Name}`}
                       />
                     </Form.Group>
                     <Form.Label className="w-100 text-center"></Form.Label>
@@ -1399,7 +1436,7 @@ const InternDetailsPage = () => {
                         type="text"
                         className="FormStyeling transparent-input"
                         placeholder="+91"
-                        value={conatct_number}
+                        value={reference1Contact}
                       />
                     </Form.Group>
                     <Form.Label className="w-100 text-center"></Form.Label>
@@ -1413,7 +1450,7 @@ const InternDetailsPage = () => {
                         type="text"
                         className="FormStyeling transparent-input"
                         placeholder="+91"
-                        value={conatct_number}
+                        value={reference2Contact}
                       />
                     </Form.Group>
                     <Form.Label className="w-100 text-center"></Form.Label>
@@ -1475,24 +1512,14 @@ const InternDetailsPage = () => {
                     </Form.Group>
                   </Col>
 
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Name of Applicant :{" "}
+                  <Col lg={2} md={2} sm={12} className="m-0">
+                    <b style={{ fontFamily: "Century Gothic" }}>
+                      Date Signed by Applicant:
                     </b>
                   </Col>
                   <Col lg={4} md={4} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname mb-2"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="date"
-                        className="FormStyeling transparent-input"
-                        as="textarea"
-                        rows={4}
-                        value={`${applicant_name}`}
-                      ></Form.Control>
-                    </Form.Group>
+                    <div className="box"></div>
+
                     {/* <Form.Control
                                                     type="date"
                                                     placeholder="Enter date"

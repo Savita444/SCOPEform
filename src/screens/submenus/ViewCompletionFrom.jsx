@@ -80,6 +80,15 @@ const ViewCompletionFrom = () => {
     });
   };
 
+  const handlePrint = (id) => {
+    const printUrl = `/completion-details/${id}`;
+    const printWindow = window.open(printUrl, "_blank");
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+  };
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
@@ -116,9 +125,19 @@ const ViewCompletionFrom = () => {
               style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
               onClick={() => handleDelete(row.id)}
             >
+              
               <FaTrash />
             </Button>
           </OverlayTrigger>
+          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+                          <Button
+                            className="ms-1"
+                            style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
+                            onClick={() => handlePrint(row.id)}
+                          >
+                            🖨️
+                          </Button>
+                        </OverlayTrigger>
         </div>
       ),
     },

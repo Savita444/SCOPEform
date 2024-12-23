@@ -9,7 +9,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 const CompletionFrom = () => {
   const [formData, setFormData] = useState({
     name: "",
-    technology: "",
+    technology_name: "",
     email: "",
     date_of_joining: "",
     selected_mode: "",
@@ -39,6 +39,7 @@ const CompletionFrom = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [technology_name, settechnology_name] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -138,7 +139,14 @@ const CompletionFrom = () => {
     const errors = {};
 
     if (!formData.name) errors.name = "Name is required";
-    if (!formData.technology) errors.technology = "technology is required";
+    if (!technology_name.trim()) {
+      errors.technology_name = "Technology name is required";
+      isValid = false;
+    } else if (technology_name.length > 100) {
+      errors.technology_name =
+        "Technology Name must be less than or equal to 50 characters";
+      isValid = false;
+    }
     if (!formData.email) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -160,28 +168,34 @@ const CompletionFrom = () => {
     if (!formData.designation_in_current_company)
       errors.designation_in_current_company = "Designation is required";
     if (!formData.package_in_lpa) {
-      errors.package_in_lpa = "Package is required";
-  } else if (isNaN(formData.package_in_lpa) || formData.package_in_lpa <= 0) {
-      errors.package_in_lpa = "Please provide a valid number for the package (LPA)";
-  }
-  
+      errors.package_in_lpa = "Package is required.";
+    } else if (
+      isNaN(formData.package_in_lpa) &&
+      formData.package_in_lpa.toUpperCase() !== "NA"
+    ) {
+      errors.package_in_lpa = "Please provide a valid number or enter 'NA'.";
+    }
+
     if (!formData.project_github) {
       errors.project_github = "GitHub link is required";
-  } else {
-      const githubUrlPattern = /^(https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)(\.git)?$/;
+    } else {
+      const githubUrlPattern =
+        /^(https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)(\.git)?$/;
       if (!githubUrlPattern.test(formData.project_github)) {
-          errors.project_github = "Please provide a valid GitHub repository URL";
+        errors.project_github = "Please provide a valid GitHub repository URL";
       }
-  }
-  
-  if (!formData.final_year_project_link) {
-    errors.final_year_project_link = "Final year project link is required";
-} else {
-    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}([\/\w .-]*)*\/?$/;
-    if (!urlPattern.test(formData.final_year_project_link)) {
-        errors.final_year_project_link = "Please provide a valid URL for the final year project";
     }
-}
+
+    if (!formData.final_year_project_link) {
+      errors.final_year_project_link = "Final year project link is required";
+    } else {
+      const urlPattern =
+        /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}([\/\w .-]*)*\/?$/;
+      if (!urlPattern.test(formData.final_year_project_link)) {
+        errors.final_year_project_link =
+          "Please provide a valid URL for the final year project";
+      }
+    }
 
     if (!formData.name_contact_of_first_candidate)
       errors.name_contact_of_first_candidate =
@@ -218,7 +232,7 @@ const CompletionFrom = () => {
   const focusFirstInvalidField = () => {
     if (errors.name) {
       nameRef.current.focus();
-    } else if (errors.technology) {
+    } else if (errors.technology_name) {
       technologyRef.current.focus();
     } else if (errors.email) {
       emailRef.current.focus();
@@ -293,41 +307,47 @@ const CompletionFrom = () => {
         const id = localStorage.getItem("id");
 
         const formDataToSubmit = new FormData();
-        // formDataToSubmit.append("review_image", formData.review_image);
-        // formDataToSubmit.append("resume_pdf", formData.resume_pdf);
-        // formDataToSubmit.append("feedback_video", formData.feedback_video);
-        // Append all fields to FormData
         Object.keys(formData).forEach((key) => {
           formDataToSubmit.append(key, formData[key]);
         });
 
-        // Append additional required data
         formDataToSubmit.append("stude_id", id);
+
+        console.log(
+          "FormData to Submit:",
+          Object.fromEntries(formDataToSubmit.entries())
+        );
 
         const response = await axios.post(
           "https://api.sumagotraining.in/public/api/intern-completion/add",
           formDataToSubmit,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Use the token in Authorization header
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-       // If successful, show the success alert
-       alert("Data submitted successfully!");
 
-       console.log("API Response:", response.data);
+        if (response.data.success) {
+          alert("Data submitted successfully!");
+          navigate("/viewcompletion");
+        } else {
+          alert("Submission failed. Please try again.");
+        }
 
-        navigate("/viewcompletion");
+        console.log("API Response:", response.data);
       } catch (error) {
         console.error("API Error:", error);
         alert("An error occurred while submitting the form");
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       setIsSubmitting(false);
-      focusFirstInvalidField(); // Focus on the first invalid field
+      focusFirstInvalidField();
     }
   };
+
   const handlePrint = () => {
     window.print();
   };
@@ -417,7 +437,7 @@ const CompletionFrom = () => {
                           onChange={handleInputChange}
                           ref={nameRef} // Add ref for the name field
                           className="FormStyeling transparent-input"
-                          placeholder="Enter your name" /* Optional placeholder */
+                          placeholder="Enter Your Name" /* Optional placeholder */
                         />
                       </Form.Group>
                       <Form.Control.Feedback type="invalid">
@@ -428,28 +448,50 @@ const CompletionFrom = () => {
                       )}
                     </Col>
 
-                    <Col lg={2} md={2} sm={12} className="mt-3">
+                    <Col lg={2} md={2} sm={10}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Technology :{" "}
-                      </b>{" "}
+                        Technology Name
+                      </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
                       <Form.Group
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Control
-                          type="text"
-                          name="technology"
-                          ref={technologyRef}
-                          value={formData.technology}
+                        <Form.Select
+                          aria-label="Default select example"
                           className="FormStyeling transparent-input"
-                          onChange={handleInputChange}
-                        />
+                          value={technology_name}
+                          onChange={(e) => settechnology_name(e.target.value)}
+                        >
+                          <option>Select Technology</option>
+                          <option value="MERN Stack Development">
+                            MERN Stack Development
+                          </option>
+                          <option value="MEAN Stack Development">
+                            MEAN Stack Development
+                          </option>
+                          <option value="Full Stack Java Development">
+                            Full Stack Java Development
+                          </option>
+                          <option value="Python Development ">
+                            Python Development{" "}
+                          </option>
+                          <option value="AWS Devops">AWS Devops</option>
+                          <option value="Data Science">Data Science</option>
+                          <option value="Data Analytics">Data Analytics</option>
+                          <option value="AIML">AIML</option>
+                          <option value="UI-UX Designing">
+                            UI-UX Designing
+                          </option>
+                          <option value="Software Testing">
+                            Software Testing
+                          </option>
+                        </Form.Select>
                       </Form.Group>
-                      {errors.technology && (
+                      {errors.technology_name && (
                         <span className="error text-danger">
-                          {errors.technology}
+                          {errors.technology_name}
                         </span>
                       )}
                     </Col>
@@ -1186,7 +1228,7 @@ const CompletionFrom = () => {
                           name="review_image"
                           accept="image/*"
                           onChange={handleFileChange}
-                           className="FormStyeling transparent-input"
+                          className="FormStyeling transparent-input"
                         />
                       </Form.Group>
 

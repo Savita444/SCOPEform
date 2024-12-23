@@ -8,7 +8,7 @@ import instance from "../../api/AxiosInstance";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const ViewInternJoining = () => {
   const { searchQuery, handleSearch, filteredData } = useSearchExport();
@@ -16,7 +16,7 @@ const ViewInternJoining = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Use useNavigate for routing
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -42,7 +42,17 @@ const ViewInternJoining = () => {
       title: "Confirm to delete",
       message: "Are you sure you want to delete this data?",
       customUI: ({ onClose }) => (
-        <div style={{ textAlign: "left", padding: "20px", backgroundColor: "white", borderRadius: "8px", boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)", maxWidth: "400px", margin: "0 auto" }}>
+        <div
+          style={{
+            textAlign: "left",
+            padding: "20px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)",
+            maxWidth: "400px",
+            margin: "0 auto",
+          }}
+        >
           <h2>Confirm to delete</h2>
           <p>Are you sure you want to delete this data?</p>
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
@@ -60,7 +70,7 @@ const ViewInternJoining = () => {
                     },
                   });
                   toast.success("Data Deleted Successfully");
-                  fetchProducts(); // Refresh product list after deletion
+                  fetchProducts();
                 } catch (error) {
                   console.error("Error deleting data:", error);
                   toast.error("Error deleting data");
@@ -72,12 +82,24 @@ const ViewInternJoining = () => {
             >
               Yes
             </button>
-            <button className="btn btn-secondary" onClick={() => onClose()}>No</button>
+            <button className="btn btn-secondary" onClick={() => onClose()}>
+              No
+            </button>
           </div>
         </div>
       ),
     });
   };
+
+  const handlePrint = (id) => {
+  const printUrl = `/intern-details/${id}`;
+  const printWindow = window.open(printUrl, "_blank");
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+};
+
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
@@ -118,6 +140,15 @@ const ViewInternJoining = () => {
               <FaTrash />
             </Button>
           </OverlayTrigger>
+          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+            <Button
+              className="ms-1"
+              style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
+              onClick={() => handlePrint(row.id)}
+            >
+              🖨️
+            </Button>
+          </OverlayTrigger>
         </div>
       ),
     },
@@ -130,7 +161,9 @@ const ViewInternJoining = () => {
           <Card>
             <Card.Header>
               <Row>
-                <Col className="d-flex align-items-center"><h5 >Internship Details</h5></Col>
+                <Col className="d-flex align-items-center">
+                  <h5>Internship Details</h5>
+                </Col>
                 <Col className="d-flex justify-content-end align-items-center">
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
                 </Col>
