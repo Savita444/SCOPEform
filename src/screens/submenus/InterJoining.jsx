@@ -293,28 +293,28 @@ function InterJoining() {
       isValid = false;
     }
 
-    if (!post_graduation_details.trim()) {
-      errors.post_graduation_details = "Post Graduation details required";
-      isValid = false;
-    } else if (post_graduation_details.length > 100) {
-      errors.post_graduation_details =
-        "Post Graduation details must be less than or equal to 100 characters";
-      isValid = false;
-    }
+    // if (!post_graduation_details.trim()) {
+    //   errors.post_graduation_details = "Post Graduation details required";
+    //   isValid = false;
+    // } else if (post_graduation_details.length > 100) {
+    //   errors.post_graduation_details =
+    //     "Post Graduation details must be less than or equal to 100 characters";
+    //   isValid = false;
+    // }
 
     // Post Graduation Percentage Validation (Numeric and within 0-100)
-    if (!post_graduation_per.trim()) {
-      errors.post_graduation_per = "Post Graduation percentage required";
-      isValid = false;
-    } else if (
-      !/^\d+(\.\d{1,2})?$/.test(post_graduation_per) ||
-      parseFloat(post_graduation_per) < 0 ||
-      parseFloat(post_graduation_per) > 100
-    ) {
-      errors.post_graduation_per =
-        "Post Graduation percentage must be a number between 0 and 100 (can include decimals)";
-      isValid = false;
-    }
+    // if (!post_graduation_per.trim()) {
+    //   errors.post_graduation_per = "Post Graduation percentage required";
+    //   isValid = false;
+    // } else if (
+    //   !/^\d+(\.\d{1,2})?$/.test(post_graduation_per) ||
+    //   parseFloat(post_graduation_per) < 0 ||
+    //   parseFloat(post_graduation_per) > 100
+    // ) {
+    //   errors.post_graduation_per =
+    //     "Post Graduation percentage must be a number between 0 and 100 (can include decimals)";
+    //   isValid = false;
+    // }
     if (!anyother_cirt.trim()) {
       errors.anyother_cirt =
         "AnyOther Certification is required (If no, Enter NA)";
@@ -364,7 +364,7 @@ function InterJoining() {
    
 
     if (!mother_name.trim()) {
-      errors.mother_name = "mother name is required";
+      errors.mother_name = "Mother name is required";
       isValid = false;
     } else if (mother_name.length > 50) {
       errors.mother_name =
@@ -373,16 +373,16 @@ function InterJoining() {
     }
 
     if (!motherOccupation.trim()) {
-      errors.motherOccupation = "mother Occupation is required";
+      errors.motherOccupation = "Mother Occupation is required";
       isValid = false;
     } else if (motherOccupation.length > 50) {
       errors.motherOccupation =
-        "mother Occupation must be less than or equal to 50 characters";
+        "Mother Occupation must be less than or equal to 50 characters";
       isValid = false;
     }
 
     if (!mother_contactdetails) {
-      errors.mother_contactdetails = "mother Contact number is required";
+      errors.mother_contactdetails = "Mother Contact number is required";
       isValid = false;
     } else if (!/^\+91\d{10}$/.test(mother_contactdetails)) {
       errors.mother_contactdetails =
@@ -416,7 +416,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!place.trim()) {
-      errors.place = "place is requied";
+      errors.place = "place is required";
       isValid = false;
     } else if (place.length > 50) {
       errors.place = "place must be less than or equal to 50 characters";
@@ -440,14 +440,14 @@ function InterJoining() {
       isValid = false;
     }
 
-    if (!conatct_number) {
-      errors.conatct_number = " Contact number is required";
-      isValid = false;
-    } else if (!/^\+91\d{10}$/.test(conatct_number)) {
-      errors.conatct_number =
-        "contact number must start with +91 and be followed by exactly 10 digits";
-      isValid = false;
-    }
+    // if (!conatct_number) {
+    //   errors.conatct_number = " Contact number is required";
+    //   isValid = false;
+    // } else if (!/^\+91\d{10}$/.test(conatct_number)) {
+    //   errors.conatct_number =
+    //     "contact number must start with +91 and be followed by exactly 10 digits";
+    //   isValid = false;
+    // }
     if (!buttom_applicant_name.trim()) {
       errors.buttom_applicant_name = "applicant name is required";
       isValid = false;
@@ -457,7 +457,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!buttom_place.trim()) {
-      errors.buttom_place = "place is requied";
+      errors.buttom_place = "place is required";
       isValid = false;
     } else if (buttom_place.length > 50) {
       errors.buttom_place = "place must be less than or equal to 50 characters";
@@ -913,7 +913,7 @@ function InterJoining() {
 
   return (
     <>
-      <div className="container backimg">
+      <div className="container backimg ">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -1474,7 +1474,7 @@ function InterJoining() {
                   }}
                 >
                   <div className="personal-card-heading position-relative">
-                    <b className="form-title">Social MEDIA ADDRESS</b>
+                    <b className="form-title">SOCIAL MEDIA ADDRESS</b>
                   </div>
                 </div>
               </Card.Header>
@@ -1983,7 +1983,7 @@ function InterJoining() {
                   }}
                 >
                   <div className="personal-card-heading position-relative">
-                    <b className="form-title">PARENTS / GAUARDIANDETAILS</b>
+                    <b className="form-title">PARENTS / GUARDIAN DETAILS</b>
                   </div>
                 </div>
               </Card.Header>

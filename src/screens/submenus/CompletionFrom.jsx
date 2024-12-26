@@ -137,6 +137,7 @@ const CompletionFrom = () => {
 
   const validate = () => {
     const errors = {};
+    let isValid = true;
 
     if (!formData.name) errors.name = "Name is required";
     if (!technology_name.trim()) {
@@ -298,6 +299,13 @@ const CompletionFrom = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation (you can add your validation logic here)
+    const isValid = validate();
+    if (!isValid) {
+      alert("Please fill in all the required fields correctly.");
+      return; // Exit the function if validation fails
+    }
 
     setIsSubmitting(true);
 

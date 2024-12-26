@@ -35,6 +35,7 @@ const InternDetailsPage = () => {
     fetchInternDetails();
   }, [id]);
 
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
@@ -687,7 +688,7 @@ const InternDetailsPage = () => {
                   </Col>
                   <Col lg={4} md={4} sm={12}>
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Any Other Cirtification :
+                      Any Other Certification :
                     </b>
                   </Col>
                   <Col lg={8} md={8} sm={12} className="mb-3">
@@ -722,7 +723,7 @@ const InternDetailsPage = () => {
                 }}
               >
                 <div className="personal-card-heading position-relative">
-                  <b className="form-title">PARENTS / GAUARDIANDETAILS</b>
+                  <b className="form-title">PARENTS / GUARDIAN DETAILS</b>
                 </div>
               </div>
             </Card.Header>

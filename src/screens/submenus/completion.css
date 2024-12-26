@@ -295,6 +295,10 @@
         height: 130px;
         max-width: 100%;
     }
+    .corner_img1 {
+        
+        max-width: 100%;
+    }
     .body{
         background-size: 100% auto;  /* Ensures the image width is 100% of the page */
         background-attachment: fixed; /* Keeps the background fixed during printing */
