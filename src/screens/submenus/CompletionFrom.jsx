@@ -116,9 +116,13 @@ const CompletionFrom = () => {
       error = "Only image files are allowed.";
     } else if (name === "resume_pdf" && file.type !== "application/pdf") {
       error = "Only PDF files are allowed.";
-    } else if (name === "feedback_video" && !file.type.startsWith("video/")) {
-      error = "Only video files are allowed.";
-    }
+    } else if (name === "feedback_video") {
+      if (!file.type.startsWith("video/")) {
+          error = "Only video files are allowed.";
+      } else if (file.size > 5 * 1024 * 1024) { // 5 MB size limit
+          error = "Video size must not exceed 5 MB.";
+      }
+  }
 
     if (error) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));

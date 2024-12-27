@@ -88,7 +88,9 @@ function InterJoining() {
   const [scoperefer, setscoperefer] = useState([]);
   const [refereance_name1, setRefereance_name1] = useState("");
   const [refereance_name2, setRefereance_name2] = useState("");
-  const [conatct_number, setconatct_number] = useState("");
+  const [conatct_number1, setconatct_number1] = useState("");
+  const [conatct_number2, setconatct_number2] = useState("");
+
   const [buttom_applicant_name, setbuttonapplicantname] = useState("");
   const [buttom_place, setbuttom_place] = useState("");
 
@@ -440,14 +442,26 @@ function InterJoining() {
       isValid = false;
     }
 
-    // if (!conatct_number) {
-    //   errors.conatct_number = " Contact number is required";
+    // if (!conatct_number1) {
+    //   errors.conatct_number1 = " Contact number is required";
     //   isValid = false;
-    // } else if (!/^\+91\d{10}$/.test(conatct_number)) {
-    //   errors.conatct_number =
+    // } else if (!/^\+91\d{10}$/.test(conatct_number1)) {
+    //   errors.conatct_number1 =
     //     "contact number must start with +91 and be followed by exactly 10 digits";
     //   isValid = false;
     // }
+    
+    // if (!conatct_number2) {
+    //   errors.conatct_number2 = " Contact number is required";
+    //   isValid = false;
+    // } else if (!/^\+91\d{10}$/.test(conatct_number2)) {
+    //   errors.conatct_number2 =
+    //     "contact number must start with +91 and be followed by exactly 10 digits";
+    //   isValid = false;
+    // }
+
+
+
     if (!buttom_applicant_name.trim()) {
       errors.buttom_applicant_name = "applicant name is required";
       isValid = false;
@@ -527,6 +541,11 @@ function InterJoining() {
       errors.selectedModules = "Please select at least one option.";
       isValid = false;
     }
+    if (selectedtraining_mode.length === 0) {
+      errors.selectedtraining_mode = "Please select at least one option.";
+      isValid = false;
+    }
+    
 
     // If any validation fails, update the errors state and set isValid to false
     if (!isValid) {
@@ -583,12 +602,20 @@ function InterJoining() {
   const handlePconatactnumberChange = (e) => {
     const value = e.target.value;
     if (value.startsWith("+91")) {
-      setconatct_number(value.slice(0, 13)); // Limit to "+91" and 10 digits
+      setconatct_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
     } else {
-      setconatct_number("+91" + value.slice(0, 10));
+      setconatct_number1("+91" + value.slice(0, 10));
     }
   };
 
+  const handlePconatactnumber2Change = (e) => {
+    const value = e.target.value;
+    if (value.startsWith("+91")) {
+      setconatct_number2(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    } else {
+      setconatct_number2("+91" + value.slice(0, 10));
+    }
+  };
   const handleHusbandDetailsChange = (field, value) => {
     setHusbandDetails((prev) => ({ ...prev, [field]: value }));
     setHusbandErrors((prev) => ({ ...prev, [field]: "" })); // Clear error on input change
@@ -821,7 +848,7 @@ function InterJoining() {
       contact_details,
       dob,
       age,
-      selected_gender,
+      selected_gender, // Add selected_gender
       blood,
       aadhar,
       linkdin,
@@ -855,21 +882,22 @@ function InterJoining() {
       technology_name,
       duration,
       selectedModules,
-      selectedtraining_mode,
-      intern_experience,
-      experience_description,
+      selectedtraining_mode, // Add training mode
+      intern_experience, // Add intern experience
+      experience_description, // Add experience description
       characteristics_describe,
       applicant_name,
       place,
-      refrance,
+      refrance, // Add reference
       scoperefer,
       refereance_name1,
       refereance_name2,
-      conatct_number,
+      conatct_number1,
+      conatct_number2,
       buttom_applicant_name,
       buttom_place,
     };
-
+    
     try {
       const response = await fetch(
         "https://api.sumagotraining.in/public/api/intern-joining/add",
@@ -3091,14 +3119,14 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           placeholder="+91"
-                          value={conatct_number}
+                          value={conatct_number1}
                           onChange={handlePconatactnumberChange}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.conatct_number && (
+                      {errors.conatct_number1 && (
                         <span className="error text-danger">
-                          {errors.conatct_number}
+                          {errors.conatct_number1}
                         </span>
                       )}
                     </Col>
@@ -3111,14 +3139,14 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           placeholder="+91"
-                          // value={conatct_number}
-                          // onChange={handlePconatactnumberChange}
+                          value={conatct_number2}
+                          onChange={handlePconatactnumber2Change}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.conatct_number && (
+                      {errors.conatct_number2 && (
                         <span className="error text-danger">
-                          {errors.conatct_number}
+                          {errors.conatct_number2}
                         </span>
                       )}
                     </Col>

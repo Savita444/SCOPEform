@@ -35,7 +35,6 @@ const InternDetailsPage = () => {
     fetchInternDetails();
   }, [id]);
 
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
@@ -354,23 +353,19 @@ const InternDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                    Gender :
+                    Gender:
                   </b>
                 </Col>
                 <Col lg={8} md={8} sm={12} className="mb-3">
-                  <Form.Group
-                    className="fname"
-                    controlId="exampleForm.ControlInput1"
-                  >
+                  <Form.Group controlId="gender">
                     <Form.Control
                       type="text"
-                      // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${selected_gender}`}
+                      value={`${selected_gender}` || "Not Specified"}
+                      readOnly
                     />
                   </Form.Group>
                 </Col>
-
                 <Col lg={4} md={4} sm={12}>
                   <b
                     style={{ fontFamily: "Century gothic" }}
@@ -1106,23 +1101,23 @@ const InternDetailsPage = () => {
                   </Col>
 
                   <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Training Mode :
+                    <b
+                      style={{ fontFamily: "Century gothic" }}
+                      className="label-colour"
+                    >
+                      Training Mode:
                     </b>
                   </Col>
                   <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="duretion"
-                      controlId="exampleForm.ControlInput1"
-                    >
+                    <Form.Group controlId="trainingMode">
                       <Form.Control
                         type="text"
                         className="FormStyeling transparent-input"
-                        value={`${selectedtraining_mode}`}
+                        value={selectedtraining_mode || "Not Specified"}
+                        readOnly
                       />
                     </Form.Group>
                   </Col>
-
                   <b style={{ fontFamily: "Century gothic" }} className="mb-3">
                     Do you have Previous Work , internship or Volunteer
                     Experience ?
@@ -1141,7 +1136,7 @@ const InternDetailsPage = () => {
                     </Form.Group>
                   </Col>
                   <Col lg={8} md={8} sm={12} className="mb-5">
-                    {intern_experience === "Yes" && (
+                    {intern_experience == "Yes" && (
                       <div>
                         <Form.Group
                           className="duretion"
@@ -1150,7 +1145,7 @@ const InternDetailsPage = () => {
                           <Form.Control
                             type="text"
                             className="FormStyeling transparent-input"
-                            value={`${experience_description}`}
+                            value={`${experience}dfsdfs`}
                           />
                         </Form.Group>
                       </div>
@@ -1260,7 +1255,7 @@ const InternDetailsPage = () => {
                   <Col lg={2} md={2} sm={12}>
                     <b style={{ fontFamily: "Century gothic" }}>
                       <Form.Check
-                        type="radio"
+                        type="checkbox"
                         label="Social Media"
                         name="refrance"
                         value={refrance}
@@ -1508,7 +1503,7 @@ const InternDetailsPage = () => {
                         type="text"
                         placeholder="Enter place"
                         className="FormStyeling transparent-input"
-                        value={buttom_place}
+                        value={`${buttom_place}`}
                       />
                     </Form.Group>
                   </Col>
