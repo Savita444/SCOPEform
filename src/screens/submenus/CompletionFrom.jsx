@@ -367,7 +367,7 @@ const CompletionFrom = () => {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container">
+        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} class="img-fluid logo2" alt="..." />
         </div>

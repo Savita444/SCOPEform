@@ -6,6 +6,7 @@ import instance from "../../api/AxiosInstance";
 import environment from "../../../src/App";
 import "./completion.css";
 import axios from "axios";
+import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
@@ -22,12 +23,15 @@ const CompletionDetailsPage = () => {
       const accessToken = localStorage.getItem("remember_token");
 
       try {
-        const response = await axios.get(`${BASE_URL}/get-perticular-completion-intern/${id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axios.get(
+          `${BASE_URL}/get-perticular-completion-intern/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         // Assuming the API returns a single object in the response
         setInternDetails(response.data);
@@ -91,7 +95,8 @@ const CompletionDetailsPage = () => {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container">
+        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} className="img-fluid logo2" alt="..." />
         </div>
         {/* <Container>
@@ -150,12 +155,12 @@ const CompletionDetailsPage = () => {
             >
               <Row>
                 {/* First name */}
-                <Col lg={2} md={2} sm={12} >
+                <Col lg={2} md={2} sm={12}>
                   <b
                     style={{ fontFamily: "Century gothic" }}
                     className="d-none d-md-block label-colour"
                   >
-                     Name : {" "}
+                    Name :{" "}
                   </b>
                 </Col>
                 <Col g={10} md={10} sm={12} className="d-none d-md-block">
@@ -182,7 +187,7 @@ const CompletionDetailsPage = () => {
                     Technology:
                   </b>
                 </Col>
-                <Col  lg={4} md={3} sm={12} className="mb-3">
+                <Col lg={4} md={3} sm={12} className="mb-3">
                   <Form.Group
                     className="fname"
                     controlId="exampleForm.ControlInput1"
@@ -200,10 +205,10 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                   Email ID:
+                    Email ID:
                   </b>
                 </Col>
-                <Col  lg={4} md={5} sm={12} className="mb-3">
+                <Col lg={4} md={5} sm={12} className="mb-3">
                   <Form.Group
                     className="fname"
                     controlId="exampleForm.ControlInput1"
@@ -266,7 +271,7 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                   Currently Working On :
+                    Currently Working On :
                   </b>
                 </Col>
                 <Col lg={10} md={3} sm={12} className="mb-3">
@@ -311,7 +316,7 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                    Describe the Project in 3 to 4 Lines: {" "}
+                    Describe the Project in 3 to 4 Lines:{" "}
                   </b>
                 </Col>
                 <Col lg={9} md={9} sm={12} className="mb-3">
@@ -334,7 +339,7 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                   Placed Anywhere ? :
+                    Placed Anywhere ? :
                   </b>
                 </Col>
                 <Col lg={3} md={3} sm={12} className="mb-3">
@@ -372,349 +377,409 @@ const CompletionDetailsPage = () => {
                   </Form.Group>
                 </Col>
 
-                
-                  <Col lg={3} md={3} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                <Col lg={3} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Designation in Current Company (If No, Enter NA) :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${designation_in_current_company}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={3} md={3} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={3} md={3} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${designation_in_current_company}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col lg={3} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Package in LPA (If No, Enter NA):
+                  </b>
+                </Col>
+                <Col lg={3} md={3} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${package_in_lpa}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col lg={12} md={12} sm={12} className="mb-3 label-colour">
+                  <b style={{ fontFamily: "Century gothic" }}>
+                    Provide minimum 5 task links which you uploaded on linkedin
+                  </b>{" "}
+                </Col>
 
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${package_in_lpa}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={12} md={12} sm={12} className='mb-3 label-colour'><b style={{ fontFamily: 'Century gothic' }}>Provide minimum 5 task links which you uploaded on linkedin</b> </Col>
-
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                <Col lg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link 1 :
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${task_links_1}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${task_links_1}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link 2 :
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${task_links_2}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${task_links_2}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link 3 :
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${task_links_3}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${task_links_3}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link 4 :
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${task_links_4}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${task_links_4}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link 5 :
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${task_links_5}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${task_links_5}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     GitHub Link of Your Final Year Project :
-                    </b>
-                  </Col>
-                  <Col lg={4} md={4} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${project_github}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={4} md={4} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${project_github}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Link of Final Project Completion Video on LinkedIn :
-                    </b>
-                  </Col>
-                  <Col lg={4} md={4} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${final_year_project_link}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={12} md={12} sm={12} className='mb-3 label-colour'><b style={{ fontFamily: 'Century gothic' }}>List of minimum 5 candidates which are refer from your side for company  </b> </Col>
-              
-              
-              
-              
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={4} md={4} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${final_year_project_link}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col lg={12} md={12} sm={12} className="mb-3 label-colour">
+                  <b style={{ fontFamily: "Century gothic" }}>
+                    List of minimum 5 candidates which are refer from your side
+                    for company{" "}
+                  </b>{" "}
+                </Col>
+
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Name & Contact of First Candidate:
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${name_contact_of_first_candidate}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${name_contact_of_first_candidate}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Name & Contact of Second Candidate:
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${name_contact_of_second_candidate}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${name_contact_of_second_candidate}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Name & Contact of Third Candidate:
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${name_contact_of_third_candidate}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${name_contact_of_third_candidate}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Name & Contact of Fourth Candidate:
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${name_contact_of_fourth_candidate}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col llg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}  className="label-colour">
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${name_contact_of_fourth_candidate}`}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col llg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
                     Name & Contact of Fifth Candidate:
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${name_contact_of_fifth_candidate}`}
+                  </b>
+                </Col>
+                <Col lg={10} md={10} sm={12} className="mb-3">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      // placeholder="enter first name"
+                      className="FormStyeling transparent-input"
+                      value={`${name_contact_of_fifth_candidate}`}
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload the screenshots of Google review
+                  </b>
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  {googleReviewImgUrl && (
+                    <Form.Group className="fname" controlId="googleReview">
+                      <img
+                        src={googleReviewImgUrl}
+                        alt="Google Review"
+                        style={{ maxWidth: "200px" }}
                       />
                     </Form.Group>
-                  </Col>
+                  )}
+                </Col>
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Write minimum one Blog on your selected technology{" "}
+                  </b>{" "}
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="blog_on_your_selected_technology"
+                      value={blog_on_your_selected_technology}
+                      className="FormStyeling transparent-input"
+                    />
+                  </Form.Group>
+                </Col>
 
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload your training video feedback
+                  </b>
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  {googleReviewImgUrl && (
+                    <Form.Group className="fname" controlId="googleReview">
+                      <img
+                        src={googleReviewImgUrl}
+                        alt="Google Review"
+                        style={{ maxWidth: "200px" }}
+                      />
+                    </Form.Group>
+                  )}
+                </Col>
 
-      <Col lg={2} md={3} sm={12}>
-        <b style={{ fontFamily: "Century gothic" }} className="label-colour">
-          Upload the screenshots of Google review
-        </b>
-      </Col>
-      <Col lg={4} md={3} sm={12} className="mb-5">
-      {googleReviewImgUrl && (
-        <Form.Group className="fname" controlId="googleReview">
-        <img
-        src={googleReviewImgUrl}
-        alt="Google Review"
-        style={{ maxWidth: "200px" }}
-      />
-        </Form.Group>
-      )}
-      </Col>
-      <Col lg={2} md={3} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }} className="label-colour">
-                        Write minimum one Blog on your selected technology{" "}
-                      </b>{" "}
-                    </Col>
-                    <Col lg={4} md={3} sm={12} className="mb-5">
-                      <Form.Group
-                        className="fname"
-                        controlId="exampleForm.ControlInput1"
+                <Col lg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload your updated Resume
+                  </b>
+                </Col>
+
+                <Col lg={4} md={4} sm={12} className="mb-5">
+                  <Form.Group className="fname" controlId="videoFeedback">
+                    {resumePdfUrl && (
+                      <a
+                        href={resumePdfUrl}
+                        download // This will trigger the download action
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: "inline-block" }}
                       >
-                        <Form.Control
-                          type="text"
-                          name="blog_on_your_selected_technology"
-                          value={blog_on_your_selected_technology}
-                          className="FormStyeling transparent-input"
+                        {/* Static Image of the PDF (Thumbnail) */}
+                        <img
+                          src={pdficon}
+                          class="img-fluid logo1"
+                          alt="PDF Thumbnail"
+                          style={{ maxWidth: "70px", cursor: "pointer" }}
                         />
-                      </Form.Group>
-                   
-                    </Col>
 
-                    <Col lg={2} md={3} sm={12}>
-        <b style={{ fontFamily: "Century gothic" }} className="label-colour">
-        Upload your training video feedback
-        </b>
-      </Col>
-      <Col lg={4} md={3} sm={12} className="mb-5">
-      {googleReviewImgUrl && (
-        <Form.Group className="fname" controlId="googleReview">
-        <img
-        src={googleReviewImgUrl}
-        alt="Google Review"
-        style={{ maxWidth: "200px" }}
-      />
-        </Form.Group>
-      )}
-      </Col>
+                        <p>Click to Download Resume</p>
+                      </a>
+                    )}
+                  </Form.Group>
+                </Col>
 
-      <Col lg={2} md={2} sm={12}>
-  <b style={{ fontFamily: "Century gothic" }} className="label-colour">
-    Upload your updated Resume
-  </b>
-</Col>
-
-<Col lg={4} md={4} sm={12} className="mb-5">
-  <Form.Group className="fname" controlId="videoFeedback">
-    {resumePdfUrl && (
-      <a
-        href={resumePdfUrl}
-        download  // This will trigger the download action
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ display: "inline-block" }}
-      >
-        {/* Static Image of the PDF (Thumbnail) */}
-        <img src={pdficon} class="img-fluid logo1" alt="PDF Thumbnail"
-          style={{ maxWidth: "70px", cursor: "pointer" }} />
-       
-        <p>Click to Download Resume</p>
-      </a>
-    )}
-  </Form.Group>
-</Col>
-
-      {/* <Col lg={2} md={2} sm={12}>
+                {/* <Col lg={2} md={2} sm={12}>
         <b style={{ fontFamily: "Century gothic" }} className="label-colour">
         Upload your updated Resume
         </b>
@@ -734,10 +799,7 @@ const CompletionDetailsPage = () => {
       )}
         </Form.Group>
       </Col> */}
-
-      
-
-                </Row>
+              </Row>
             </Card.Body>
           </Card>
         </Container>

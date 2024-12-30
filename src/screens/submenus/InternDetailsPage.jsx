@@ -4,6 +4,7 @@ import { Container, Row, Card, Col, Form } from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
 
 import "./completion.css";
+import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
@@ -110,7 +111,8 @@ const InternDetailsPage = () => {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container">
+        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} className="img-fluid logo2" alt="..." />
         </div>
         {/* <Container>

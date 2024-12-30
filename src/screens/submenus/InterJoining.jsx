@@ -209,7 +209,7 @@ function InterJoining() {
       errors.aadhar = "Aadhar is required";
       isValid = false;
     }
-    
+
     if (!whatsappno) {
       errors.whatsappno = "WhatsApp number is required";
       isValid = false;
@@ -233,7 +233,7 @@ function InterJoining() {
       errors.aadhar = "Aadhar is required";
       isValid = false;
     }
-   
+
     if (!school_name.trim()) {
       errors.school_name = "School name is required";
       isValid = false;
@@ -363,7 +363,6 @@ function InterJoining() {
         "Father Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-   
 
     if (!mother_name.trim()) {
       errors.mother_name = "Mother name is required";
@@ -391,7 +390,7 @@ function InterJoining() {
         "mother Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-   
+
     if (!intern_experience.trim()) {
       errors.intern_experience = "Experience Field is required";
       isValid = false;
@@ -450,7 +449,7 @@ function InterJoining() {
     //     "contact number must start with +91 and be followed by exactly 10 digits";
     //   isValid = false;
     // }
-    
+
     // if (!conatct_number2) {
     //   errors.conatct_number2 = " Contact number is required";
     //   isValid = false;
@@ -459,8 +458,6 @@ function InterJoining() {
     //     "contact number must start with +91 and be followed by exactly 10 digits";
     //   isValid = false;
     // }
-
-
 
     if (!buttom_applicant_name.trim()) {
       errors.buttom_applicant_name = "applicant name is required";
@@ -545,7 +542,6 @@ function InterJoining() {
       errors.training_mode = "Please select at least one option.";
       isValid = false;
     }
-    
 
     // If any validation fails, update the errors state and set isValid to false
     if (!isValid) {
@@ -897,7 +893,7 @@ function InterJoining() {
       buttom_applicant_name,
       buttom_place,
     };
-    
+
     try {
       const response = await fetch(
         "https://api.sumagotraining.in/public/api/intern-joining/add",
@@ -945,8 +941,8 @@ function InterJoining() {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container">
-          {/* <img src={logo1} class="img-fluid logo1" alt="..." /> */}
+        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} class="img-fluid logo2" alt="..." />
         </div>
         <Container>
@@ -983,7 +979,7 @@ function InterJoining() {
         <div style={{ margin: "40px" }}></div>
 
         {/* Form Personal Details */}
-        
+
         <Form onSubmit={handleSubmit}>
           <Container fluid>
             {/* <Card className="transparent-card">
@@ -2755,7 +2751,9 @@ function InterJoining() {
                               placeholder="Enter Previous Experience"
                               className="FormStyeling transparent-input"
                               value={experience_description}
-                              onChange={(e) => setexperience_description(e.target.value)}
+                              onChange={(e) =>
+                                setexperience_description(e.target.value)
+                              }
                             ></Form.Control>
                           </Form.Group>
                           {/* {errors.experience_description && <span className="error text-danger">{errors.experience_description}</span>} */}
@@ -3055,9 +3053,7 @@ function InterJoining() {
                         onChange={(e) => setscoperefer(e.target.value)}
                       />
                       {errors.scoperefer && (
-                        <div className="text-danger">
-                          {errors.scoperefer}
-                        </div>
+                        <div className="text-danger">{errors.scoperefer}</div>
                       )}
                     </Col>
                     <bt />

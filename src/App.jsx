@@ -15,6 +15,7 @@ import CompletionFrom from "./screens/submenus/CompletionFrom";
 import ViewCompletionFrom from "./screens/submenus/ViewCompletionFrom";
 import InternDetailsPage from "./screens/submenus/InternDetailsPage";
 import CompletionDetailsPage from "./screens/submenus/CompletionDetailsPage";
+import IdCardIssue from "./screens/submenus/IdCardIssue";
 
 function App() {
   // REACT_APP_IMAGE_URL= "https://api.sumagotraining.in/";
@@ -54,6 +55,12 @@ function App() {
             path="/viewcompletion"
             element={<ProtectedRoutes Component={ViewCompletionFrom} />}
           />
+
+          <Route
+            path="/IdCardIssue"
+            element={<ProtectedRoutes Component={IdCardIssue} />}
+          />
+
           <Route
             path="/logout"
             element={<ProtectedRoutes Component={Logout} />}

@@ -48,7 +48,11 @@ const SidebarMenu = [
         url: "/viewcompletion",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
-
+      {
+        subMenus: "Id Card Issue",
+        url: "/IdCardIssue",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
     ],
   },
 
