@@ -19,7 +19,7 @@ function InterJoining() {
   const [whatsappno, setwhatsappno] = useState("");
   const [dob, setdob] = useState("");
   const [age, setAge] = useState("");
-  const [selected_gender, setselected_gender] = useState("");
+  const [gender, setselected_gender] = useState("");
   const [blood, setblood] = useState("");
   const [aadhar, setaadhar] = useState("");
   const [linkdin, setlinkdin] = useState("");
@@ -76,7 +76,7 @@ function InterJoining() {
   const [technology_name, settechnology_name] = useState("");
   const [duration, setduration] = useState("");
   const [selectedModules, setSelectedModules] = useState("");
-  const [selectedtraining_mode, setSelectedtraining_mode] = useState("");
+  const [training_mode, setSelectedtraining_mode] = useState("");
 
   const [intern_experience, setintern_experience] = useState("");
   const [experience_description, setexperience_description] = useState("");
@@ -195,7 +195,7 @@ function InterJoining() {
       errors.dob = "You must be at least 18 years old";
       isValid = false;
     }
-    if (!selected_gender) {
+    if (!gender) {
       setError("Please select your Gender.");
       isValid = false;
     } else {
@@ -541,8 +541,8 @@ function InterJoining() {
       errors.selectedModules = "Please select at least one option.";
       isValid = false;
     }
-    if (selectedtraining_mode.length === 0) {
-      errors.selectedtraining_mode = "Please select at least one option.";
+    if (training_mode.length === 0) {
+      errors.training_mode = "Please select at least one option.";
       isValid = false;
     }
     
@@ -848,7 +848,7 @@ function InterJoining() {
       contact_details,
       dob,
       age,
-      selected_gender, // Add selected_gender
+      gender, // Add selected_gender
       blood,
       aadhar,
       linkdin,
@@ -882,7 +882,7 @@ function InterJoining() {
       technology_name,
       duration,
       selectedModules,
-      selectedtraining_mode, // Add training mode
+      training_mode, // Add training mode
       intern_experience, // Add intern experience
       experience_description, // Add experience description
       characteristics_describe,
@@ -1398,18 +1398,18 @@ function InterJoining() {
                         <Form.Check
                           type="radio"
                           label="Male"
-                          name="selected_age"
+                          name="gender"
                           value="Male"
                           onChange={(e) => setselected_gender(e.target.value)}
-                          checked={selected_gender === "Male"}
+                          checked={gender === "Male"}
                         />
                         <Form.Check
                           type="radio"
                           label="Female"
-                          name="selected_branches"
+                          name="gender"
                           value="Female"
                           onChange={(e) => setselected_gender(e.target.value)}
-                          checked={selected_gender === "Female"}
+                          checked={gender === "Female"}
                         />
                       </div>
                     </Col>
@@ -2687,27 +2687,27 @@ function InterJoining() {
                         <Form.Check
                           type="radio"
                           label="Online"
-                          name="selectedtraining_mode"
+                          name="training_mode"
                           value="Online"
                           onChange={(e) =>
                             setSelectedtraining_mode(e.target.value)
                           }
-                          checked={selectedtraining_mode === "Online"}
+                          checked={training_mode === "Online"}
                         />
                         <Form.Check
                           type="radio"
                           label="Offline"
-                          name="selectedtraining_mode"
+                          name="training_mode"
                           value="Offline"
                           onChange={(e) =>
                             setSelectedtraining_mode(e.target.value)
                           }
-                          checked={selectedtraining_mode === "Offline"}
+                          checked={training_mode === "Offline"}
                         />
                       </div>
-                      {errors.selectedtraining_mode && (
+                      {errors.training_mode && (
                         <div className="text-danger">
-                          {errors.selectedtraining_mode}
+                          {errors.training_mode}
                         </div>
                       )}
                     </Col>

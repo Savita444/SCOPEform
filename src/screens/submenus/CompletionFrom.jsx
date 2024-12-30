@@ -9,7 +9,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 const CompletionFrom = () => {
   const [formData, setFormData] = useState({
     name: "",
-    technology_name: "",
+    technology: "",
     email: "",
     date_of_joining: "",
     selected_mode: "",
@@ -39,7 +39,7 @@ const CompletionFrom = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [technology_name, settechnology_name] = useState("");
+  const [technology, settechnology_name] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -144,14 +144,10 @@ const CompletionFrom = () => {
     let isValid = true;
 
     if (!formData.name) errors.name = "Name is required";
-    if (!technology_name.trim()) {
-      errors.technology_name = "Technology name is required";
-      isValid = false;
-    } else if (technology_name.length > 100) {
-      errors.technology_name =
-        "Technology Name must be less than or equal to 50 characters";
-      isValid = false;
-    }
+  
+  if (!formData.technology) {
+    errors.technology = "Technology is required";
+  }
     if (!formData.email) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -237,7 +233,7 @@ const CompletionFrom = () => {
   const focusFirstInvalidField = () => {
     if (errors.name) {
       nameRef.current.focus();
-    } else if (errors.technology_name) {
+    } else if (errors.technology) {
       technologyRef.current.focus();
     } else if (errors.email) {
       emailRef.current.focus();
@@ -339,8 +335,10 @@ const CompletionFrom = () => {
             },
           }
         );
+// console.log(response, "response.data.successresponse.data.success");
 
-        if (response.data.success) {
+        if (response) {
+
           alert("Data submitted successfully!");
           navigate("/viewcompletion");
         } else {
@@ -473,8 +471,13 @@ const CompletionFrom = () => {
                         <Form.Select
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
-                          value={technology_name}
-                          onChange={(e) => settechnology_name(e.target.value)}
+                          value={formData.technology}
+                          onChange={handleInputChange}
+                        
+                          // onChange={(e) => settechnology_name(e.target.value)}
+
+                          name="technology" // this ensures the right field is updated
+                          ref={technologyRef} // Add ref for focus
                         >
                           <option>Select Technology</option>
                           <option value="MERN Stack Development">
@@ -501,9 +504,9 @@ const CompletionFrom = () => {
                           </option>
                         </Form.Select>
                       </Form.Group>
-                      {errors.technology_name && (
+                      {errors.technology && (
                         <span className="error text-danger">
-                          {errors.technology_name}
+                          {errors.technology}
                         </span>
                       )}
                     </Col>
