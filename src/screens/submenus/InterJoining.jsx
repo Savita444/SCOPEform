@@ -3289,7 +3289,7 @@ function InterJoining() {
                         backgroundColor: "#28a745",
                         borderColor: "#28a745",
                         marginRight: "10px",
-                      }} // Change to your desired color
+                      }} 
                     >
                       Submit
                     </Button>
@@ -3300,7 +3300,7 @@ function InterJoining() {
                       style={{
                         backgroundColor: "#17a2b8",
                         borderColor: "#17a2b8",
-                      }} // Change to your desired color
+                      }} 
                     >
                       Print
                     </Button>

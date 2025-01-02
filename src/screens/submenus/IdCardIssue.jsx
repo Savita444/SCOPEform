@@ -8,11 +8,13 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 function IdCardIssue() {
   const navigate = useNavigate();
   const [name, setname] = useState("");
-  const [technology_name, settechnology_name] = useState("");
-  const [doj, setdoj] = useState("");
+  const [stude_id, setstude_id] = useState("");
+
+  const [technology, settechnology] = useState("");
+  const [date_of_joining, setdate_of_joining] = useState("");
   const [contact_details, setcontact_details] = useState("");
-  const [blood, setblood] = useState("");
-  const [shirtsize, setshirtsize] = useState("");
+  const [blood_group, setblood_group] = useState("");
+  const [shirt_size, setshirt_size] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -25,7 +27,7 @@ function IdCardIssue() {
     let isValid = true;
 
     if (!name.trim()) {
-      errors.fname = "Name is required";
+      errors.name = "Name is required";
       isValid = false;
     }
 
@@ -38,21 +40,21 @@ function IdCardIssue() {
       isValid = false;
     }
 
-    if (!doj) {
-      errors.doj = "Date of Joining is required";
+    if (!date_of_joining) {
+      errors.date_of_joining = "Date of Joining is required";
       isValid = false;
     }
 
-    if (!blood.trim()) {
-      errors.blood = "Blood group is required";
+    if (!blood_group.trim()) {
+      errors.blood_group = "Blood group is required";
       isValid = false;
     }
 
-    if (!technology_name.trim()) {
-      errors.technology_name = "Technology name is required";
+    if (!technology.trim()) {
+      errors.technology = "Technology name is required";
       isValid = false;
-    } else if (technology_name.length > 100) {
-      errors.technology_name =
+    } else if (technology.length > 100) {
+      errors.technology =
         "Technology Name must be less than or equal to 50 characters";
       isValid = false;
     }
@@ -79,63 +81,60 @@ function IdCardIssue() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
 
-    // Validation (you can add your validation logic here)
     const isValid = validateForm();
     if (!isValid) {
       alert("Please fill in all the required fields correctly.");
-      return; // Exit the function if validation fails
+      return;
     }
 
     const token = localStorage.getItem("remember_token");
+    if (!token) {
+      alert("Authentication token is missing.");
+      return;
+    }
 
-    // Prepare the form data
+    
     const newData = {
       name,
+      stude_id, // Include the required stude_id field
       contact_details,
-      doj,
-      blood,
-      technology_name,
-      shirtsize,
+      date_of_joining,
+      blood_group,
+      technology,
+      shirt_size,
     };
 
     try {
+      console.log("Submitting Data:", newData);
       const response = await fetch(
-        "https://api.sumagotraining.in/public/api/Idcardissue/add",
+        "https://api.sumagotraining.in/public/api/intern-id-card/add",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Bearer ${token}`, // Include token for authentication
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(newData),
         }
       );
 
-      // Parse the response JSON
       const responseData = await response.json();
+      console.log("API Response:", responseData);
 
       if (response.ok) {
-        // If submission is successful
         alert("Data submitted successfully!");
-        // navigate("/viewinterjoining"); // Navigate after success
         console.log("Response Data:", responseData);
       } else {
-        // Handle validation errors or other issues from the server
-        if (responseData.errors) {
-          const errorMessages = Object.values(responseData.errors)
-            .flat()
-            .join("\n");
-          alert(`Failed to submit data:\n${errorMessages}`);
-        } else {
-          alert("Failed to submit data. Please try again.");
-        }
+        const errorMessages = responseData.errors
+          ? Object.values(responseData.errors).flat().join("\n")
+          : "Failed to submit data. Please try again.";
+        alert(`Failed to submit data:\n${errorMessages}`);
         console.error("Error Response:", responseData);
       }
     } catch (error) {
-      // Handle unexpected errors
       alert("An error occurred while submitting data.");
       console.error("Error:", error);
     }
@@ -147,7 +146,14 @@ function IdCardIssue() {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div
+          className="logo-container"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} class="img-fluid logo2" alt="..." />
         </div>
@@ -190,6 +196,26 @@ function IdCardIssue() {
                 <Card.Title className="text-black"></Card.Title>
                 <Card.Text className="text-black">
                   <Row>
+                    <Col lg={2} md={12} sm={10}>
+                      <b style={{ fontFamily: "Century gothic" }}>Student ID</b>
+                    </Col>
+                    <Col lg={10} md={10} sm={12} className="mb-3">
+                      <Form.Group className="fname" controlId="studeIdInput">
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Student ID"
+                          className="FormStyeling transparent-input"
+                          value={stude_id}
+                          onChange={(e) => setstude_id(e.target.value)}
+                        />
+                      </Form.Group>
+                      {errors.stude_id && (
+                        <span className="error text-danger">
+                          {errors.stude_id}
+                        </span>
+                      )}
+                    </Col>
+
                     <Col lg={2} md={2} sm={12} className="mt-3">
                       <b style={{ fontFamily: "Century gothic" }}>
                         Name of Intern :{" "}
@@ -225,8 +251,8 @@ function IdCardIssue() {
                         <Form.Select
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
-                          value={technology_name}
-                          onChange={(e) => settechnology_name(e.target.value)}
+                          value={technology}
+                          onChange={(e) => settechnology(e.target.value)}
                         >
                           <option>Select Technology</option>
                           <option value="MERN Stack Development">
@@ -253,9 +279,9 @@ function IdCardIssue() {
                           </option>
                         </Form.Select>
                       </Form.Group>
-                      {errors.technology_name && (
+                      {errors.technology && (
                         <span className="error text-danger">
-                          {errors.technology_name}
+                          {errors.technology}
                         </span>
                       )}
                     </Col>
@@ -273,12 +299,14 @@ function IdCardIssue() {
                         <Form.Control
                           type="date"
                           className="FormStyeling transparent-input"
-                          value={doj}
-                          onChange={(e) => setdoj(e.target.value)}
+                          value={date_of_joining}
+                          onChange={(e) => setdate_of_joining(e.target.value)}
                         />
                       </Form.Group>
-                      {errors.doj && (
-                        <span className="error text-danger">{errors.doj}</span>
+                      {errors.date_of_joining && (
+                        <span className="error text-danger">
+                          {errors.date_of_joining}
+                        </span>
                       )}
                     </Col>
 
@@ -320,8 +348,8 @@ function IdCardIssue() {
                         <Form.Select
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
-                          value={blood}
-                          onChange={(e) => setblood(e.target.value)}
+                          value={blood_group}
+                          onChange={(e) => setblood_group(e.target.value)}
                         >
                           <option>Select Blood Group</option>
                           <option value="A+">A+</option>
@@ -334,9 +362,9 @@ function IdCardIssue() {
                           <option value="O-">O-</option>
                         </Form.Select>
                       </Form.Group>
-                      {errors.blood && (
+                      {errors.blood_group && (
                         <span className="error text-danger">
-                          {errors.blood}
+                          {errors.blood_group}
                         </span>
                       )}
                     </Col>
@@ -354,8 +382,8 @@ function IdCardIssue() {
                         <Form.Select
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
-                          value={shirtsize}
-                          onChange={(e) => setshirtsize(e.target.value)}
+                          value={shirt_size}
+                          onChange={(e) => setshirt_size(e.target.value)}
                         >
                           <option>Select T-Shirt Size</option>
                           <option value="M">M</option>
@@ -365,9 +393,9 @@ function IdCardIssue() {
                           <option value="Free Size ">Free Size</option>
                         </Form.Select>
                       </Form.Group>
-                      {errors.shirtsize && (
+                      {errors.shirt_size && (
                         <span className="error text-danger">
-                          {errors.shirtsize}
+                          {errors.shirt_size}
                         </span>
                       )}
                     </Col>

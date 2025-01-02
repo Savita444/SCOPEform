@@ -5,7 +5,7 @@ import { useSearchExport } from "../../context/SearchExportContext";
 import SearchInput from "../../components/search/SearchInput";
 import { toast } from "react-toastify";
 import instance from "../../api/AxiosInstance";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaEye, FaPrint, FaTrash } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -135,7 +135,7 @@ const ViewCompletionFrom = () => {
                             style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
                             onClick={() => handlePrint(row.id)}
                           >
-                            🖨️
+                            <FaPrint/>
                           </Button>
                         </OverlayTrigger>
         </div>
