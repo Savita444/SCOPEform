@@ -53,6 +53,7 @@ const CompletionDetailsPage = () => {
 
   const {
     fname = "",
+    fathername = "",
     mname = "",
     lname = "",
     email = "",
@@ -87,7 +88,10 @@ const CompletionDetailsPage = () => {
   // URLs for assets (if present)
   const googleReviewImgUrl = google_review_img ? `${google_review_img}` : null;
   const resumePdfUrl = resume_pdf ? `${resume_pdf}` : null;
-  const feedbackVideoUrl = feedback_video ? `${feedback_video}` : null;
+  const feedbackVideoUrl = feedback_video
+    ? feedback_video.replace("video\\/mp4", "video/mp4")
+    : null;
+
 
   return (
     <>
@@ -99,35 +103,7 @@ const CompletionDetailsPage = () => {
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} className="img-fluid logo2" alt="..." />
         </div>
-        {/* <Container>
-          <div className="text-center title-container">
-            <b className="title-text">
-              INTERNS JOINING <span className="highlight">FORM</span>
-            </b>
-          </div>
-        </Container>
-        <Container className="position-relative text-center homepara">
-          <p>
-            SCOPE, where we believe in empowering individuals through education
-            and skill development. Established with a vision to foster
-            excellence and innovation in learning, Scope is dedicated to
-            providing high-quality training programs tailored to meet the
-            diverse needs of our students.
-          </p>
-        </Container>
-        <Container className="position-relative text-center welcommsg">
-          <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
-          </p>
-        </Container>
-        <Container className="position-relative text-center para2">
-          <p style={{ textAlign: "justify" }}>
-            We’re glad to have you on board as part of our intern team. Get
-            ready to dive into hands-on learning, sharpen your skills, and make
-            meaningful contributions. Let’s make this journey both rewarding and
-            memorable!
-          </p>
-        </Container> */}
+        
 
         {/* Intern Details */}
         <Container fluid>
@@ -172,7 +148,7 @@ const CompletionDetailsPage = () => {
                       type="text"
                       // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${fname}`}
+                      value={`${fname} ${fathername} ${mname} ${lname}`}
                     />
                   </Form.Group>
                 </Col>
@@ -184,7 +160,7 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                    Technology:
+                    Technology :
                   </b>
                 </Col>
                 <Col lg={4} md={3} sm={12} className="mb-3">
@@ -205,7 +181,7 @@ const CompletionDetailsPage = () => {
                     style={{ fontFamily: "Century gothic" }}
                     className="label-colour"
                   >
-                    Email ID:
+                    Email ID :
                   </b>
                 </Col>
                 <Col lg={4} md={5} sm={12} className="mb-3">
@@ -735,12 +711,15 @@ const CompletionDetailsPage = () => {
                   </b>
                 </Col>
                 <Col lg={4} md={3} sm={12} className="mb-5">
-                  {googleReviewImgUrl && (
+                  {feedbackVideoUrl && (
                     <Form.Group className="fname" controlId="googleReview">
-                      <img
-                        src={googleReviewImgUrl}
-                        alt="Google Review"
-                        style={{ maxWidth: "200px" }}
+                      <video
+                        src={feedbackVideoUrl}
+                        controls
+                        autoPlay
+                        playsInline
+                        style={{ maxWidth: "200px", cursor: "pointer" }}
+                        onError={() => console.error("Error loading video")}
                       />
                     </Form.Group>
                   )}

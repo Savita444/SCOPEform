@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import "./InterJoining.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 
 function InterJoining() {
+  const { id } = useParams();
   const navigate = useNavigate();
+
   const [fname, setfname] = useState("");
   const [mname, setmname] = useState("");
   const [fathername, setfathername] = useState("");
@@ -19,7 +21,7 @@ function InterJoining() {
   const [whatsappno, setwhatsappno] = useState("");
   const [dob, setdob] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setselected_gender] = useState("");
+  const [gender, setgender] = useState("");
   const [blood, setblood] = useState("");
   const [aadhar, setaadhar] = useState("");
   const [linkdin, setlinkdin] = useState("");
@@ -35,8 +37,7 @@ function InterJoining() {
   const [post_graduation_per, setPostGraduationPer] = useState("");
   const [anyother_cirt, setanyother_cirt] = useState("");
   const [selected_branches, setselected_branches] = useState("");
-
-  const [other_branch, setother_branch] = useState(""); // To track 'Other' branch input
+  const [other_branch, setother_branch] = useState(""); 
 
   const [father_name, setfather_name] = useState("");
   const [fatherOccupation, setfatherOccupation] = useState("");
@@ -48,7 +49,6 @@ function InterJoining() {
   const [mother_aadharno, setmother_aadharno] = useState("");
   const [marriedStatus, setMarriedStatus] = useState("");
   const [error, setError] = useState("");
-  const [selectedBranches, setSelectedBranches] = useState([]);
   const [husbandDetails, setHusbandDetails] = useState({
     name: "",
     occupation: "",
@@ -73,58 +73,73 @@ function InterJoining() {
   const [Guardian_contactdetails, setGuardiancontactdetails] = useState("");
   const [Guardian_aadharno, setGuardian_aadharno] = useState("");
 
+  const [date_of_joining, setdate_of_joining] = useState("");
   const [technology_name, settechnology_name] = useState("");
   const [duration, setduration] = useState("");
   const [selectedModules, setSelectedModules] = useState("");
   const [training_mode, setSelectedtraining_mode] = useState("");
 
   const [intern_experience, setintern_experience] = useState("");
-  const [experience_description, setexperience_description] = useState("");
+  const [experience, setexperience] = useState("");
   const [characteristics_describe, setcharacteristics_describe] = useState("");
   const [applicant_name, setapplicant_name] = useState("");
   const [place, setplace] = useState("");
 
-  const [refrance, setRefrance] = useState([]);
-  const [scoperefer, setscoperefer] = useState([]);
-  const [refereance_name1, setRefereance_name1] = useState("");
-  const [refereance_name2, setRefereance_name2] = useState("");
-  const [conatct_number1, setconatct_number1] = useState("");
-  const [conatct_number2, setconatct_number2] = useState("");
+  const [refrance_social_media, setrefrance_social_media] = useState("");
+  const [refrance_friend, setrefrance_friend] = useState("");
+  const [refrance_family, setrefrance_family] = useState("");
+  const [refrance_relatives, setrefrance_relatives] = useState("");
+  const [refrance_other, setrefrance_other] = useState("");
 
+
+  const [scoperefer, setscoperefer] = useState([]);
+  const [reference_name, setRefereance_name] = useState("");
+  const [reference_name1, setRefereance_name1] = useState("");
+  const [contact_number, setcontact_number] = useState("");
+  const [contact_number1, setcontact_number1] = useState("");
   const [buttom_applicant_name, setbuttonapplicantname] = useState("");
   const [buttom_place, setbuttom_place] = useState("");
-
   const [errors, setErrors] = useState({});
 
-  const handleCheckboxChange = (e) => {
-    const { value, checked } = e.target;
+  const location = useLocation()
+  useEffect(() => {
+    if (location) {
+      console.log("location?.state", location?.state)
+      setfname(location?.state?.fname ? location.state.fname : "");
+      setmname(location?.state?.mname ? location.state.mname : "");
+      setfathername(location?.state?.fathername ? location.state.fathername : "");
+      setlname(location?.state?.lname ? location.state.lname : "");
+      setemail(location?.state?.email ? location.state.email : "");
+      setparmanenat_address(location?.state?.parmanenat_address ? location.state.parmanenat_address : "");
+      setcurrent_address(location?.state?.current_address ? location.state.current_address : "");
+      setcontact_details(location?.state?.contact_details ? location?.state?.contact_details : "")
+      setwhatsappno(location?.state?.whatsappno ? location.state.whatsappno : "");
+      setdob(location?.state?.dob ? location.state.dob : "");
+      setAge(location?.state?.Age ? location.state.Age : "");
+      setgender(location?.state?.gender ? location.state.gender : "");
+      setblood(location?.state?.blood ? location.state.blood : "");
+      setaadhar(location?.state?.aadhar ? location.state.aadhar : "");
 
-    if (checked) {
-      // Add the selected option to the state if checked
-      setRefrance((prev) => [...prev, value]);
-    } else {
-      // Remove the option from the state if unchecked
-      setRefrance((prev) => prev.filter((item) => item !== value));
     }
-  };
+  }, [location])
+
+
+
   const handlePrint = () => {
     window.print();
   };
 
-  const handleRefereanceChange = (e) => {
-    const { name, checked } = e.target;
-    setRefereance((prevSelected) => {
-      if (checked) {
-        return [...prevSelected, name];
-      } else {
-        return prevSelected.filter((refereance) => refereance !== name);
-      }
-    });
-  };
-
-  // const handleother_branchChange = (e) => {
-  //     setother_branch(e.target.value);
+  // const handleRefereanceChange = (e) => {
+  //   const { name, checked } = e.target;
+  //   setRefrance((prevSelected) => {
+  //     if (checked) {
+  //       return [...prevSelected, name];
+  //     } else {
+  //       return prevSelected.filter((refereance) => refereance !== name);
+  //     }
+  //   });
   // };
+
 
   const validateForm = () => {
     let errors = {};
@@ -138,7 +153,6 @@ function InterJoining() {
       errors.mname = "Mother Name is required";
       isValid = false;
     }
-
     if (!fathername.trim()) {
       errors.fathername = "Father Name is required";
       isValid = false;
@@ -170,7 +184,6 @@ function InterJoining() {
         "Current Address should not exceed 255 characters";
       isValid = false;
     }
-
     if (!contact_details) {
       errors.contact_details = "Contact number is required";
       isValid = false;
@@ -179,7 +192,6 @@ function InterJoining() {
         "Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-
     if (!whatsappno) {
       errors.whatsappno = "WhatsApp number is required";
       isValid = false;
@@ -205,35 +217,10 @@ function InterJoining() {
       errors.blood = "Blood group is required";
       isValid = false;
     }
-    if (!aadhar.trim()) {
-      errors.aadhar = "Aadhar is required";
-      isValid = false;
-    }
-
-    if (!whatsappno) {
-      errors.whatsappno = "WhatsApp number is required";
-      isValid = false;
-    } else if (!/^\+91\d{10}$/.test(whatsappno)) {
-      errors.whatsappno =
-        "WhatsApp number must start with +91 and be followed by exactly 10 digits";
-      isValid = false;
-    }
-    if (!dob) {
-      errors.dob = "Date of Birth is required";
-      isValid = false;
-    } else if (!isAgeValid()) {
-      errors.dob = "You must be at least 18 years old";
-      isValid = false;
-    }
-    if (!blood.trim()) {
-      errors.blood = "Blood group is required";
-      isValid = false;
-    }
-    if (!aadhar.trim()) {
-      errors.aadhar = "Aadhar is required";
-      isValid = false;
-    }
-
+    // if (!aadhar.trim()) {
+    //   errors.aadhar = "Aadhar is required";
+    //   isValid = false;
+    // }
     if (!school_name.trim()) {
       errors.school_name = "School name is required";
       isValid = false;
@@ -242,7 +229,6 @@ function InterJoining() {
         "School name must be less than or equal to 100 characters";
       isValid = false;
     }
-
     // 10th Percentage Validation (Numeric and within 0-100)
     if (!tenth_per.trim()) {
       errors.tenth_per = "10th percentage is required";
@@ -256,7 +242,6 @@ function InterJoining() {
         "10th percentage must be a number between 0 and 100 (can include decimals)";
       isValid = false;
     }
-
     // 12th/Diploma Percentage Validation (Numeric and within 0-100)
     if (!twelve_diploma_per.trim()) {
       errors.twelve_diploma_per = "12th/Diploma percentage is required";
@@ -270,7 +255,6 @@ function InterJoining() {
         "12th/Diploma percentage must be a number between 0 and 100 (can include decimals)";
       isValid = false;
     }
-
     // Graduation Details Validation
     if (!graduation_details.trim()) {
       errors.graduation_details = "Graduation details are required";
@@ -280,7 +264,6 @@ function InterJoining() {
         "Graduation details must be less than or equal to 100 characters";
       isValid = false;
     }
-
     // Graduation Percentage Validation (Numeric and within 0-100)
     if (!graduation_per.trim()) {
       errors.graduation_per = "Graduation percentage is required";
@@ -326,17 +309,14 @@ function InterJoining() {
         "anyother_ irt must be less than or equal to 255 characters";
       isValid = false;
     }
-
     if (selected_branches.length === 0) {
       errors.selected_branches = "Please select at least one branch";
       isValid = false;
     }
-
     if (selected_branches.includes("Other") && !other_branch.trim()) {
       errors.other_branch = "Please specify the other branch";
       isValid = false;
     }
-
     if (!father_name.trim()) {
       errors.father_name = "Father name is required";
       isValid = false;
@@ -345,7 +325,6 @@ function InterJoining() {
         "Father name pareant gauaradian details must be less than or equal to 50 characters";
       isValid = false;
     }
-
     if (!fatherOccupation.trim()) {
       errors.fatherOccupation = "Father Occupation is required";
       isValid = false;
@@ -354,7 +333,6 @@ function InterJoining() {
         "Father Occupation must be less than or equal to 50 characters";
       isValid = false;
     }
-
     if (!father_contactdetails) {
       errors.father_contactdetails = "Father Contact number is required";
       isValid = false;
@@ -363,7 +341,6 @@ function InterJoining() {
         "Father Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-
     if (!mother_name.trim()) {
       errors.mother_name = "Mother name is required";
       isValid = false;
@@ -372,7 +349,6 @@ function InterJoining() {
         "mother name pareant gauaradian details must be less than or equal to 50 characters";
       isValid = false;
     }
-
     if (!motherOccupation.trim()) {
       errors.motherOccupation = "Mother Occupation is required";
       isValid = false;
@@ -381,7 +357,6 @@ function InterJoining() {
         "Mother Occupation must be less than or equal to 50 characters";
       isValid = false;
     }
-
     if (!mother_contactdetails) {
       errors.mother_contactdetails = "Mother Contact number is required";
       isValid = false;
@@ -390,14 +365,13 @@ function InterJoining() {
         "mother Contact number must start with +91 and be followed by exactly 10 digits";
       isValid = false;
     }
-
     if (!intern_experience.trim()) {
       errors.intern_experience = "Experience Field is required";
       isValid = false;
     }
-    if (experience_description.length > 255) {
-      errors.experience_description =
-        "experience_description must be less than or equal to 255 characters";
+    if (experience.length > 255) {
+      errors.experience =
+        "experience must be less than or equal to 255 characters";
       isValid = false;
     }
     if (!characteristics_describe.trim()) {
@@ -405,7 +379,7 @@ function InterJoining() {
       isValid = false;
     } else if (characteristics_describe.length > 500) {
       errors.characteristics_describe =
-        "experience_description must be less than or equal to 500 characters";
+        "experience must be less than or equal to 500 characters";
       isValid = false;
     }
     if (!applicant_name.trim()) {
@@ -424,40 +398,119 @@ function InterJoining() {
       isValid = false;
     }
 
-    if (!refereance_name1.trim()) {
-      errors.refereance_name = "refereance name is required";
-      isValid = false;
-    } else if (refereance_name1.length > 50) {
-      errors.refereance_name =
-        "refereance name must be less than or equal to 50 characters";
-      isValid = false;
-    }
-    if (!refereance_name2.trim()) {
-      errors.refereance_name = "refereance name is required";
-      isValid = false;
-    } else if (refereance_name2.length > 50) {
-      errors.refereance_name =
-        "refereance name must be less than or equal to 50 characters";
-      isValid = false;
-    }
+    // if (!reference_name.trim()) {
+    //   errors.reference_name = "refereance name is required";
+    //   isValid = false;
+    // } else if (reference_name.length > 50) {
+    //   errors.reference_name =
+    //     "refereance name must be less than or equal to 50 characters";
+    //   isValid = false;
+    // }
+    // if (!reference_name1.trim()) {
+    //   errors.reference_name = "refereance name is required";
+    //   isValid = false;
+    // } else if (reference_name1.length > 50) {
+    //   errors.reference_name1 =
+    //     "refereance name must be less than or equal to 50 characters";
+    //   isValid = false;
+    // }
+
+    // if (!conatct_number) {
+    //   errors.conatct_number = " Contact number is required";
+    //   isValid = false;
+    // } else if (!/^\+91\d{10}$/.test(conatct_number)) {
+    //   errors.conatct_number =
+    //     "contact number must start with +91 and be followed by exactly 10 digits";
+    //   isValid = false;
+    // }
 
     // if (!conatct_number1) {
     //   errors.conatct_number1 = " Contact number is required";
     //   isValid = false;
-    // } else if (!/^\+91\d{10}$/.test(conatct_number1)) {
+    // } else if (!/^\+91\d{10}$/.test(conatct_number2)) {
     //   errors.conatct_number1 =
     //     "contact number must start with +91 and be followed by exactly 10 digits";
     //   isValid = false;
     // }
+    if (!date_of_joining) {
+      errors.date_of_joining = "Date of Birth is required";
+      isValid = false;
+    }
+    if (!technology_name.trim()) {
+      errors.technology_name = "Technology name is required";
+      isValid = false;
+    } else if (technology_name.length > 100) {
+      errors.technology_name =
+        "Technology Name must be less than or equal to 50 characters";
+      isValid = false;
+    }
 
-    // if (!conatct_number2) {
-    //   errors.conatct_number2 = " Contact number is required";
-    //   isValid = false;
-    // } else if (!/^\+91\d{10}$/.test(conatct_number2)) {
-    //   errors.conatct_number2 =
-    //     "contact number must start with +91 and be followed by exactly 10 digits";
-    //   isValid = false;
+    // if (!refereance.trim()) {
+    //     errors.refereance = 'Please select refereance is required';
+    //     isValid = false;
     // }
+    if (!duration.trim()) {
+      errors.duration = "Please select a duration.";
+      isValid = false;
+    }
+
+    if (!marriedStatus) {
+      setError("Please select your marital status.");
+      isValid = false;
+    } else {
+      setError("");
+    }
+    // if (!selectedModules.length === 0) {
+    //     setErrors({ selectmodule: 'Please select at least one option.' });
+    //     return false;
+    // }
+    if (selectedModules.length === 0) {
+      errors.selectedModules = "Please select at least one option.";
+      isValid = false;
+    }
+    if (training_mode.length === 0) {
+      errors.training_mode = "Please select at least one option.";
+      isValid = false;
+    }
+    if (marriedStatus === "Yes") {
+      const errors = {};
+      const { name, occupation, contact, aadhar } = husbandDetails;
+
+      if (!name.trim()) {
+        errors.name = "Husband/Wife name is required.";
+        isValid = false;
+      }
+
+      if (!occupation.trim()) {
+        errors.occupation = "Husband/Wife occupation is required.";
+        isValid = false;
+      }
+
+      if (!contact.trim()) {
+        errors.contact = "Husband/Wife contact details are required.";
+        isValid = false;
+      } else if (!/^\d{10}$/.test(contact)) {
+        errors.contact = "Enter a valid 10-digit contact number.";
+        isValid = false;
+      }
+
+      if (!aadhar.trim()) {
+        errors.aadhar = "Husband/Wife Aadhar number is required.";
+        isValid = false;
+      } else if (!/^\d{12}$/.test(aadhar)) {
+        errors.aadhar = "Enter a valid 12-digit Aadhar number.";
+        isValid = false;
+      }
+
+      setHusbandErrors(errors);
+    }
+
+    if (isValid) {
+      console.log("Marital Status:", marriedStatus);
+      if (marriedStatus === "Yes") {
+        console.log("Husband Details:", husbandDetails);
+      }
+    }
 
     if (!buttom_applicant_name.trim()) {
       errors.buttom_applicant_name = "applicant name is required";
@@ -505,90 +558,12 @@ function InterJoining() {
     //   errors.Guardian_aadharno = "Guardian Aadhar is required";
     //   isValid = false;
     // }
-
-    if (!technology_name.trim()) {
-      errors.technology_name = "Technology name is required";
-      isValid = false;
-    } else if (technology_name.length > 100) {
-      errors.technology_name =
-        "Technology Name must be less than or equal to 50 characters";
-      isValid = false;
-    }
-
-    // if (!refereance.trim()) {
-    //     errors.refereance = 'Please select refereance is required';
-    //     isValid = false;
-    // }
-    if (!duration.trim()) {
-      errors.duration = "Please select a duration.";
-      isValid = false;
-    }
-
-    if (!marriedStatus) {
-      setError("Please select your marital status.");
-      isValid = false;
-    } else {
-      setError("");
-    }
-    // if (!selectedModules.length === 0) {
-    //     setErrors({ selectmodule: 'Please select at least one option.' });
-    //     return false;
-    // }
-    if (selectedModules.length === 0) {
-      errors.selectedModules = "Please select at least one option.";
-      isValid = false;
-    }
-    if (training_mode.length === 0) {
-      errors.training_mode = "Please select at least one option.";
-      isValid = false;
-    }
-
     // If any validation fails, update the errors state and set isValid to false
     if (!isValid) {
       setErrors(errors);
     } else {
       setErrors({});
       console.log("Form submitted successfully");
-    }
-
-    if (marriedStatus === "Yes") {
-      const errors = {};
-      const { name, occupation, contact, aadhar } = husbandDetails;
-
-      if (!name.trim()) {
-        errors.name = "Husband name is required.";
-        isValid = false;
-      }
-
-      if (!occupation.trim()) {
-        errors.occupation = "Husband occupation is required.";
-        isValid = false;
-      }
-
-      if (!contact.trim()) {
-        errors.contact = "Husband contact details are required.";
-        isValid = false;
-      } else if (!/^\d{10}$/.test(contact)) {
-        errors.contact = "Enter a valid 10-digit contact number.";
-        isValid = false;
-      }
-
-      if (!aadhar.trim()) {
-        errors.aadhar = "Husband Aadhar number is required.";
-        isValid = false;
-      } else if (!/^\d{12}$/.test(aadhar)) {
-        errors.aadhar = "Enter a valid 12-digit Aadhar number.";
-        isValid = false;
-      }
-
-      setHusbandErrors(errors);
-    }
-
-    if (isValid) {
-      console.log("Marital Status:", marriedStatus);
-      if (marriedStatus === "Yes") {
-        console.log("Husband Details:", husbandDetails);
-      }
     }
 
     setErrors(errors);
@@ -598,24 +573,49 @@ function InterJoining() {
   const handlePconatactnumberChange = (e) => {
     const value = e.target.value;
     if (value.startsWith("+91")) {
-      setconatct_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
+      setcontact_number(value.slice(0, 13)); // Limit to "+91" and 10 digits
     } else {
-      setconatct_number1("+91" + value.slice(0, 10));
+      setcontact_number("+91" + value.slice(0, 10));
     }
   };
 
   const handlePconatactnumber2Change = (e) => {
     const value = e.target.value;
     if (value.startsWith("+91")) {
-      setconatct_number2(value.slice(0, 13)); // Limit to "+91" and 10 digits
+      setcontact_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
     } else {
-      setconatct_number2("+91" + value.slice(0, 10));
+      setcontact_number1("+91" + value.slice(0, 10));
     }
   };
+
   const handleHusbandDetailsChange = (field, value) => {
+    if (field === "contact") {
+      if (value.startsWith("+91")) {
+        value = value.slice(0, 13); // Ensure it doesn't exceed "+91" + 10 digits
+      } else {
+        value =  value.slice(0, 10); // Auto-append "+91" and limit to 10 digits
+      }
+    }
+  
+    if (field === "aadhar") {
+      // Check if input is a number and has at most 12 digits
+      if (/^\d{0,12}$/.test(value)) {
+        if (value.length === 12) {
+          setHusbandErrors((prevErrors) => ({ ...prevErrors, aadhar: null }));
+        } else {
+          setHusbandErrors((prevErrors) => ({
+            ...prevErrors,
+            aadhar: "Aadhar number must be exactly 12 digits.",
+          }));
+        }
+      } else {
+        return; // Prevent invalid input (non-numeric or exceeding 12 digits)
+      }
+    }
+  
     setHusbandDetails((prev) => ({ ...prev, [field]: value }));
-    setHusbandErrors((prev) => ({ ...prev, [field]: "" })); // Clear error on input change
   };
+  
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
@@ -664,11 +664,11 @@ function InterJoining() {
       ageDiff > 18 ||
       (ageDiff === 18 &&
         today >=
-          new Date(
-            today.getFullYear(),
-            birthDate.getMonth(),
-            birthDate.getDate()
-          ))
+        new Date(
+          today.getFullYear(),
+          birthDate.getMonth(),
+          birthDate.getDate()
+        ))
     );
   };
 
@@ -752,19 +752,19 @@ function InterJoining() {
     }
   };
 
-  // const handleStatusChange = (event) => {
-  //     const value = event.target.value;
-  //     setIsMarried(value === "Yes");
+  const handleStatusChange = (event) => {
+    const value = event.target.value;
+    setIsMarried(value === "Yes");
 
-  //     if (value === "No") {
-  //         // Clear fields and errors when "No" is selected
-  //         setHusband_pareantgauaradiandetails('null');
-  //         setHusbandOccupation('null');
-  //         setHusband_contactdetails('');
-  //         setHusband_aadharno('null');
-  //         setErrors({});
-  //     }
-  // };
+    if (value === "No") {
+      // Clear fields and errors when "No" is selected
+      setHusband_pareantgauaradiandetails('null');
+      setHusbandOccupation('null');
+      setHusband_contactdetails('');
+      setHusband_aadharno('null');
+      setErrors({});
+    }
+  };
 
   const handle_husbandAadharChange = (e) => {
     const value = e.target.value;
@@ -819,6 +819,9 @@ function InterJoining() {
       setGuardiancontactdetails("+91" + value.slice(0, 10));
     }
   };
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
@@ -833,6 +836,7 @@ function InterJoining() {
 
     // Prepare the form data
     const newData = {
+      stude_id: id,
       fname,
       mname,
       fathername,
@@ -844,7 +848,7 @@ function InterJoining() {
       contact_details,
       dob,
       age,
-      gender, // Add selected_gender
+      gender,
       blood,
       aadhar,
       linkdin,
@@ -875,24 +879,32 @@ function InterJoining() {
       GuardianOccupation,
       Guardian_aadharno,
       Guardian_contactdetails,
+      date_of_joining,
       technology_name,
       duration,
       selectedModules,
-      training_mode, // Add training mode
-      intern_experience, // Add intern experience
-      experience_description, // Add experience description
+      training_mode, 
+      intern_experience,
+      experience, 
       characteristics_describe,
       applicant_name,
       place,
-      refrance, // Add reference
+      // refrance, 
+      refrance_social_media,
+      refrance_friend,
+      refrance_family,
+      refrance_relatives,
+      refrance_other,
       scoperefer,
-      refereance_name1,
-      refereance_name2,
-      conatct_number1,
-      conatct_number2,
+      reference_name,
+      reference_name1,
+      contact_number,
+      contact_number1,
       buttom_applicant_name,
       buttom_place,
     };
+
+
 
     try {
       const response = await fetch(
@@ -902,22 +914,19 @@ function InterJoining() {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Bearer ${token}`, // Include token for authentication
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(newData),
         }
       );
 
-      // Parse the response JSON
       const responseData = await response.json();
+      console.log("Response Data:", responseData);
 
       if (response.ok) {
-        // If submission is successful
         alert("Data submitted successfully!");
-        navigate("/viewinterjoining"); // Navigate after success
-        console.log("Response Data:", responseData);
+        navigate("/viewjoining");
       } else {
-        // Handle validation errors or other issues from the server
         if (responseData.errors) {
           const errorMessages = Object.values(responseData.errors)
             .flat()
@@ -926,14 +935,13 @@ function InterJoining() {
         } else {
           alert("Failed to submit data. Please try again.");
         }
-        console.error("Error Response:", responseData);
       }
     } catch (error) {
-      // Handle unexpected errors
-      alert("An error occurred while submitting data.");
-      console.error("Error:", error);
+      console.error("Error during submission:", error);
+      alert("An error occurred while submitting the form.");
     }
   };
+
 
   return (
     <>
@@ -941,7 +949,7 @@ function InterJoining() {
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
-        <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div className="logo-container">
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} class="img-fluid logo2" alt="..." />
         </div>
@@ -1021,7 +1029,7 @@ function InterJoining() {
                         style={{ fontFamily: "Century gothic" }}
                         className="d-none d-md-block"
                       >
-                        First Name{" "}
+                        First Name:{" "}
                       </b>
                     </Col>
                     <Col lg={2} className="d-none d-md-block">
@@ -1036,6 +1044,7 @@ function InterJoining() {
                           value={fname}
                           // onChange={handleChange}
                           onChange={(e) => setfname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -1062,6 +1071,7 @@ function InterJoining() {
                           value={mname}
                           // onChange={handleChange}
                           onChange={(e) => setmname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -1086,6 +1096,7 @@ function InterJoining() {
                           value={fathername}
                           // onChange={handleChange}
                           onChange={(e) => setfathername(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -1110,6 +1121,7 @@ function InterJoining() {
                           value={lname}
                           // onChange={handleChange}
                           onChange={(e) => setlname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -1139,6 +1151,7 @@ function InterJoining() {
                           value={fname}
                           // onChange={handleChange}
                           onChange={(e) => setfname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.fname && (
@@ -1163,6 +1176,7 @@ function InterJoining() {
                           className="FormStyeling transparent-input"
                           value={mname}
                           onChange={(e) => setmname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.mname && (
@@ -1187,6 +1201,7 @@ function InterJoining() {
                           className="FormStyeling transparent-input"
                           value={fathername}
                           onChange={(e) => setfathername(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.fathername && (
@@ -1209,6 +1224,7 @@ function InterJoining() {
                           className="FormStyeling transparent-input"
                           value={lname}
                           onChange={(e) => setlname(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.lname && (
@@ -1221,7 +1237,7 @@ function InterJoining() {
                   <Row>
                     {/* email */}
                     <Col lg={4}>
-                      <b style={{ fontFamily: "Century gothic" }}>Email Id</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Email Id:</b>
                     </Col>
                     <Col lg={8} className="mb-3">
                       <Form.Group
@@ -1234,6 +1250,7 @@ function InterJoining() {
                           className="FormStyeling transparent-input"
                           value={email}
                           onChange={(e) => setemail(e.target.value)}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.email && (
@@ -1244,7 +1261,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Permanent Address
+                        Permanent Address:
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -1259,7 +1276,9 @@ function InterJoining() {
                           value={parmanenat_address}
                           onChange={(e) =>
                             setparmanenat_address(e.target.value)
+
                           }
+                          readOnly
                         />
                       </Form.Group>
                       {errors.parmanenat_address && (
@@ -1270,7 +1289,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Current Address
+                        Current Address:
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -1284,7 +1303,7 @@ function InterJoining() {
 
                           className="FormStyeling transparent-input"
                           value={current_address}
-                          onChange={(e) => setcurrent_address(e.target.value)}
+                          onChange={(e) => setcurrent_address(e.target.value)} readOnly
                         />
                       </Form.Group>
                       {errors.current_address && (
@@ -1296,7 +1315,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Contact Details
+                        Contact Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1310,7 +1329,7 @@ function InterJoining() {
                           placeholder="+91"
                           className="FormStyeling transparent-input"
                           value={contact_details}
-                          onChange={handlePhoneChange}
+                          onChange={handlePhoneChange} readOnly
                         />
                       </Form.Group>
                       {errors.contact_details && (
@@ -1347,7 +1366,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Date Of Birth
+                        Date Of Birth:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1361,7 +1380,7 @@ function InterJoining() {
                           placeholder="+91"
                           className="FormStyeling transparent-input"
                           value={dob}
-                          onChange={(e) => setdob(e.target.value)}
+                          onChange={(e) => setdob(e.target.value)} readOnly
                         />
                       </Form.Group>
                       {errors.dob && (
@@ -1369,7 +1388,7 @@ function InterJoining() {
                       )}
                     </Col>
                     <Col lg={1} md={1} sm={12} className="m-0">
-                      <b style={{ fontFamily: "Century gothic" }}>Age : </b>
+                      <b style={{ fontFamily: "Century gothic" }}>Age: </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">
                       <Form.Group
@@ -1387,7 +1406,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Gender</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Gender:</b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
@@ -1396,23 +1415,23 @@ function InterJoining() {
                           label="Male"
                           name="gender"
                           value="Male"
-                          onChange={(e) => setselected_gender(e.target.value)}
-                          checked={gender === "Male"}
+                          onChange={(e) => setgender(e.target.value)}
+                          checked={gender === "Male"} readOnly
                         />
                         <Form.Check
                           type="radio"
                           label="Female"
                           name="gender"
                           value="Female"
-                          onChange={(e) => setselected_gender(e.target.value)}
-                          checked={gender === "Female"}
+                          onChange={(e) => setgender(e.target.value)}
+                          checked={gender === "Female"} readOnly
                         />
                       </div>
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Blood Group
+                        Blood Group:
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-3">
@@ -1424,7 +1443,7 @@ function InterJoining() {
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
                           value={blood}
-                          onChange={(e) => setblood(e.target.value)}
+                          onChange={(e) => setblood(e.target.value)} readOnly
                         >
                           <option>Select Blood Group</option>
                           <option value="A+">A+</option>
@@ -1446,7 +1465,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Aadhar Card no
+                        Aadhar Card no:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1459,7 +1478,7 @@ function InterJoining() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={aadhar}
-                          onChange={handleAadharChange}
+                          onChange={handleAadharChange} readOnly
                         />
                       </Form.Group>
                       {errors.aadhar && (
@@ -1512,7 +1531,7 @@ function InterJoining() {
                     {/* email */}
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        LinkedIn Address
+                        LinkedIn Address:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1532,7 +1551,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Facebook Address
+                        Facebook Address:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1552,7 +1571,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        YouTube Address
+                        YouTube Address:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1572,7 +1591,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Any Other Address
+                        Any Other Address:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1633,7 +1652,7 @@ function InterJoining() {
                   <Row>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        School Name
+                        School Name:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1657,7 +1676,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        10<sup>th</sup> Percentage
+                        10<sup>th</sup> Percentage:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1681,7 +1700,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        12<sup>th</sup>/Diploma Percentage
+                        12<sup>th</sup>/Diploma Percentage:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1707,7 +1726,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Graduation Details
+                        Graduation Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1758,7 +1777,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Post Graduation Details
+                        Post Graduation Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1808,7 +1827,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Branch</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Branch:</b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       {/* <Form.Group className="fname" controlId="exampleForm.ControlInput1">
@@ -1874,20 +1893,7 @@ function InterJoining() {
                           {errors.selected_branches}
                         </span>
                       )}
-                      {selected_branches.includes("Other") && (
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter other certification"
-                          className="FormStyeling transparent-input"
-                          value={other_branch}
-                          onChange={handleother_branchChange}
-                        />
-                      )}
-                      {errors.other_branch && (
-                        <span className="error text-danger">
-                          {errors.other_branch}
-                        </span>
-                      )}
+
                       {/* <div className="d-flex flex-wrap" style={{ gap: '10px' }}>
                                                 <Form.Check
                                                     type="checkbox"
@@ -1953,7 +1959,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Any Other Certification
+                        Any Other Certification:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -2020,7 +2026,7 @@ function InterJoining() {
                   <Row>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Name
+                        Father Name:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2044,7 +2050,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Occupation
+                        Father Occupation:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2069,7 +2075,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Contact Details
+                        Father Contact Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2093,7 +2099,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Aadhar card no
+                        Father Aadhar card no:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2118,7 +2124,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Name
+                        Mother Name:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2142,7 +2148,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Occupation
+                        Mother Occupation:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2167,7 +2173,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Contact Details
+                        Mother Contact Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2191,7 +2197,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Aadhar card no
+                        Mother Aadhar card no:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2215,7 +2221,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Married</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Married:</b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2254,7 +2260,7 @@ function InterJoining() {
                               style={{ fontFamily: "Century gothic" }}
                               className="p-0 m-0"
                             >
-                              Husband Name
+                              Husband/Wife Name:
                             </b>
                           </Col>
                           <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2264,7 +2270,7 @@ function InterJoining() {
                             >
                               <Form.Control
                                 type="text"
-                                placeholder="Enter husband name"
+                                placeholder="Enter Husband/Wife name"
                                 className="FormStyeling transparent-input"
                                 value={husbandDetails.name}
                                 onChange={(e) =>
@@ -2283,7 +2289,7 @@ function InterJoining() {
                           </Col>
                           <Col lg={2} md={2} sm={12} className="m-0 ">
                             <b style={{ fontFamily: "Century gothic" }}>
-                              Husband Occupation
+                              Husband/Wife Occupation:
                             </b>
                           </Col>
                           <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2293,7 +2299,7 @@ function InterJoining() {
                             >
                               <Form.Control
                                 type="text"
-                                placeholder="Enter husband occupation"
+                                placeholder="Enter Husband/Wife occupation"
                                 className="FormStyeling transparent-input"
                                 value={husbandDetails.occupation}
                                 onChange={(e) =>
@@ -2313,7 +2319,7 @@ function InterJoining() {
 
                           <Col lg={4} md={4} sm={12}>
                             <b style={{ fontFamily: "Century gothic" }}>
-                              Husband Contact Details
+                              Husband/Wife Contact Details:
                             </b>
                           </Col>
                           <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2342,7 +2348,7 @@ function InterJoining() {
                           </Col>
                           <Col lg={2} md={2} sm={12} className="m-0 ">
                             <b style={{ fontFamily: "Century gothic" }}>
-                              Husband Aadhar No
+                              Husband/Wife Aadhar No:
                             </b>
                           </Col>
                           <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2352,7 +2358,7 @@ function InterJoining() {
                             >
                               <Form.Control
                                 type="text"
-                                placeholder="Enter husband Aadhar card no"
+                                placeholder="Enter Husband/Wife Aadhar card no"
                                 className="FormStyeling transparent-input"
                                 value={husbandDetails.aadhar}
                                 onChange={(e) =>
@@ -2374,7 +2380,7 @@ function InterJoining() {
                     )}
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Guardian Name
+                        Guardian Name:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2398,7 +2404,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Guardian Occupation
+                        Guardian Occupation:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2425,7 +2431,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Guardian Contact Details
+                        Guardian Contact Details:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2449,7 +2455,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Guardian Aadhar card no
+                        Guardian Aadhar card no:
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2517,8 +2523,30 @@ function InterJoining() {
                 <Card.Text className="text-black">
                   <Row>
                     <Col lg={4} md={4} sm={12}>
+                      <b style={{ fontFamily: "Century Gothic" }}>Date Of Joining:</b>
+                    </Col>
+                    <Col lg={3} md={3} sm={12} className="mb-3">
+                      <Form.Group className="fname" controlId="exampleForm.ControlInput1">
+                        <Form.Control
+                          type="date"
+                          className="FormStyeling transparent-input"
+                          value={date_of_joining}
+                          onChange={(e) => setdate_of_joining(e.target.value)}
+                        />
+                      </Form.Group>
+                      {errors.date_of_joining && (
+                        <span className="error text-danger">{errors.date_of_joining}</span>
+                      )}
+                    </Col>
+                  </Row>
+
+
+
+
+                  <Row>
+                    <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Technology Name
+                        Technology Name:
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-3">
@@ -2565,7 +2593,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Duration</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Duration:</b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2610,7 +2638,7 @@ function InterJoining() {
                       )}
                     </Col>
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Module</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Module:</b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2675,7 +2703,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Training Mode
+                        Training Mode:
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -2708,21 +2736,16 @@ function InterJoining() {
                       )}
                     </Col>
 
-                    <Col lg={12} md={12} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>
-                        Do you have Previous Work , internship or Volunteer
-                        Experience ?
-                      </b>
-                    </Col>
+                    <Col lg={12} md={12} sm={12}><b style={{ fontFamily: 'Century gothic' }} >Do you have Previous Work , internship or Volunteer Experience ?</b></Col>
                     <Col lg={4} md={4} sm={12}>
-                      <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
+                      <div className="d-flex flex-wrap" style={{ gap: '20px' }}>
                         <Form.Check
                           type="radio"
                           label="Yes"
                           name="intern"
                           value="Yes"
                           onChange={(e) => setintern_experience(e.target.value)}
-                          checked={intern_experience === "Yes"}
+                          checked={intern_experience === 'Yes'}
                         />
                         <Form.Check
                           type="radio"
@@ -2730,45 +2753,33 @@ function InterJoining() {
                           name="intern"
                           value="No"
                           onChange={(e) => setintern_experience(e.target.value)}
-                          checked={intern_experience === "No"}
+                          checked={intern_experience === 'No'}
                         />
                       </div>
                       {errors.intern_experience && (
-                        <div className="text-danger">
-                          {errors.intern_experience}
-                        </div>
+                        <div className="text-danger">{errors.intern_experience}</div>
                       )}
                     </Col>
-                    <Col lg={8} md={8} sm={12} className="mb-5">
-                      {intern_experience === "Yes" && (
+                    <Col lg={8} md={8} sm={12} className='mb-5'>
+                      {intern_experience === 'Yes' && (
                         <div>
-                          <Form.Group
-                            className="fname"
-                            controlId="exampleForm.ControlInput1"
-                          >
-                            <Form.Control
-                              type="text"
-                              placeholder="Enter Previous Experience"
-                              className="FormStyeling transparent-input"
-                              value={experience_description}
-                              onChange={(e) =>
-                                setexperience_description(e.target.value)
-                              }
-                            ></Form.Control>
+                          <Form.Group className="fname" controlId="exampleForm.ControlInput1">
+                            <Form.Control type="text" placeholder="Enter experince" className='FormStyeling transparent-input' value={experience}
+                              onChange={(e) => setexperience(e.target.value)}></Form.Control>
                           </Form.Group>
-                          {/* {errors.experience_description && <span className="error text-danger">{errors.experience_description}</span>} */}
+                          {/* {errors.experince && <span className="error text-danger">{errors.experince}</span>} */}
                           <Form.Label className="w-100 text-center">
-                            {errors.experience_description ? (
-                              <span className="error text-danger">
-                                {errors.experience_description}
-                              </span>
+                            {errors.experience ? (
+                              <span className="error text-danger">{errors.experience}</span>
                             ) : (
-                              "Please Mention Your Experinace"
+                              'Please Mention Your Experinace'
                             )}
                           </Form.Label>
                         </div>
                       )}
+
                     </Col>
+
 
                     <b style={{ fontFamily: "Century gothic" }}>
                       Which characteristics best describe you?
@@ -2903,131 +2914,139 @@ function InterJoining() {
                 <Card.Title className="text-black"></Card.Title>
                 <Card.Text className="text-black">
                   <Row>
+
+
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        <Form.Check
-                          type="checkbox"
-                          label="Social Media"
-                          value="Social Media"
-                          checked={refrance.includes("Social Media")}
-                          onChange={handleCheckboxChange}
-                        />
+                        Social Media :{" "}
                       </b>
                     </Col>
-                    <Col lg={10} md={10} sm={12}>
+                    <Col lg={10} md={10} sm={12} className="mb-5">
                       <Form.Group
                         className="fname"
-                        controlId="exampleForm.ControlInput1 mb-3"
+                        controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
                           type="text"
+                          placeholder="Social Media"
                           className="FormStyeling transparent-input"
+                          value={refrance_social_media}
+                          onChange={(e) =>
+                            setrefrance_social_media(e.target.value)
+                          }
                         />
                       </Form.Group>
-                      <Form.Label className="w-100 text-center"></Form.Label>
+                      {errors.refrance_social_media && (
+                        <span className="error text-danger">
+                          {errors.refrance_social_media}
+                        </span>
+                      )}
                     </Col>
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        <Form.Check
-                          type="checkbox"
-                          label="Friend"
-                          name="refrance"
-                          value="Friend"
-                          checked={refrance.includes("Friend")}
-                          onChange={handleCheckboxChange}
-                        />
+                        Friend :{" "}
                       </b>
                     </Col>
-                    <Col lg={10} md={10} sm={12}>
+                    <Col lg={10} md={10} sm={12} className="mb-5">
                       <Form.Group
                         className="fname"
-                        controlId="exampleForm.ControlInput1 mb-3"
+                        controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
                           type="text"
+                          placeholder="Friend Name"
                           className="FormStyeling transparent-input"
+                          value={refrance_friend}
+                          onChange={(e) =>
+                            setrefrance_friend(e.target.value)
+                          }
                         />
                       </Form.Group>
-                      <Form.Label className="w-100 text-center"></Form.Label>
+                      {errors.refrance_friend && (
+                        <span className="error text-danger">
+                          {errors.refrance_friend}
+                        </span>
+                      )}
                     </Col>
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        <Form.Check
-                          type="checkbox"
-                          label="Family"
-                          name="refrance"
-                          value="Family"
-                          checked={refrance.includes("Family")}
-                          onChange={handleCheckboxChange}
-                        />
+                        Family :{" "}
                       </b>
                     </Col>
-                    <Col lg={10} md={10} sm={12}>
+                    <Col lg={10} md={10} sm={12} className="mb-5">
                       <Form.Group
                         className="fname"
-                        controlId="exampleForm.ControlInput1 mb-3"
+                        controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
                           type="text"
+                          placeholder="Family"
                           className="FormStyeling transparent-input"
+                          value={refrance_family}
+                          onChange={(e) =>
+                            setrefrance_family(e.target.value)
+                          }
                         />
                       </Form.Group>
-                      <Form.Label className="w-100 text-center"></Form.Label>
+                      {errors.refrance_family && (
+                        <span className="error text-danger">
+                          {errors.refrance_family}
+                        </span>
+                      )}
                     </Col>
-
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        <Form.Check
-                          type="checkbox"
-                          label="Relatives"
-                          value="Relatives"
-                          name="refrance"
-                          checked={refrance.includes("Relatives")}
-                          onChange={handleCheckboxChange}
-                        />
+                        Relatives :{" "}
                       </b>
                     </Col>
-                    <Col lg={10} md={10} sm={12}>
+                    <Col lg={10} md={10} sm={12} className="mb-5">
                       <Form.Group
                         className="fname"
-                        controlId="exampleForm.ControlInput1 mb-3"
+                        controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
                           type="text"
+                          placeholder="Relatives"
                           className="FormStyeling transparent-input"
+                          value={refrance_relatives}
+                          onChange={(e) =>
+                            setrefrance_relatives(e.target.value)
+                          }
                         />
                       </Form.Group>
-                      <Form.Label className="w-100 text-center"></Form.Label>
+                      {errors.refrance_relatives && (
+                        <span className="error text-danger">
+                          {errors.refrance_relatives}
+                        </span>
+                      )}
                     </Col>
-
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        <Form.Check
-                          type="checkbox"
-                          label="Other"
-                          value="Other"
-                          name="refrance"
-                          checked={refrance.includes("Other")}
-                          onChange={handleCheckboxChange}
-                        />
+                        Other :{" "}
                       </b>
                     </Col>
-                    {errors.refrance && (
-                      <div className="text-danger">{errors.refrance}</div>
-                    )}
-                    <Col lg={10} md={10} sm={12}>
+                    <Col lg={10} md={10} sm={12} className="mb-5">
                       <Form.Group
                         className="fname"
-                        controlId="exampleForm.ControlInput1 mb-3"
+                        controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
                           type="text"
+                          placeholder="Other"
                           className="FormStyeling transparent-input"
+                          value={refrance_other}
+                          onChange={(e) =>
+                            setrefrance_other(e.target.value)
+                          }
                         />
                       </Form.Group>
-                      <Form.Label className="w-100 text-center"></Form.Label>
+                      {errors.refrance_other && (
+                        <span className="error text-danger">
+                          {errors.refrance_other}
+                        </span>
+                      )}
                     </Col>
 
                     <Col lg={5} md={5} sm={12}>
@@ -3049,6 +3068,7 @@ function InterJoining() {
                       <Form.Check
                         type="radio"
                         label="no"
+                        value="No"
                         name="scoperefer"
                         onChange={(e) => setscoperefer(e.target.value)}
                       />
@@ -3070,14 +3090,14 @@ function InterJoining() {
                         <Form.Control
                           type="text"
                           className="FormStyeling transparent-input"
-                          value={refereance_name1}
-                          onChange={(e) => setRefereance_name1(e.target.value)}
+                          value={reference_name}
+                          onChange={(e) => setRefereance_name(e.target.value)}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.refereance_name1 && (
+                      {errors.reference_name && (
                         <span className="error text-danger">
-                          {errors.refereance_name1}
+                          {errors.reference_name}
                         </span>
                       )}
                     </Col>
@@ -3089,14 +3109,14 @@ function InterJoining() {
                         <Form.Control
                           type="text"
                           className="FormStyeling transparent-input"
-                          value={refereance_name2}
-                          onChange={(e) => setRefereance_name2(e.target.value)}
+                          value={reference_name1}
+                          onChange={(e) => setRefereance_name1(e.target.value)}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.refereance_name2 && (
+                      {errors.reference_name1 && (
                         <span className="error text-danger">
-                          {errors.refereance_name2}
+                          {errors.reference_name1}
                         </span>
                       )}
                     </Col>
@@ -3115,14 +3135,14 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           placeholder="+91"
-                          value={conatct_number1}
+                          value={contact_number}
                           onChange={handlePconatactnumberChange}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.conatct_number1 && (
+                      {errors.contact_number && (
                         <span className="error text-danger">
-                          {errors.conatct_number1}
+                          {errors.contact_number}
                         </span>
                       )}
                     </Col>
@@ -3135,14 +3155,14 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           placeholder="+91"
-                          value={conatct_number2}
+                          value={contact_number1}
                           onChange={handlePconatactnumber2Change}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
-                      {errors.conatct_number2 && (
+                      {errors.contact_number1 && (
                         <span className="error text-danger">
-                          {errors.conatct_number2}
+                          {errors.contact_number1}
                         </span>
                       )}
                     </Col>
@@ -3289,18 +3309,18 @@ function InterJoining() {
                         backgroundColor: "#28a745",
                         borderColor: "#28a745",
                         marginRight: "10px",
-                      }} 
+                      }}
                     >
                       Submit
                     </Button>
 
                     <Button
-                      variant="primary"
+                      variant="primary" 
                       onClick={handlePrint}
                       style={{
                         backgroundColor: "#17a2b8",
                         borderColor: "#17a2b8",
-                      }} 
+                      }}
                     >
                       Print
                     </Button>

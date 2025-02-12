@@ -17,6 +17,9 @@ import { FaEye, FaPrint, FaTrash } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import * as XLSX from 'xlsx';
+import { FaDownLong } from "react-icons/fa6";
+
 
 const ViewIdCard = () => {
   const { searchQuery, handleSearch, filteredData } = useSearchExport();
@@ -40,7 +43,10 @@ const ViewIdCard = () => {
         },
       });
       console.log("Fetched Data:", response.data); // Log the response for debugging
-      setProducts(response.data);
+ // Sorting the data in descending order based on created_at
+ const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+ setProducts(sortedData);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -105,6 +111,7 @@ const ViewIdCard = () => {
       ),
     });
   };
+ 
 
   const handlePrint = (id) => {
     const printUrl = `get-intern-id-card-details/${id}`;
@@ -115,6 +122,29 @@ const ViewIdCard = () => {
     };
   };
 
+   const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB'); // Formats as dd/mm/yyyy
+    };
+  
+  
+    const exportExcel = () => {
+      // Format date fields before exporting
+      const formattedProducts = products.map((product) => ({
+        ...product,
+        date_of_joining: formatDate(product.date_of_joining),
+
+        created_at: formatDate(product.created_at),
+        updated_at: formatDate(product.updated_at),
+      }));
+  
+      const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Id Card Details");
+      XLSX.writeFile(workbook, "View-Id-Card-Details.xlsx");
+    };
+  
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
@@ -122,7 +152,7 @@ const ViewIdCard = () => {
     },
     {
       name: "Full Name",
-      cell: (row) => row.name,
+      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
     },
     {
       name: "Contact No",
@@ -130,7 +160,11 @@ const ViewIdCard = () => {
     },
     {
       name: "Technology",
-      cell: (row) => row.technology,
+      cell: (row) => row.technology_name,
+    },
+    {
+      name: "Date of Joining",
+      cell: (row) => formatDate(row.date_of_joining),
     },
 
     {
@@ -143,7 +177,7 @@ const ViewIdCard = () => {
           >
             <Button
               className="ms-1"
-              onClick={() => navigate(`/get-intern-id-card-details/${row.id}`)}
+              onClick={() => navigate(`/get-intern-id-card-details/${row.id}`, { state: row })}
             >
               <FaEye />
             </Button>
@@ -203,6 +237,16 @@ const ViewIdCard = () => {
                   />
                 </Col>
               </Row>
+               <Row className="mt-3">
+                              <Col className="d-flex justify-content-end">
+                                <Button
+                                  variant="primary"
+                                  onClick={exportExcel}
+                                >
+                                  <FaDownLong /> Export to Excel
+                                </Button>
+                              </Col>
+                            </Row>
             </Card.Header>
 
             <Card.Body>

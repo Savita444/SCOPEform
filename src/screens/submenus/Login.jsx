@@ -44,7 +44,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (validateForm()) {
       setLoading(true);
       try {
@@ -57,47 +57,34 @@ const Login = () => {
             },
           }
         );
-
-        // if (response.data.result) {
-        //   const { token } = response.data.responseData;
-          
-        //   localStorage.setItem("remember_token", token);
-        //   toast.success("Login successful");
-        //   navigate("/interjoining");
-        // } 
-        console.log(response.data, "ssssssssssssssss");
+  
         if (response.data) {
-          // Log the entire response data for debugging
           console.log("Login response:", response.data);
-      
-          // Extract the token from the response
+  
           const token = response.data.access_token;
           const id = response.data.user.id;
-          // console.log(response.data.user.id, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
-          
-          // Set the token in localStorage
+          const userEmail = response.data.user.email; // Extract user email
+  
+          // Store token and user details in localStorage
           localStorage.setItem("remember_token", token);
           localStorage.setItem("access_token", token);
           localStorage.setItem("id", id);
-      
-          // Log the token to confirm it was set correctly
-          console.log("Token received and stored:", token);
-      
-          // Show success message and navigate to the desired page
+          localStorage.setItem("user_email", userEmail);
+  
           toast.success("Login successful");
-          navigate("/interjoining");
-      }
-      
-      
-        else {
-          // Handle server-side error messages
+  
+          // Check for specific email condition
+          if (userEmail === "bde@sumagoinfotech.com") {
+            navigate("/ViewPopupEnquiry"); // Redirect to admin page
+          } else {
+            navigate("/viewinterjoining"); // Redirect to default user page
+          }
+        } else {
           const errorMessage = response.data.message || "Login failed";
           toast.error(errorMessage);
         }
       } catch (error) {
-        // Handle unexpected errors (like network issues or server down)
         if (error.response) {
-          // The request was made and the server responded with a status code
           const status = error.response.status;
           if (status === 401) {
             toast.error("Please Enter correct Password");
@@ -106,19 +93,18 @@ const Login = () => {
           } else if (status === 500) {
             toast.error("Internal server error.");
           } else {
-            // Handle other status codes as needed
             toast.error("An error occurred. Please try again.");
           }
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error("Error handling form submission:", error);
-          toast.error("Error in Submit"); // General error message for unexpected issues
+          toast.error("Error in Submit");
         }
       } finally {
         setLoading(false);
       }
     }
   };
+  
 
   return (
     <Container className="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-light">

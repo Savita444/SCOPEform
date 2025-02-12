@@ -1,0 +1,148 @@
+Table{
+    font-family: Century gothic;
+
+}
+
+.personal-card-heading {
+    background: linear-gradient(90deg,
+            #af0202 0%,
+            /* Red color */
+            rgba(176, 3, 3, 0.58) 66.96%,
+            rgba(255, 0, 0, 0) 100%);
+    /* Transparent red */
+    color: white;
+    /* Keep text color as white */
+
+    padding: 3px 40px 0px 14px;
+    width: 500px;
+    height: 40px;
+    letter-spacing: 5px;
+    font-size: 20px;
+    font-family: 'Century Gothic', sans-serif;
+    margin-left: 10px;
+    margin-top: -10px;
+}
+@media print {
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Background image for printing */
+    .corner_img {
+        height: 130px;
+        max-width: 100%;
+    }
+
+    .corner_img1 {
+        max-width: 100%;
+    }
+
+    .body {
+        background-size: 100% auto;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .logo1 {
+        width: 100px;
+        margin-left: 50px;
+    }
+
+    .backimg {
+        background-image: url(/src/screens/imgs/5.jpg);
+        background-size: auto;
+        background-position: center;
+        background-repeat: repeat;
+        width: 100%;
+        min-height: 10vh;
+        height: auto;
+        box-sizing: border-box;
+    }
+
+    /* Ensure the Date and Sign columns have enough space during print */
+    td:nth-child(3),
+    td:nth-child(4),
+    th:nth-child(3),
+    th:nth-child(4) {
+        width: 150px !important;
+    }
+
+    tr td[rowspan] {
+        height: auto !important;
+        vertical-align: middle !important;
+    }
+
+    /* Ensure the table doesn't overflow */
+    table {
+        table-layout: auto !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+
+    /* Reduce font size for better fitting */
+    table {
+        font-size: 10px !important;
+    }
+
+    /* Hide logos and button container during print */
+    .logo-container,
+    .button-container {
+        display: none;
+    }
+
+    /* Ensure the table contents fit the page */
+    th,
+    td {
+        font-size: 10px;
+        padding: 5px !important;
+    }
+
+    /* Adjust header and footer visibility */
+    .d-none.d-md-block {
+        display: block !important;
+    }
+
+    /* Prevent page breaks inside the table */
+    table,
+    tr,
+    td,
+    th {
+        page-break-inside: avoid;
+    }
+
+    /* Force the print to stay within two pages */
+    body {
+        page-break-before: always;
+    }
+
+   
+
+    
+    /* Position the Print Button under the labels during print */
+    .print-button {
+        display: block !important;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Limit the page content to fit two pages */
+    .container {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    /* Limit height of content to fit in two pages */
+    .content-limited {
+        max-height: calc(100vh - 50px); /* Ensures the content is restricted */
+        overflow: hidden;
+    }
+
+   
+}
+

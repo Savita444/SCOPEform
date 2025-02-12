@@ -5,10 +5,11 @@
     background-repeat: repeat;
     width: 100%;
     min-height: 10vh;
-    height: auto;
+    height: 100%;
     box-sizing: border-box;;
 
 }
+
 
 
 .corner_img {
@@ -51,6 +52,7 @@
 
 .logo-container {
     position: absolute;
+    padding-left: 15%;
     /* Makes the logo container fixed at the top */
     top: 0;
     /* Position at the very top of the screen */
@@ -69,7 +71,7 @@
 }
 
 .logo1 {
-    height: 120px;
+    height: 150px;
 }
 
 .logo2 {
@@ -90,6 +92,8 @@
     }
 
     .logo1 {
+        height: 150px;
+
         margin-left: 50px;
     }
 
@@ -289,126 +293,45 @@
 
 
 
-
-
-
+/* Normal page styles */
+.output-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .output-display {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #333;
+  }
+  
+  button {
+    padding: 10px 15px;
+    background-color: #0060AA;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #005090;
+  }
+  
+  /* Print-specific styles */
+ 
 
 @media print {
-    * {
-        -webkit-print-color-adjust: exact; /* Safari/Chrome */
-        print-color-adjust: exact;         /* Firefox */
-        box-sizing: border-box;
-    }
+  .container, .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .col {
+    flex: 1 0 auto !important; /* Ensures columns don't collapse */
+  }
 
-    html, body {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .corner_img {
-        height: 130px;
-        max-width: 100%;
-    }
-
-    .body {
-        background-size: 100% auto; 
-        background-attachment: fixed;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    .logo1 {
-        width: 100px;
-        margin-left: 50px;
-    }
-
-    .backimg {
-        background-image: url(/src/screens/imgs/5.jpg);
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        width: 100%;
-        min-height: 10vh;
-        height: auto;
-    }
-
-    .container {
-        width: 100%;
-        padding: 0 15px;
-        margin: 0;
-    }
-
-    .title-container, .form-title {
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .form-section {
-        page-break-inside: avoid; /* Prevent sections from splitting across pages */
-        margin-bottom: 20px;
-    }
-
-    form {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .col-lg-4, .col-lg-8, .col-lg-2, .col-lg-3 {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .form-control {
-        width: 100%;
-        margin: 5px 0;
-        padding: 10px;
-        border: 1px solid #000;
-        font-size: 14px;
-    }
-
-    textarea {
-        width: 100%; /* Full width */
-        height: 50px; /* Reduced height */
-        margin: 5px 0;
-        padding: 8px;
-        font-size: 12px; /* Smaller font size */
-        resize: none; /* Prevent resizing in print */
-    }
-
-    .error {
-        font-size: 12px;
-        color: red;
-    }
-
-    /* Reduce Page Count */
-    .form-section {
-        margin-bottom: 5px; /* Reduce spacing */
-    }
-
-    /* Adjust spacing between rows to compress content */
-    .row {
-        margin-bottom: 10px;
-    }
-
-    /* Avoid unnecessary large margins or padding */
-    .container, .form-section {
-        padding: 10px;
-    }
-
-    /* Handle Page Breaks */
-    .page-break {
-        page-break-after: always;
-    }
+  button {
+    display: none !important; /* Hide buttons in print */
+  }
 }
 

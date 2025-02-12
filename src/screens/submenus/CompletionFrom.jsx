@@ -1,13 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 const CompletionFrom = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
+
+
+    stude_id: id,
     name: "",
     technology: "",
     email: "",
@@ -33,15 +39,62 @@ const CompletionFrom = () => {
     name_contact_of_fourth_candidate: "",
     name_contact_of_fifth_candidate: "",
     blog_on_your_selected_technology: "",
-    review_image: null,
-    resume_pdf: null,
-    feedback_video: null,
+    review_image: "",
+    resume_pdf: "",
+    feedback_video: "",
   });
+// console.log(formData.selected_mode);
+
+
 
   const [errors, setErrors] = useState({});
-  const [technology, settechnology_name] = useState("");
+  // const [technology, settechnology_name] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const token = localStorage.getItem("remember_token");
+        const response = await axios.get(
+          `https://api.sumagotraining.in/public/api/get-perticular-intern-by-studId/${id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = response.data;
+        // console.log(data[0].fname);
+
+
+        if (data) {
+          setFormData({
+            name: `${data[0].fname} ${data[0].fathername || ""} ${data[0].lname || ""}`.trim(),
+            
+            email: data[0].email,
+            date_of_joining: data[0].date_of_joining,
+
+            technology: data[0].technology_name,
+            selected_mode: data[0].training_mode,
+
+          })
+        }
+      } catch (err) {
+        console.error("Error fetching details:", err);
+        alert("Failed to load data. Please try again.");
+      }
+    };
+
+    fetchDetails();
+  }, [id]);
+
+
+
+
+
+
+
+
+
+
+
 
   // Refs for fields
   const nameRef = useRef();
@@ -118,11 +171,11 @@ const CompletionFrom = () => {
       error = "Only PDF files are allowed.";
     } else if (name === "feedback_video") {
       if (!file.type.startsWith("video/")) {
-          error = "Only video files are allowed.";
+        error = "Only video files are allowed.";
       } else if (file.size > 5 * 1024 * 1024) { // 5 MB size limit
-          error = "Video size must not exceed 5 MB.";
+        error = "Video size must not exceed 5 MB.";
       }
-  }
+    }
 
     if (error) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
@@ -144,10 +197,10 @@ const CompletionFrom = () => {
     let isValid = true;
 
     if (!formData.name) errors.name = "Name is required";
-  
-  if (!formData.technology) {
-    errors.technology = "Technology is required";
-  }
+
+    if (!formData.technology) {
+      errors.technology = "Technology is required";
+    }
     if (!formData.email) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -217,15 +270,15 @@ const CompletionFrom = () => {
       errors.blog_on_your_selected_technology =
         "blog on your selected technology is required.";
 
-    if (!formData.review_image) {
-      errors.review_image = "Image upload is required.";
-    }
-    if (!formData.resume_pdf) {
-      errors.resume_pdf = "PDF upload is required.";
-    }
-    if (!formData.feedback_video) {
-      errors.feedback_video = "Video upload is required.";
-    }
+    // if (!formData.review_image) {
+    //   errors.review_image = "Image upload is required.";
+    // }
+    // if (!formData.resume_pdf) {
+    //   errors.resume_pdf = "PDF upload is required.";
+    // }
+    // if (!formData.feedback_video) {
+    //   errors.feedback_video = "Video upload is required.";
+    // }
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -297,6 +350,9 @@ const CompletionFrom = () => {
     }));
   };
 
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -312,12 +368,13 @@ const CompletionFrom = () => {
     if (validate()) {
       try {
         const token = localStorage.getItem("remember_token");
-        const id = localStorage.getItem("id");
+        // const id = localStorage.getItem("id");
 
         const formDataToSubmit = new FormData();
         Object.keys(formData).forEach((key) => {
           formDataToSubmit.append(key, formData[key]);
         });
+
 
         formDataToSubmit.append("stude_id", id);
 
@@ -335,7 +392,7 @@ const CompletionFrom = () => {
             },
           }
         );
-// console.log(response, "response.data.successresponse.data.success");
+        // console.log(response, "response.data.successresponse.data.success");
 
         if (response) {
 
@@ -434,6 +491,7 @@ const CompletionFrom = () => {
                   <Row>
                     <Col lg={2} md={2} sm={12} className="mt-3">
                       <b style={{ fontFamily: "Century gothic" }}>Name : </b>
+                      
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-3">
                       <Form.Group
@@ -448,6 +506,7 @@ const CompletionFrom = () => {
                           ref={nameRef} // Add ref for the name field
                           className="FormStyeling transparent-input"
                           placeholder="Enter Your Name" /* Optional placeholder */
+                          readOnly
                         />
                       </Form.Group>
                       <Form.Control.Feedback type="invalid">
@@ -460,7 +519,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={10}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Technology Name
+                        Technology Name:
                       </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
@@ -468,41 +527,19 @@ const CompletionFrom = () => {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Select
+                        <Form.Control
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
                           value={formData.technology}
                           onChange={handleInputChange}
-                        
+                          readOnly
+
                           // onChange={(e) => settechnology_name(e.target.value)}
 
                           name="technology" // this ensures the right field is updated
                           ref={technologyRef} // Add ref for focus
-                        >
-                          <option>Select Technology</option>
-                          <option value="MERN Stack Development">
-                            MERN Stack Development
-                          </option>
-                          <option value="MEAN Stack Development">
-                            MEAN Stack Development
-                          </option>
-                          <option value="Full Stack Java Development">
-                            Full Stack Java Development
-                          </option>
-                          <option value="Python Development ">
-                            Python Development{" "}
-                          </option>
-                          <option value="AWS Devops">AWS Devops</option>
-                          <option value="Data Science">Data Science</option>
-                          <option value="Data Analytics">Data Analytics</option>
-                          <option value="AIML">AIML</option>
-                          <option value="UI-UX Designing">
-                            UI-UX Designing
-                          </option>
-                          <option value="Software Testing">
-                            Software Testing
-                          </option>
-                        </Form.Select>
+                        />
+                          
                       </Form.Group>
                       {errors.technology && (
                         <span className="error text-danger">
@@ -528,6 +565,7 @@ const CompletionFrom = () => {
                           onChange={handleInputChange}
                           ref={emailRef} // Add ref for the email field
                           className="FormStyeling transparent-input"
+                          readOnly
                         />
                       </Form.Group>
                       {errors.email && (
@@ -580,17 +618,8 @@ const CompletionFrom = () => {
                         className="me-3"
                         name="selected_mode"
                         value="Online"
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            selected_mode: e.target.value,
-                          }));
-                          // Clear the error for selected_mode when value changes
-                          setErrors((prev) => ({
-                            ...prev,
-                            selected_mode: "",
-                          }));
-                        }}
+                        checked={formData.selected_mode === "Online"}
+                        readOnly
                       />
                       <Form.Check
                         type="radio"
@@ -598,17 +627,8 @@ const CompletionFrom = () => {
                         label="Offline"
                         name="selected_mode"
                         value="Offline"
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            selected_mode: e.target.value,
-                          }));
-                          // Clear the error for selected_mode when value changes
-                          setErrors((prev) => ({
-                            ...prev,
-                            selected_mode: "",
-                          }));
-                        }}
+                        checked={formData.selected_mode === "Offline"}
+                        readOnly
                       />
 
                       {errors.selected_mode && (
@@ -1230,7 +1250,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload the screenshots of Google review
+                        Upload the screenshots of Google review:
                       </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-5">
@@ -1254,7 +1274,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Write minimum one Blog on your selected technology{" "}
+                        Write minimum one Blog on your selected technology:{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-5">
@@ -1279,7 +1299,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload your training video feedback
+                        Upload your training video feedback:
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-5">
@@ -1301,7 +1321,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload your updated Resume
+                        Upload your updated Resume:
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-5">

@@ -8,7 +8,9 @@ import instance from "../../api/AxiosInstance";
 import { FaEye, FaPrint, FaTrash } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { FaDownLong } from "react-icons/fa6";
+import * as XLSX from 'xlsx';
 
 const ViewCompletionFrom = () => {
   const { searchQuery, handleSearch, filteredData } = useSearchExport();
@@ -16,7 +18,7 @@ const ViewCompletionFrom = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Use useNavigate for routing
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -89,6 +91,28 @@ const ViewCompletionFrom = () => {
     };
   };
 
+
+
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // Formats as dd/mm/yyyy
+  };
+   const exportExcel = () => {
+      // Format date fields before exporting
+      const formattedProducts = products.map((product) => ({
+        ...product,
+        date_of_joining: formatDate(product.date_of_joining),
+      }));
+  
+  
+     
+      const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "View Completion");
+      XLSX.writeFile(workbook, "View-Completion.xlsx");
+    };
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
@@ -97,25 +121,43 @@ const ViewCompletionFrom = () => {
     {
       name: "Full Name",
       cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
+      width:"200px",
     },
     {
       name: "Email Id",
       cell: (row) => row.email,
+      width:"200px",
     },
+    // {
+    //   name: "Contact Details",
+    //   cell: (row) => row.contact_details,
+    // },
     {
       name: "Technology",
       cell: (row) => row.technology_name,
+      sortable: true,
+      sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
+      
     },
     {
       name: "Training mode",
       cell: (row) => row.selected_mode,
+      sortable: true,
+      sortFunction: (a, b) => a.selected_mode.localeCompare(b.selected_mode),
+    },
+    {
+      name: "Placed",
+      cell: (row) => row.placed,
+      sortable: true,
+      sortFunction: (a, b) => a.placed.localeCompare(b.placed),
     },
     {
       name: "Actions",
       cell: (row) => (
+        
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/completion-details/${row.id}`)}>
+            <Button className="ms-1" onClick={() => navigate(`/completion-details/${row.id}`, { state: row })}>
               <FaEye />
             </Button>
           </OverlayTrigger>
@@ -140,6 +182,7 @@ const ViewCompletionFrom = () => {
                         </OverlayTrigger>
         </div>
       ),
+      
     },
   ];
 
@@ -155,6 +198,16 @@ const ViewCompletionFrom = () => {
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
                 </Col>
               </Row>
+              <Row className="mt-3">
+                              <Col className="d-flex justify-content-end">
+                                <Button
+                                  variant="primary"
+                                  onClick={exportExcel}
+                                >
+                                  <FaDownLong /> Export to Excel
+                                </Button>
+                              </Col>
+                            </Row>
             </Card.Header>
 
             <Card.Body>

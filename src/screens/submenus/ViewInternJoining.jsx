@@ -5,7 +5,7 @@ import { useSearchExport } from "../../context/SearchExportContext";
 import SearchInput from "../../components/search/SearchInput";
 import { toast } from "react-toastify";
 import instance from "../../api/AxiosInstance";
-import { FaEye, FaPrint, FaTrash } from "react-icons/fa";
+import { FaEye, FaPrint, FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,7 @@ const ViewInternJoining = () => {
   const fetchProducts = async () => {
     const accessToken = localStorage.getItem("remember_token");
     try {
-      const response = await instance.get("get-intern-joining", {
+      const response = await instance.get("get-intern-personal-info", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -63,7 +63,7 @@ const ViewInternJoining = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`intern-joining/delete/${id}`, {
+                  await instance.delete(`intern-personal-info/delete/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -91,14 +91,14 @@ const ViewInternJoining = () => {
     });
   };
 
-  const handlePrint = (id) => {
-  const printUrl = `/intern-details/${id}`;
-  const printWindow = window.open(printUrl, "_blank");
-  printWindow.onload = () => {
-    printWindow.focus();
-    printWindow.print();
-  };
-};
+  //   const handlePrint = (id) => {
+  //   const printUrl = `/intern-details/${id}`;
+  //   const printWindow = window.open(printUrl, "_blank");
+  //   printWindow.onload = () => {
+  //     printWindow.focus();
+  //     printWindow.print();
+  //   };
+  // };
 
 
   const tableColumns = (currentPage, rowsPerPage) => [
@@ -124,34 +124,43 @@ const ViewInternJoining = () => {
     },
     {
       name: "Actions",
-      cell: (row) => (
-        <div className="d-flex">
-          <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/intern-details/${row.id}`)}>
-              <FaEye />
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
-            <Button
-              className="ms-1"
-              style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
-              onClick={() => handleDelete(row.id)}
-            >
-              <FaTrash />
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
-            <Button
-              className="ms-1"
-              style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
-              onClick={() => handlePrint(row.id)}
-            >
-                <FaPrint/>
-            </Button>
-          </OverlayTrigger>
-        </div>
-      ),
-    },
+      cell: (row) => {
+        return (
+          <div className="d-flex">
+            <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
+              <Button className="ms-1" onClick={() => navigate(`/intern-details/${row.id}`, { state: row })}>
+                <FaEye />
+              </Button>
+            </OverlayTrigger>
+            <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
+              <Button
+                className="ms-1"
+                style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
+                onClick={() => handleDelete(row.id)}
+              >
+                <FaTrash />
+              </Button>
+            </OverlayTrigger>
+            <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">Edit</Tooltip>}>
+              <Button className="ms-1" onClick={() =>
+                navigate(`/update-intern-personal-details/${row.id}`, { state: row })}>
+                <FaEdit />
+              </Button>
+            </OverlayTrigger>
+            {/* <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+              <Button
+                className="ms-1"
+                style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
+                onClick={() => handlePrint(row.id)}
+              >
+                <FaPrint />
+              </Button>
+            </OverlayTrigger> */}
+          </div>
+        );
+      },
+    }
+
   ];
 
   return (
@@ -162,10 +171,20 @@ const ViewInternJoining = () => {
             <Card.Header>
               <Row>
                 <Col className="d-flex align-items-center">
-                  <h5>Internship Details</h5>
+                  <h5>New Interns Details</h5>
                 </Col>
                 <Col className="d-flex justify-content-end align-items-center">
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
+                </Col>
+              </Row>
+              <Row className="mt-3">
+                <Col className="d-flex justify-content-end">
+                  <Button
+                    variant="primary"
+                    onClick={() => navigate('/PersonalDetailsPage')}
+                  >
+                    <FaPlus /> Add New Intern
+                  </Button>
                 </Col>
               </Row>
             </Card.Header>

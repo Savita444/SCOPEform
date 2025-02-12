@@ -6,7 +6,9 @@ import { Link } from "react-router-dom";
 import {
   MdOutlineClose,
   MdHome,
+  MdOutlineArticle ,
   MdLogout,
+  MdPassword,
   MdOutlinePermContactCalendar,
 } from "react-icons/md";
 import { RiTeamFill, RiContactsBookLine, RiFileListLine } from "react-icons/ri";
@@ -28,31 +30,37 @@ const SidebarMenu = [
     url: "/dashboard",
     mainIcon: <MdHome size={24} />,
     subMenu: [
+      // {
+      //   subMenus: "Intern Joining",
+      //   url: "/interjoining",
+      //   icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      // },
       {
-        subMenus: "Intern Joining",
-        url: "/interjoining",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
-      {
-        subMenus: "View Intern Joining",
+        subMenus: "Interns List",
         url: "/viewinterjoining",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
+
       {
-        subMenus: "Completion",
-        url: "/completion",
+        subMenus: "View Joining",
+        url: "/viewjoining",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
+      // {
+      //   subMenus: "Completion",
+      //   url: "/completion",
+      //   icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      // },
       {
         subMenus: "View Completion",
         url: "/viewcompletion",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
-      {
-        subMenus: "Id Card Issue",
-        url: "/IdCardIssue",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
+      // {
+      //   subMenus: "Id Card Issue",
+      //   url: "/IdCardIssue",
+      //   icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      // },
 
       {
         subMenus: "View Id Card",
@@ -60,10 +68,42 @@ const SidebarMenu = [
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
 
+      {
+        subMenus: "View T3 Sheet",
+        url: "/ViewT3Sheet",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
 
     ],
   },
 
+  {
+    menu: "Our Courses",
+    url: "/dashboard",
+    mainIcon: <MdOutlineArticle size={24} />,
+    subMenu: [
+      {
+        subMenus: "Add Course",
+        url: "/addcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Add Sub Course",
+        url: "/addsubcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Add Sub sub Course",
+        url: "/addsubsubcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+      
+    ],
+  },
+  
+  
   
   {
     menu: "Logout",
@@ -71,7 +111,51 @@ const SidebarMenu = [
     mainIcon: <MdLogout size={24} />,
     subMenu: [],
   },
+
+  // {
+  //   menu: "Forgot Password",
+  //   url: "/forgotpassword",
+  //   mainIcon: <MdPassword size={24} />,
+  //   subMenu: [],
+  // },
 ];
+
+
+
+const BDESidebar = [
+  
+
+  
+  {
+    menu: "Popup Enquiry",
+    url: "/ViewPopupEnquiry",
+    mainIcon: <AiOutlineProject style={{ color: "red" }} size={24} />,      
+    subMenu: [],
+  },
+
+  {
+    menu: "Implant Training List",
+    url: "/ViewImplanttraining",
+    mainIcon: <AiOutlineProject style={{ color: "red" }} size={24} />,      
+    subMenu: [],
+  },
+
+  {
+    menu: "Logout",
+    url: "/logout",
+    mainIcon: <MdLogout size={24} />,
+    subMenu: [],
+  },
+
+  // {
+  //   menu: "Forgot Password",
+  //   url: "/forgotpassword",
+  //   mainIcon: <MdPassword size={24} />,
+  //   subMenu: [],
+  // },
+];
+
+
 
 // Sidebar Component
 const Sidebar = () => {
@@ -80,6 +164,12 @@ const Sidebar = () => {
   const { setTitle } = useContext(TitleContext);
   const [activeMenu, setActiveMenu] = useState("");
   const [activeSubMenu, setActiveSubMenu] = useState("");
+
+  // Retrieve email from localStorage
+  const userEmail = localStorage.getItem("user_email");
+
+  // Determine which sidebar menu to show
+  const menuToRender = userEmail === "bde@sumagoinfotech.com" ? BDESidebar : SidebarMenu;
 
   // Close sidebar on clicking outside
   const handleClickOutside = (event) => {
@@ -111,30 +201,23 @@ const Sidebar = () => {
 
   // Handle main menu click
   const handleMenuClick = (menu) => {
-    setActiveMenu(activeMenu === menu ? "" : menu); // Toggle active menu
-    setActiveSubMenu(""); // Close any open sub menu when a main menu is clicked
-    setTitle(menu); // Set the title context
+    setActiveMenu(activeMenu === menu ? "" : menu);
+    setActiveSubMenu("");
+    setTitle(menu);
   };
 
   // Handle sub menu click
   const handleSubMenuClick = (subMenu) => {
-    setActiveSubMenu(subMenu); // Set active sub menu
+    setActiveSubMenu(subMenu);
   };
 
   return (
     <nav ref={navbarRef} className={`sidebar ${isSidebarOpen ? "sidebar-show" : ""}`}>
       <div className="sidebar-top">
         <div className="sidebar-brand">
-          <img className="w-75 m-2  " src={logo} alt="Logo" />
-          {/* <span className="sidebar-brand-text text-danger">
-            Bilz
-          </span> */}
+          <img className="w-75 m-2" src={logo} alt="Logo" />
         </div>
-        <Button
-          variant="outline-danger"
-          className="sidebar-close-btn"
-          onClick={closeSidebar}
-        >
+        <Button variant="outline-danger" className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
         </Button>
       </div>
@@ -142,13 +225,11 @@ const Sidebar = () => {
         <div className="sidebar-menu">
           <MenuBar>
             <Menu>
-              {SidebarMenu.map((item, id) => (
+              {menuToRender.map((item, id) => (
                 <div key={id}>
                   {item.subMenu.length > 0 ? (
                     <SubMenu
-                      className={`menu-link-text bg-white ${
-                        activeMenu === item.menu ? "active" : ""
-                      }`}
+                      className={`menu-link-text bg-white ${activeMenu === item.menu ? "active" : ""}`}
                       icon={item.mainIcon}
                       label={item.menu}
                       open={activeMenu === item.menu}
@@ -171,12 +252,10 @@ const Sidebar = () => {
                   ) : (
                     <MenuItem
                       icon={item.mainIcon}
-                      className={`menu-link-text bg-white ${
-                        activeMenu === item.menu ? "active" : ""
-                      }`}
+                      className={`menu-link-text bg-white ${activeMenu === item.menu ? "active" : ""}`}
                       onClick={() => {
                         handleMenuClick(item.menu);
-                        closeSidebar(); // Close sidebar on menu item click
+                        closeSidebar();
                       }}
                       component={<Link to={item.url} />}
                     >
@@ -194,3 +273,5 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+

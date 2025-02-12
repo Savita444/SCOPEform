@@ -19,6 +19,7 @@ const IdCardDetailsPage = () => {
   useEffect(() => {
     const fetchInternDetails = async () => {
       const accessToken = localStorage.getItem("remember_token");
+      console.log("Fetching ID:", id);
 
       try {
         const response = await axios.get(
@@ -49,19 +50,21 @@ const IdCardDetailsPage = () => {
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
 
-  // Destructure internDetails with fallback values
   const {
-    name = "",
-    technology = "",
+    fname = "",
+    fathername ="",
+    mname = "",
+    lname = "",
+    technology_name = "",
     date_of_joining = "",
     contact_details = "",
-    blood_group = "",
+    blood = "",
     shirt_size = "",
   } = internDetails || {};
 
   return (
     <>
-      <div className="container backimg">
+      <div className="container idcardbackimg">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -118,7 +121,8 @@ const IdCardDetailsPage = () => {
                     <Form.Control
                       type="text"
                       className="FormStyeling transparent-input"
-                      value={name}
+                      value={`${fname} ${fathername} ${mname} ${lname}` }
+                      name="name"
                       readOnly
                     />
                   </Form.Group>
@@ -140,7 +144,8 @@ const IdCardDetailsPage = () => {
                     <Form.Control
                       type="text"
                       className="FormStyeling transparent-input"
-                      value={technology}
+                      value={technology_name}
+                      name="technology"
                       readOnly
                     />
                   </Form.Group>
@@ -163,6 +168,7 @@ const IdCardDetailsPage = () => {
                       type="text"
                       className="FormStyeling transparent-input"
                       value={date_of_joining}
+                      name="date_of_joining"
                       readOnly
                     />
                   </Form.Group>
@@ -185,6 +191,7 @@ const IdCardDetailsPage = () => {
                       type="text"
                       className="FormStyeling transparent-input"
                       value={contact_details}
+                      name="contact_details"
                       readOnly
                     />
                   </Form.Group>
@@ -206,7 +213,8 @@ const IdCardDetailsPage = () => {
                     <Form.Control
                       type="text"
                       className="FormStyeling transparent-input"
-                      value={blood_group}
+                      value={blood}
+                      name="blood_group"
                       readOnly
                     />
                   </Form.Group>
@@ -229,6 +237,7 @@ const IdCardDetailsPage = () => {
                       type="text"
                       className="FormStyeling transparent-input"
                       value={shirt_size}
+                      name="shirt_size"
                       readOnly
                     />
                   </Form.Group>
