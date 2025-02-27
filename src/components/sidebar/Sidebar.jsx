@@ -78,30 +78,6 @@ const SidebarMenu = [
     ],
   },
 
-  {
-    menu: "Our Courses",
-    url: "/dashboard",
-    mainIcon: <MdOutlineArticle size={24} />,
-    subMenu: [
-      {
-        subMenus: "Add Course",
-        url: "/addcourse",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
-      {
-        subMenus: "Add Sub Course",
-        url: "/addsubcourse",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
-      {
-        subMenus: "Add Sub sub Course",
-        url: "/addsubsubcourse",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
-
-      
-    ],
-  },
   
   
   
@@ -125,18 +101,53 @@ const SidebarMenu = [
 const BDESidebar = [
   
 
-  
+
+  {
+    menu: "Our Courses",
+    url: "/dashboard",
+    mainIcon: <MdOutlineArticle size={24} />,
+    subMenu: [
+      {
+        subMenus: "Add Course",
+        url: "/addcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Add Sub Course",
+        url: "/addsubcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Subcourse Details",
+        url: "/addsubsubcourse",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+      {
+        subMenus: "Program Fees Category",
+        url: "/addprogramfeescategory",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Course Fees",
+        url: "/addcoursefees",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+      
+    ],
+  },
   {
     menu: "Popup Enquiry",
     url: "/ViewPopupEnquiry",
-    mainIcon: <AiOutlineProject style={{ color: "red" }} size={24} />,      
+    mainIcon: <MdOutlineArticle size={24} />,
     subMenu: [],
   },
 
   {
     menu: "Implant Training List",
     url: "/ViewImplanttraining",
-    mainIcon: <AiOutlineProject style={{ color: "red" }} size={24} />,      
+    mainIcon: <MdOutlineArticle size={24} />,
     subMenu: [],
   },
 
@@ -146,6 +157,11 @@ const BDESidebar = [
     mainIcon: <MdLogout size={24} />,
     subMenu: [],
   },
+
+
+
+ 
+  
 
   // {
   //   menu: "Forgot Password",

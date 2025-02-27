@@ -5,6 +5,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
+import { toast, Bounce } from "react-toastify";
 
 function IdCardIssue() {
   const { id } = useParams();
@@ -24,6 +25,7 @@ function IdCardIssue() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -37,6 +39,22 @@ function IdCardIssue() {
         const data = response.data;
         // console.log(data[0].fname);
 
+        if (!data) {
+          toast.error("Add Intern Details First", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            style: { marginTop: '80px' },
+            transition: Bounce,
+          });
+          return;
+        }
+        setFormData(data);
 
         if (data) {
           setFormData({
@@ -47,14 +65,33 @@ function IdCardIssue() {
             blood_group: data[0].blood
           })
         }
+      
       } catch (err) {
-        console.error("Error fetching details:", err);
-        alert("Failed to load data. Please try again.");
+        setErrors("Failed to fetch intern details. Please try again later.");
+        console.error("Error fetching intern details:", err);
+        toast.error("Add Intern Details First!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          style: { marginTop: '80px' },
+          transition: Bounce,
+        });
+        navigate(-1);
+        return;
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDetails();
   }, [id]);
+
+       
 
 
 
@@ -118,15 +155,7 @@ function IdCardIssue() {
     if (validate()) {
       try {
         const token = localStorage.getItem("remember_token");
-        // const id = localStorage.getItem("id");
-
-        // const formDataToSubmit = new FormData();
-        // Object.keys(formData).forEach((key) => {
-        //   console.log("key0", key);
-
-        // });
-
-        // console.log("formData", formData);
+       
 
         const response = await axios.post(
           "https://api.sumagotraining.in/public/api/intern-id-card/add",
@@ -137,14 +166,13 @@ function IdCardIssue() {
             },
           }
         );
-        // console.log(response, "response.data.successresponse.data.success");
 
         if (response) {
 
-          alert("Data submitted successfully!");
+          toast.success("Data submitted successfully!");
           navigate("/ViewIdCard");
         } else {
-          alert("Submission failed. Please try again.");
+          toast.error("Submission failed. Please try again.");
         }
 
         console.log("API Response:", response.data);

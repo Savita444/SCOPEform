@@ -41,6 +41,10 @@ import AddSubsubcourse from "./screens/submenus/AddSub-subcourse";
 import UpdateCourse from "./screens/submenus/UpdateCourse";
 import UpdateSubcourse from "./screens/submenus/UpdateSubcourse";
 import UpdateSubcoursedetails from "./screens/submenus/UpdateSubcoursedetails";
+import ProgramfeesCategory from "./screens/submenus/ProgramfeesCategory";
+import AddCoursefees from "./screens/submenus/AddCoursefees";
+import Updatefeecategory from "./screens/submenus/Updatefeecategory";
+import Updatecoursefees from "./screens/submenus/Updatecoursefees";
 
 function App() {
   // REACT_APP_IMAGE_URL= "https://api.sumagotraining.in/";
@@ -180,6 +184,22 @@ function App() {
           <Route
             path="/update-subcoursedetails/:id"
             element={<ProtectedRoutes Component={UpdateSubcoursedetails} />}
+          />
+          <Route
+            path="/addprogramfeescategory"
+            element={<ProtectedRoutes Component={ProgramfeesCategory} />}
+          />
+          <Route
+            path="/update-feecategory/:id"
+            element={<ProtectedRoutes Component={Updatefeecategory} />}
+          />
+          <Route
+            path="/addcoursefees"
+            element={<ProtectedRoutes Component={AddCoursefees} />}
+          />
+           <Route
+            path="/update-coursefees/:id"
+            element={<ProtectedRoutes Component={Updatecoursefees} />}
           />
 
 

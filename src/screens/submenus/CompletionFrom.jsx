@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import "./completion.css";
+import { toast, Bounce } from "react-toastify";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
@@ -43,13 +44,14 @@ const CompletionFrom = () => {
     resume_pdf: "",
     feedback_video: "",
   });
-// console.log(formData.selected_mode);
 
 
 
   const [errors, setErrors] = useState({});
   // const [technology, settechnology_name] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
 
   useEffect(() => {
@@ -62,38 +64,59 @@ const CompletionFrom = () => {
         );
         const data = response.data;
         // console.log(data[0].fname);
+         if (!data) {
+                  toast.error("Add Intern Details First", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    style: { marginTop: '80px' },
+                    transition: Bounce,
+                  });
+                  return;
+                }
+                setFormData(data);
 
 
         if (data) {
           setFormData({
-            name: `${data[0].fname} ${data[0].fathername || ""} ${data[0].lname || ""}`.trim(),
-            
+            name: `${data[0].fname} ${data[0].mname || ""} ${data[0].fathername || ""} ${data[0].lname || ""}`.trim(),
             email: data[0].email,
             date_of_joining: data[0].date_of_joining,
-
             technology: data[0].technology_name,
             selected_mode: data[0].training_mode,
 
           })
         }
       } catch (err) {
-        console.error("Error fetching details:", err);
-        alert("Failed to load data. Please try again.");
-      }
-    };
+       setErrors("Failed to fetch intern details. Please try again later.");
+               console.error("Error fetching intern details:", err);
+               toast.error("Add Intern Details First!", {
+                 position: "top-right",
+                 autoClose: 5000,
+                 hideProgressBar: false,
+                 closeOnClick: false,
+                 pauseOnHover: true,
+                 draggable: true,
+                 progress: undefined,
+                 theme: "light",
+                 style: { marginTop: '80px' },
+                 transition: Bounce,
+               });
+               navigate(-1);
+               return;
+             } finally {
+               setLoading(false);
+             }
+           };
+       
 
     fetchDetails();
   }, [id]);
-
-
-
-
-
-
-
-
-
-
 
 
   // Refs for fields
@@ -148,6 +171,8 @@ const CompletionFrom = () => {
   //     setFormData((prevData) => ({ ...prevData, [name]: file }));
   //   }
   // };
+
+
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -209,7 +234,7 @@ const CompletionFrom = () => {
     if (!formData.date_of_joining)
       errors.date_of_joining = "Date of joining is required";
     if (!formData.selected_mode)
-      errors.selected_mode = "Training mode is required";
+      errors.selected_mode =  "Training mode is required";
     if (!formData.current_working)
       errors.current_working = "current working is required";
     if (!formData.project_title)
@@ -396,10 +421,10 @@ const CompletionFrom = () => {
 
         if (response) {
 
-          alert("Data submitted successfully!");
+          toast.success("Data submitted successfully!");
           navigate("/viewcompletion");
         } else {
-          alert("Submission failed. Please try again.");
+          toast.error("Submission failed. Please try again.");
         }
 
         console.log("API Response:", response.data);
@@ -491,7 +516,7 @@ const CompletionFrom = () => {
                   <Row>
                     <Col lg={2} md={2} sm={12} className="mt-3">
                       <b style={{ fontFamily: "Century gothic" }}>Name : </b>
-                      
+
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-3">
                       <Form.Group
@@ -539,7 +564,7 @@ const CompletionFrom = () => {
                           name="technology" // this ensures the right field is updated
                           ref={technologyRef} // Add ref for focus
                         />
-                          
+
                       </Form.Group>
                       {errors.technology && (
                         <span className="error text-danger">
@@ -609,7 +634,7 @@ const CompletionFrom = () => {
                       lg={4}
                       md={4}
                       sm={12}
-                      className="mb-3 d-flex justify-content-start"
+                      className="mt-3 d-flex justify-content-start"
                     >
                       <Form.Check
                         type="radio"
@@ -639,7 +664,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="mt-3">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Current working on :{" "}
+                        Current working on : <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-2 mt-3">
@@ -762,7 +787,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="mt-3">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Project Title :{" "}
+                        Project Title : <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-3">
@@ -787,7 +812,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="mt-2">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Describe project in 3 to 4 lines :{" "}
+                        Describe project in 3 to 4 lines : <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={5} sm={12} className="mb-3">
@@ -814,7 +839,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Placed Anywhere? :{" "}
+                        Placed Anywhere? : <span className="text-danger">*</span>{" "}
                       </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
@@ -861,7 +886,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Employer Name(If no, Enter NA):
+                        Employer Name(If no, Enter NA): <span className="text-danger">*</span>
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
@@ -887,7 +912,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Designation In current company (If no, Enter NA):{" "}
+                        Designation In current company (If no, Enter NA): <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
@@ -912,7 +937,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Package in LPA(If no, Enter NA):{" "}
+                        Package in LPA(If no, Enter NA): <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-3">
@@ -938,7 +963,7 @@ const CompletionFrom = () => {
                     <Col lg={12} md={12} sm={12} className="mb-3">
                       <b style={{ fontFamily: "Century gothic" }}>
                         Provide minimum 5 task links which you uploaded on
-                        linkedin
+                        linkedin : <span className="text-danger">*</span>
                       </b>{" "}
                     </Col>
                     <Col lg={2} md={2} sm={12}>
@@ -1058,7 +1083,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        GitHub link of your final year project Link:{" "}
+                        GitHub link of your final year project Link: <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={2} sm={12} className="mb-3">
@@ -1084,7 +1109,7 @@ const CompletionFrom = () => {
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
                         Link of final project completion video on linked in Link
-                        :{" "}
+                        : <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">
@@ -1120,7 +1145,7 @@ const CompletionFrom = () => {
                         className="responsive-text"
                         style={{ fontFamily: "Century gothic" }}
                       >
-                        Name & Contact of first candidate:
+                        Name & Contact of first candidate: <span className="text-danger">*</span>
                       </b>
                     </Col>
 
@@ -1147,7 +1172,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Name & Contact of second candidate:
+                        Name & Contact of second candidate: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-3">
@@ -1173,7 +1198,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Name & Contact of third candidate:
+                        Name & Contact of third candidate: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={10} md={10} sm={12} className="mb-3">
@@ -1199,7 +1224,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Name & Contact of fourth candidate:
+                        Name & Contact of fourth candidate: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={10} md={9} sm={12} className="mb-3">
@@ -1225,7 +1250,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Name & Contact of fifth candidate:
+                        Name & Contact of fifth candidate: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={10} md={9} sm={12} className="mb-5">
@@ -1250,7 +1275,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload the screenshots of Google review:
+                        Upload the screenshots of Google review: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-5">
@@ -1274,7 +1299,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Write minimum one Blog on your selected technology:{" "}
+                        Write minimum one Blog on your selected technology: <span className="text-danger">*</span>{" "}
                       </b>{" "}
                     </Col>
                     <Col lg={4} md={3} sm={12} className="mb-5">
@@ -1299,7 +1324,7 @@ const CompletionFrom = () => {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload your training video feedback:
+                        Upload your training video feedback: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-5">
@@ -1321,7 +1346,7 @@ const CompletionFrom = () => {
                     </Col>
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Upload your updated Resume:
+                        Upload your updated Resume: <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-5">

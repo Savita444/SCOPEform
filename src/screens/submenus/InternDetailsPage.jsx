@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { FaEdit, FaTrash, FaRegAddressBook, FaEye } from "react-icons/fa";
+import { HiUserAdd } from "react-icons/hi";
 import instance from "../../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 
@@ -235,7 +236,7 @@ const InternDetailsPage = () => {
                       Full Name:
                     </Col>
                     <Col xs={7} className="fw-bold">
-                      {fname} {lname}
+                      {fname} {mname} {fathername} {lname}
                     </Col>
                   </Row>
                   <hr />
@@ -336,26 +337,12 @@ const InternDetailsPage = () => {
                         <div style={{ display: "flex", gap: "10px" }}>
 
 
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="Add-tooltip">View</Tooltip>
-                            }
-                          >
-                            <Button
-                              variant="primary"
-                              className="ms-1"
-                              onClick={() => navigate(`/intern-all-details/${id}`, { state: "row" })}
-
-                            >
-                              <FaEye style={{ color: "white" }} />
-                            </Button>
-                          </OverlayTrigger>
+                        
 
                           <OverlayTrigger
                             placement="top"
                             overlay={
-                              <Tooltip id="Add-tooltip">Add Intern Details</Tooltip>
+                              <Tooltip id="Add-tooltip">Add Intern details</Tooltip>
                             }
                           >
                             <Button
@@ -364,7 +351,7 @@ const InternDetailsPage = () => {
                               onClick={() => navigate(`/InterJoining/${id}`, { state: internDetails })}
                             // onClick={() => navigate(`/InterJoining/${id}`)}
                             >
-                              <FaRegAddressBook style={{ color: "black" }} />
+                              <HiUserAdd  style={{ color: "black" }} />
                             </Button>
                           </OverlayTrigger>
 
@@ -380,6 +367,23 @@ const InternDetailsPage = () => {
                               <FaEdit style={{ color: "black" }} />
                             </Button>
                           </OverlayTrigger>
+
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="Add-tooltip">View</Tooltip>
+                            }
+                          >
+                            <Button
+                              variant="secondary"
+                              className="ms-1"
+                              onClick={() => navigate(`/intern-all-details/${id}`, { state: "row" })}
+
+                            >
+                              <FaEye style={{ color: "white" }} />
+                            </Button>
+                          </OverlayTrigger>
+
 
                           {/* <OverlayTrigger
                             placement="top"
@@ -416,25 +420,12 @@ const InternDetailsPage = () => {
                         </a>
                         <div style={{ display: "flex", gap: "10px" }}>
 
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="Add-tooltip">View</Tooltip>
-                            }
-                          >
-                            <Button
-                              variant="primary"
-                              className="ms-1"
-                              onClick={() => navigate(`/Id-card-all-details/${id}`, { state: "row" })}
-                            >
-                              <FaEye style={{ color: "white" }} />
-                            </Button>
-                          </OverlayTrigger>
+                         
 
                           <OverlayTrigger
                             placement="top"
                             overlay={
-                              <Tooltip id="Add-tooltip">Issue Id Card</Tooltip>
+                              <Tooltip id="Add-tooltip">Add Id Card details</Tooltip>
                             }
                           >
                             <Button
@@ -442,7 +433,7 @@ const InternDetailsPage = () => {
                               className="ms-1"
                               onClick={() => navigate(`/IdCardIssue/${id}`)}
                             >
-                              <FaRegAddressBook style={{ color: "black" }} />
+                              <HiUserAdd style={{ color: "black" }} />
                             </Button>
                           </OverlayTrigger>
 
@@ -456,6 +447,23 @@ const InternDetailsPage = () => {
                               onClick={() => navigate(`/update-Id-card-details/${id}`)}
                             >
                               <FaEdit style={{ color: "black" }} />
+                            </Button>
+                          </OverlayTrigger>
+
+
+
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="Add-tooltip">View</Tooltip>
+                            }
+                          >
+                            <Button
+                              variant="secondary"
+                              className="ms-1"
+                              onClick={() => navigate(`/Id-card-all-details/${id}`, { state: "row" })}
+                            >
+                              <FaEye style={{ color: "white" }} />
                             </Button>
                           </OverlayTrigger>
 
@@ -494,28 +502,11 @@ const InternDetailsPage = () => {
                         </a>
                         <div style={{ display: "flex", gap: "10px" }}>
 
+                          
                           <OverlayTrigger
                             placement="top"
                             overlay={
-                              <Tooltip id="Add-tooltip">View</Tooltip>
-
-                            }
-                          >
-                            <Button
-                              variant="primary"
-                              className="ms-1"
-                              onClick={() => navigate(`/completion-all-details/${id}`, { state: "row" })}
-                            >
-                              <FaEye style={{ color: "white" }} />
-                            </Button>
-                          </OverlayTrigger>
-
-
-
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id="Add-tooltip">Add Completion</Tooltip>
+                              <Tooltip id="Add-tooltip">Add Completion details</Tooltip>
                             }
                           >
                             <Button
@@ -523,7 +514,7 @@ const InternDetailsPage = () => {
                               className="ms-1"
                               onClick={() => navigate(`/Completion/${id}`)}
                             >
-                              <FaRegAddressBook style={{ color: "black" }} />
+                              <HiUserAdd style={{ color: "black" }} />
                             </Button>
                           </OverlayTrigger>
 
@@ -538,6 +529,24 @@ const InternDetailsPage = () => {
 
                             >
                               <FaEdit style={{ color: "black" }} />
+                            </Button>
+                          </OverlayTrigger>
+
+
+
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={
+                              <Tooltip id="Add-tooltip">View</Tooltip>
+
+                            }
+                          >
+                            <Button
+                              variant="secondary"
+                              className="ms-1"
+                              onClick={() => navigate(`/completion-all-details/${id}`, { state: "row" })}
+                            >
+                              <FaEye style={{ color: "white" }} />
                             </Button>
                           </OverlayTrigger>
                           {/* <OverlayTrigger
@@ -583,9 +592,9 @@ const InternDetailsPage = () => {
                             }
                           >
                             <Button
-                              variant="primary"
+                              variant="secondary"
                               className="ms-1"
-                              style={{ marginRight:"110px" }}
+                              // style={{ marginRight:"110px" }}
                               onClick={() => navigate(`/T3SheetAllDetails/${id}`, { state: "row" })}
 
                             >
@@ -602,974 +611,7 @@ const InternDetailsPage = () => {
           </Row>
         </Container>
 
-        {/* <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
-            <Card.Header
-              className="cardpersonal_details"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div
-                className="position-absolute"
-                style={{
-                  backgroundColor: "black",
-                  width: "20px",
-                  height: "30px",
-                }}
-              >
-                <div className="personal-card-heading position-relative">
-                  <b className="form-title">SOCIAL MEDIA ADDRESS</b>
-                </div>
-              </div>
-            </Card.Header>
-            <Card.Body
-              style={{ backgroundColor: "transparent", color: "white" }}
-              className="pt-5"
-            >
-              <Card.Title className="text-black"></Card.Title>
-              <Card.Text className="text-black">
-                <Row>
-               
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Linkedin Address :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${linkdin}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Facebook Address :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${facebook}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Youtube Address :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${youtube}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Anyother Address :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${anyother_add}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Container> */}
-
-        {/* <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
-            <Card.Header
-              className="cardpersonal_details"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div
-                className="position-absolute"
-                style={{
-                  backgroundColor: "black",
-                  width: "20px",
-                  height: "30px",
-                }}
-              >
-                <div className="personal-card-heading position-relative">
-                  <b className="form-title">EDUCATIONAL DETAILS</b>
-                </div>
-              </div>
-            </Card.Header>
-            <Card.Body
-              style={{ backgroundColor: "transparent", color: "white" }}
-              className="pt-5"
-            >
-              <Card.Title className="text-black"></Card.Title>
-              <Card.Text className="text-black">
-                <Row>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      School Name :{" "}
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter school name"
-                        className="FormStyeling transparent-input"
-                        value={`${school_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      10<sup>th</sup> Percentage :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter 10th percentage"
-                        className="FormStyeling transparent-input"
-                        value={`${tenth_per}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      12<sup>th</sup>/Diploma Percentage :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter 12th/Diploma percentage"
-                        className="FormStyeling transparent-input"
-                        value={`${twelve_diploma_per}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Graduation Details :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter graduation details"
-                        className="FormStyeling transparent-input"
-                        value={`${graduation_details}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Graduation Percentage :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter graduation percentage"
-                        className="FormStyeling transparent-input"
-                        value={`${graduation_per}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Post Graduation Details :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter graduation details"
-                        className="FormStyeling transparent-input"
-                        value={`${post_graduation_details}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Post Graduation Percentage :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter graduation percentage"
-                        className="FormStyeling transparent-input"
-                        value={`${post_graduation_per}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>Branch :</b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter graduation percentage"
-                      className="FormStyeling transparent-input"
-                      value={`${selected_branches}`}
-                    />
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Any Other Certification :
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={`${anyother_cirt}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Container> */}
-
-        {/* <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
-            <Card.Header
-              className="cardpersonal_details"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div
-                className="position-absolute"
-                style={{
-                  backgroundColor: "black",
-                  width: "20px",
-                  height: "30px",
-                }}
-              >
-                <div className="personal-card-heading position-relative">
-                  <b className="form-title">PARENTS / GUARDIAN DETAILS</b>
-                </div>
-              </div>
-            </Card.Header>
-            <Card.Body
-              style={{ backgroundColor: "transparent", color: "white" }}
-              className="pt-5"
-            >
-              <Card.Title className="text-black"></Card.Title>
-              <Card.Text className="text-black">
-                <Row>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Father Name :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter fathername"
-                        className="FormStyeling transparent-input"
-                        value={`${father_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Father Occupation:
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter father occupation"
-                        className="FormStyeling transparent-input"
-                        value={`${fatherOccupation}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Father Contact Details :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="+91"
-                        className="FormStyeling transparent-input"
-                        value={`${father_contactdetails}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Father Aadhar Card No :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Father Aadhar card no"
-                        className="FormStyeling transparent-input"
-                        value={`${father_aadharno}`}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Mother Name :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter fathername"
-                        className="FormStyeling transparent-input"
-                        value={`${mother_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Mother Occupation :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter father occupation"
-                        className="FormStyeling transparent-input"
-                        value={motherOccupation}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Mother Contact Details :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="+91"
-                        className="FormStyeling transparent-input"
-                        value={`${mother_contactdetails}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Mother Aadhar card No. :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter mother Aadhar card no"
-                        className="FormStyeling transparent-input"
-                        value={`${mother_aadharno}`}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>Married :</b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder=""
-                        className="FormStyeling transparent-input"
-                        value={`${marriedStatus}`}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-                  <bt />
-                  
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Name :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Guardian Name"
-                        className="FormStyeling transparent-input"
-                        value={`${guardian_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Occupation :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Guardian Occupation"
-                        className="FormStyeling transparent-input"
-                        alue={`${GuardianOccupation}`}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Contact Details :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="+91"
-                        className="FormStyeling transparent-input"
-                        value={`${Guardian_contactdetails}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12} className="m-0 ">
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Aadhar card No :
-                    </b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Guardian Aadhar card no"
-                        className="FormStyeling transparent-input"
-                        value={`${Guardian_aadharno}`}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Container> */}
-
-        {/* <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
-            <Card.Header
-              className="cardpersonal_details"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div
-                className="position-absolute"
-                style={{
-                  backgroundColor: "black",
-                  width: "20px",
-                  height: "30px",
-                }}
-              >
-                <div className="personal-card-heading position-relative">
-                  <b className="form-title">INTERNSHIP DETAILS</b>
-                </div>
-              </div>
-            </Card.Header>
-
-            <Card.Body
-              style={{ backgroundColor: "transparent", color: "white" }}
-              className="pt-5"
-            >
-              <Card.Title className="text-black"></Card.Title>
-              <Card.Text className="text-black">
-                <Row>
-                  <Col lg={4}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Technology Name :
-                    </b>
-                  </Col>
-                  <Col lg={8}>
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        // placeholder="enter first name"
-                        className="FormStyeling transparent-input"
-                        value={`${technology_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>Duration :</b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="duretion"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="+91"
-                        className="FormStyeling transparent-input"
-                        value={`${duration}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>Module :</b>
-                  </Col>
-                  <Col lg={3} md={3} sm={12} className="mb-3">
-                    <Form.Group
-                      className="duretion"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={`${selectedModules}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <b
-                      style={{ fontFamily: "Century gothic" }}
-                      className="label-colour"
-                    >
-                      Training Mode:
-                    </b>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-3">
-                    <Form.Group controlId="trainingMode">
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={selectedtraining_mode || "Not Specified"}
-                        readOnly
-                      />
-                    </Form.Group>
-                  </Col>
-                  <b style={{ fontFamily: "Century gothic" }} className="mb-3">
-                    Do you have Previous Work , internship or Volunteer
-                    Experience ?
-                  </b>
-                  <Col lg={4} md={4} sm={12}>
-                    <Form.Group
-                      className="duretion"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder=""
-                        className="FormStyeling transparent-input"
-                        value={`${intern_experience}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-5">
-                    {intern_experience == "Yes" && (
-                      <div>
-                        <Form.Group
-                          className="duretion"
-                          controlId="exampleForm.ControlInput1"
-                        >
-                          <Form.Control
-                            type="text"
-                            className="FormStyeling transparent-input"
-                            value={`${experience}dfsdfs`}
-                          />
-                        </Form.Group>
-                      </div>
-                    )}
-                  </Col>
-
-                  <b style={{ fontFamily: "Century gothic" }}>
-                    Which characteristics best describe you?
-                  </b>
-                  <Form.Group
-                    className="fname mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    <Form.Control
-                      type="text"
-                      className="FormStyeling transparent-input"
-                      as="textarea"
-                      rows={4}
-                      value={characteristics_describe}
-                    ></Form.Control>
-                  </Form.Group>
-                  <b style={{ fontFamily: "Century gothic" }} className="mb-3">
-                    Note: You have an 8-day period to change your choosen
-                    technology. If you wish to make a change, please do so
-                    within 8-days of timeframe.
-                  </b>
-
-                  <Col lg={4} md={4} sm={12}>
-                    <div class="box"></div>
-                    <Form.Label className="w-100 text-center">
-                      Applicant Signature
-                    </Form.Label>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <Form.Group
-                      className="fname1 mb-2"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        className=" FormStyeling transparent-input"
-                        as="textarea"
-                        rows={4}
-                        value={applicant_name}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-                  <Col lg={4} md={4} sm={12}>
-                    <Form.Group
-                      className="fname1 mb-2"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        as="textarea"
-                        rows={4}
-                        value={place}
-                      ></Form.Control>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Container> */}
-
-        {/* R E F E R E N C E */}
-        {/* <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
-            <Card.Header
-              className="cardpersonal_details"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div
-                className="position-absolute"
-                style={{
-                  backgroundColor: "black",
-                  width: "20px",
-                  height: "30px",
-                }}
-              >
-                <div className="personal-card-heading position-relative">
-                  <b className="form-title">REFERENCE</b>
-                </div>
-              </div>
-            </Card.Header>
-
-            <Card.Body
-              style={{ backgroundColor: "transparent", color: "white" }}
-              className="pt-5"
-            >
-              <Card.Title className="text-black"></Card.Title>
-              <Card.Text className="text-black">
-                <Row>
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      <Form.Check
-                        type="checkbox"
-                        label="Social Media"
-                        name="refrance"
-                        value={refrance}
-                      />
-                    </b>
-                  </Col>
-                  <Col lg={10} md={10} sm={12}>
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                      />
-                    </Form.Group>
-                    <Form.Label className="w-100 text-center"></Form.Label>
-                  </Col>
-
-                  
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Would you like to give reference about Scope / Sumago ? :{" "}
-                    </b>
-                  </Col>
-                  <Col lg={5} md={5} sm={12} className="mb-5">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={`${scoperefer}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <bt />
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Reference name :{" "}
-                    </b>
-                  </Col>
-                  <Col lg={5} md={5} sm={12}>
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={`${reference1Name}`}
-                      />
-                    </Form.Group>
-                    <Form.Label className="w-100 text-center"></Form.Label>
-                  </Col>
-                  <Col lg={5} md={5} sm={12}>
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        value={`${reference2Name}`}
-                      />
-                    </Form.Group>
-                    <Form.Label className="w-100 text-center"></Form.Label>
-                  </Col>
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Contact number :{" "}
-                    </b>
-                  </Col>
-                  <Col lg={5} md={5} sm={12}>
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        placeholder="+91"
-                        value={reference1Contact}
-                      />
-                    </Form.Group>
-                    <Form.Label className="w-100 text-center"></Form.Label>
-                  </Col>
-                  <Col lg={5} md={5} sm={12} className="mb-5">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1 mb-3"
-                    >
-                      <Form.Control
-                        type="text"
-                        className="FormStyeling transparent-input"
-                        placeholder="+91"
-                        value={reference2Contact}
-                      />
-                    </Form.Group>
-                    <Form.Label className="w-100 text-center"></Form.Label>
-                  </Col>
-
-                  <b
-                    className="mb-5"
-                    style={{
-                      fontFamily: "Century Gothic",
-                      textAlign: "justify",
-                    }}
-                  >
-                    I certify that the information I have provided above is true
-                    to the best of my knowledge and belief, without any malice
-                    or intention to commit acts of misrepresentation. I am aware
-                    that any false, misleading, or deceptive information
-                    provided may lead to withdrawal, exclusion, or disciplinary
-                    action, which may be dealt with by the company or relevant
-                    authorities.
-                  </b>
-
-                  <Col lg={2} md={2} sm={12}>
-                    <b style={{ fontFamily: "Century gothic" }}>
-                      Name of Applicant :{" "}
-                    </b>
-                  </Col>
-                  <Col lg={5} md={5} sm={12} className="mb-5">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter applicant name"
-                        className="FormStyeling transparent-input"
-                        value={`${buttom_applicant_name}`}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col lg={1} md={1} sm={12} className="m-0">
-                    <b
-                      className="single-line"
-                      style={{ fontFamily: "Century Gothic" }}
-                    >
-                      Place:
-                    </b>
-                  </Col>
-                  <Col lg={4} md={4} sm={12} className="mb-3">
-                    <Form.Group
-                      className="fname"
-                      controlId="exampleForm.ControlInput1"
-                    >
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter place"
-                        className="FormStyeling transparent-input"
-                        value={`${buttom_place}`}
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={2} md={2} sm={12} className="m-0">
-                    <b style={{ fontFamily: "Century Gothic" }}>
-                      Date Signed by Applicant:
-                    </b>
-                  </Col>
-                  <Col lg={4} md={4} sm={12} className="mb-3">
-                    <div className="box"></div>
-                  </Col>
-        
-                  <Col lg={2} md={2} sm={12} className="m-0">
-                    <b style={{ fontFamily: "Century Gothic" }}>
-                      Applicant Signature:
-                    </b>
-                  </Col>
-                  <Col lg={4} md={4} sm={12} className="mb-3">
-                    <div className="box"></div>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Container> */}
+       
       </div>
     </>
   );

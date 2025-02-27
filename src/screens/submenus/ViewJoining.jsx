@@ -14,18 +14,31 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
 
 const ViewJoining = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
+
+  useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]); // Fetch data when page changes
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [products, filteredData]);
 
   const fetchProducts = async () => {
+    setLoading(true);
     const accessToken = localStorage.getItem("remember_token");
     try {
       const response = await instance.get("get-intern-joining", {
@@ -34,11 +47,17 @@ const ViewJoining = () => {
           "Content-Type": "application/json",
         },
       });
-      setProducts(response.data);
+
+      const sortedProducts = response.data.sort((a, b) => b.id - a.id);
+      setProducts(sortedProducts);
+      setData(sortedProducts);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -94,14 +113,14 @@ const ViewJoining = () => {
     });
   };
 
-  const handlePrint = (id) => {
-    const printUrl = `/intern-details/${id}`;
-    const printWindow = window.open(printUrl, "_blank");
-    printWindow.onload = () => {
-      printWindow.focus();
-      printWindow.print();
-    };
-  };
+  // const handlePrint = (id) => {
+  //   const printUrl = `/intern-details/${id}`;
+  //   const printWindow = window.open(printUrl, "_blank");
+  //   printWindow.onload = () => {
+  //     printWindow.focus();
+  //     printWindow.print();
+  //   };
+  // };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -118,13 +137,13 @@ const ViewJoining = () => {
     }));
 
 
-   
+
     const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "View Joining");
     XLSX.writeFile(workbook, "View-Joining.xlsx");
   };
- 
+
 
 
   const tableColumns = (currentPage, rowsPerPage) => [
@@ -134,8 +153,8 @@ const ViewJoining = () => {
     },
     {
       name: "Full Name",
-      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
-      width: "200px",
+      cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
+      width:"250px",
 
     },
     // {
@@ -156,6 +175,7 @@ const ViewJoining = () => {
       cell: (row) => row.technology_name,
       sortable: true,
       sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
+      width:"190px",
 
     },
 
@@ -179,7 +199,7 @@ const ViewJoining = () => {
       cell: (row) => (
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/all-intern-details/${row.id}`)}>
+            <Button className="ms-1" variant="secondary" onClick={() => navigate(`/all-intern-details/${row.id}`)}>
               <FaEye />
             </Button>
           </OverlayTrigger>
@@ -192,7 +212,7 @@ const ViewJoining = () => {
               <FaTrash />
             </Button>
           </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+          {/* <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
             <Button
               className="ms-1"
               style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
@@ -200,7 +220,7 @@ const ViewJoining = () => {
             >
               <FaPrint />
             </Button>
-          </OverlayTrigger>
+          </OverlayTrigger> */}
         </div>
       ),
     },
@@ -233,16 +253,22 @@ const ViewJoining = () => {
             </Card.Header>
 
             <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+            <DataTable
+  key={forceUpdate}
+  columns={tableColumns(currentPage, rowsPerPage)}
+  data={searchQuery ? filteredData : products} // Use filtered data only when searching
+  pagination
+  paginationServer
+  paginationTotalRows={products.length}
+  onChangePage={(page) => {
+    setCurrentPage(page);
+    handleSearch(""); // Reset search when changing pages
+  }}
+  responsive
+  striped
+  noDataComponent="No Data Available"
+/>
+
             </Card.Body>
           </Card>
         </Col>

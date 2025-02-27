@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Card, Col, Form } from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
 import pdficon from "../imgs/download.png";
+import { toast, Bounce  } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
@@ -11,6 +15,7 @@ import corner from "../imgs/file (28).png";
 
 const CompletionAllDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,19 +34,38 @@ const CompletionAllDetails = () => {
 
         setInternDetails(response.data); // Assuming the first object contains intern details
       } catch (err) {
-        setError("Failed to fetch intern details. Please try again later.");
+        setError("Add Completion Details First");
         console.error("Error fetching intern details:", err);
+        toast.error('Add Completion Details First!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          style: { marginTop: '80px' }, 
+          transition: Bounce, 
+        });
+                
+        navigate(-1)
       } finally {
         setLoading(false);
       }
     };
 
     fetchInternDetails();
-  }, [id]);
-
+  }, [id]); 
+  
+  
+  // Handling loading, error, and missing data states
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
+
+
+  
 
   const {
     fname = "",
@@ -171,7 +195,7 @@ const CompletionAllDetails = () => {
                       type="text"
                       // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}`}
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                     />
                   </Form.Group>
                 </Col>
@@ -684,103 +708,103 @@ const CompletionAllDetails = () => {
                   </Form.Group>
                 </Col>
 
-                   <Col lg={2} md={3} sm={12}>
-                                  <b
-                                    style={{ fontFamily: "Century gothic" }}
-                                    className="label-colour"
-                                  >
-                                    Upload the screenshots of Google review
-                                  </b>
-                                </Col>
-                                <Col lg={4} md={3} sm={12} className="mb-5">
-                                  {googleReviewImgUrl && (
-                                    <Form.Group className="fname" controlId="googleReview">
-                                      <img
-                                        src={googleReviewImgUrl}
-                                        alt="Google Review"
-                                        style={{ maxWidth: "200px" }}
-                                      />
-                                    </Form.Group>
-                                  )}
-                                </Col>
-                                <Col lg={2} md={3} sm={12}>
-                                  <b
-                                    style={{ fontFamily: "Century gothic" }}
-                                    className="label-colour"
-                                  >
-                                    Write minimum one Blog on your selected technology{" "}
-                                  </b>{" "}
-                                </Col>
-                                <Col lg={4} md={3} sm={12} className="mb-5">
-                                  <Form.Group
-                                    className="fname"
-                                    controlId="exampleForm.ControlInput1"
-                                  >
-                                    <Form.Control
-                                      type="text"
-                                      name="blog_on_your_selected_technology"
-                                      value={blog_on_your_selected_technology}
-                                      className="FormStyeling transparent-input"
-                                    />
-                                  </Form.Group>
-                                </Col>
-                
-                                <Col lg={2} md={3} sm={12}>
-                                  <b
-                                    style={{ fontFamily: "Century gothic" }}
-                                    className="label-colour"
-                                  >
-                                    Upload your training video feedback
-                                  </b>
-                                </Col>
-                                <Col lg={4} md={3} sm={12} className="mb-5">
-                                  {feedbackVideoUrl && (
-                                    <Form.Group className="fname" controlId="googleReview">
-                                      <video
-                                        src={feedbackVideoUrl}
-                                        controls
-                                        autoPlay
-                                        playsInline
-                                        style={{ maxWidth: "200px", cursor: "pointer" }}
-                                        onError={() => console.error("Error loading video")}
-                                      />
-                                    </Form.Group>
-                                  )}
-                                </Col>
-                
-                                <Col lg={2} md={2} sm={12}>
-                                  <b
-                                    style={{ fontFamily: "Century gothic" }}
-                                    className="label-colour"
-                                  >
-                                    Upload your updated Resume
-                                  </b>
-                                </Col>
-                
-                                <Col lg={4} md={4} sm={12} className="mb-5">
-                                  <Form.Group className="fname" controlId="videoFeedback">
-                                    {resumePdfUrl && (
-                                      <a
-                                        href={resumePdfUrl}
-                                        download // This will trigger the download action
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{ display: "inline-block" }}
-                                      >
-                                        {/* Static Image of the PDF (Thumbnail) */}
-                                        <img
-                                          src={pdficon}
-                                          class="img-fluid logo1"
-                                          alt="PDF Thumbnail"
-                                          style={{ maxWidth: "70px", cursor: "pointer" }}
-                                        />
-                
-                                        <p>Click to Download Resume</p>
-                                      </a>
-                                    )}
-                                  </Form.Group>
-                                </Col>
-                
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload the screenshots of Google review
+                  </b>
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  {googleReviewImgUrl && (
+                    <Form.Group className="fname" controlId="googleReview">
+                      <img
+                        src={googleReviewImgUrl}
+                        alt="Google Review"
+                        style={{ maxWidth: "200px" }}
+                      />
+                    </Form.Group>
+                  )}
+                </Col>
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Write minimum one Blog on your selected technology{" "}
+                  </b>{" "}
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  <Form.Group
+                    className="fname"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="blog_on_your_selected_technology"
+                      value={blog_on_your_selected_technology}
+                      className="FormStyeling transparent-input"
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col lg={2} md={3} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload your training video feedback
+                  </b>
+                </Col>
+                <Col lg={4} md={3} sm={12} className="mb-5">
+                  {feedbackVideoUrl && (
+                    <Form.Group className="fname" controlId="googleReview">
+                      <video
+                        src={feedbackVideoUrl}
+                        controls
+                        autoPlay
+                        playsInline
+                        style={{ maxWidth: "200px", cursor: "pointer" }}
+                        onError={() => console.error("Error loading video")}
+                      />
+                    </Form.Group>
+                  )}
+                </Col>
+
+                <Col lg={2} md={2} sm={12}>
+                  <b
+                    style={{ fontFamily: "Century gothic" }}
+                    className="label-colour"
+                  >
+                    Upload your updated Resume
+                  </b>
+                </Col>
+
+                <Col lg={4} md={4} sm={12} className="mb-5">
+                  <Form.Group className="fname" controlId="videoFeedback">
+                    {resumePdfUrl && (
+                      <a
+                        href={resumePdfUrl}
+                        download // This will trigger the download action
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: "inline-block" }}
+                      >
+                        {/* Static Image of the PDF (Thumbnail) */}
+                        <img
+                          src={pdficon}
+                          class="img-fluid logo1"
+                          alt="PDF Thumbnail"
+                          style={{ maxWidth: "70px", cursor: "pointer" }}
+                        />
+
+                        <p>Click to Download Resume</p>
+                      </a>
+                    )}
+                  </Form.Group>
+                </Col>
+
                 {/* <Col lg={2} md={2} sm={12}>
         <b style={{ fontFamily: "Century gothic" }} className="label-colour">
         Upload your updated Resume

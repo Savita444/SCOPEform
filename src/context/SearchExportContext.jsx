@@ -12,13 +12,17 @@ export const SearchExportProvider = ({ children }) => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    const filtered = data.filter((item) =>
-      Object.values(item).some((value) =>
-        value !== null && value !== undefined && value.toString().toLowerCase().includes(query.toLowerCase())
+    setFilteredData(
+      data.filter((item) =>
+        Object.values(item).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(query.toLowerCase())
+        )
       )
     );
-    setFilteredData(filtered);
   };
+  
 
   const handleExport = (dataToExport, tableColumns, tableName) => {
     const filteredColumns = tableColumns.filter((col) => col.name.props.name !== "Actions");

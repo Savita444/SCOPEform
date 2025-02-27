@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Card, Col, Form } from "react-bootstrap";
 import "./completion.css";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -121,7 +122,7 @@ const IdCardDetailsPage = () => {
                     <Form.Control
                       type="text"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}` }
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                       name="name"
                       readOnly
                     />

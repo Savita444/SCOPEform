@@ -5,6 +5,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function InterJoining() {
   const { id } = useParams();
@@ -37,7 +38,7 @@ function InterJoining() {
   const [post_graduation_per, setPostGraduationPer] = useState("");
   const [anyother_cirt, setanyother_cirt] = useState("");
   const [selected_branches, setselected_branches] = useState("");
-  const [other_branch, setother_branch] = useState(""); 
+  const [other_branch, setother_branch] = useState("");
 
   const [father_name, setfather_name] = useState("");
   const [fatherOccupation, setfatherOccupation] = useState("");
@@ -366,7 +367,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!intern_experience.trim()) {
-      errors.intern_experience = "Experience Field is required";
+      errors.intern_experience = "Experience field is required";
       isValid = false;
     }
     if (experience.length > 255) {
@@ -383,7 +384,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!applicant_name.trim()) {
-      errors.applicant_name = "applicant name is required";
+      errors.applicant_name = "Applicant name is required";
       isValid = false;
     } else if (applicant_name.length > 50) {
       errors.applicant_name =
@@ -391,7 +392,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!place.trim()) {
-      errors.place = "place is required";
+      errors.place = "Place is required";
       isValid = false;
     } else if (place.length > 50) {
       errors.place = "place must be less than or equal to 50 characters";
@@ -513,7 +514,7 @@ function InterJoining() {
     }
 
     if (!buttom_applicant_name.trim()) {
-      errors.buttom_applicant_name = "applicant name is required";
+      errors.buttom_applicant_name = "Applicant name is required";
       isValid = false;
     } else if (buttom_applicant_name.length > 50) {
       errors.buttom_applicant_name =
@@ -521,7 +522,7 @@ function InterJoining() {
       isValid = false;
     }
     if (!buttom_place.trim()) {
-      errors.buttom_place = "place is required";
+      errors.buttom_place = "Place is required";
       isValid = false;
     } else if (buttom_place.length > 50) {
       errors.buttom_place = "place must be less than or equal to 50 characters";
@@ -593,10 +594,10 @@ function InterJoining() {
       if (value.startsWith("+91")) {
         value = value.slice(0, 13); // Ensure it doesn't exceed "+91" + 10 digits
       } else {
-        value =  value.slice(0, 10); // Auto-append "+91" and limit to 10 digits
+        value = value.slice(0, 10); // Auto-append "+91" and limit to 10 digits
       }
     }
-  
+
     if (field === "aadhar") {
       // Check if input is a number and has at most 12 digits
       if (/^\d{0,12}$/.test(value)) {
@@ -612,10 +613,10 @@ function InterJoining() {
         return; // Prevent invalid input (non-numeric or exceeding 12 digits)
       }
     }
-  
+
     setHusbandDetails((prev) => ({ ...prev, [field]: value }));
   };
-  
+
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
@@ -717,13 +718,23 @@ function InterJoining() {
   };
 
   const handle_fatherPhoneChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setfather_contactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setfather_contactdetails("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+
+    setfather_contactdetails(value);
   };
+
 
   const handlemotherAadharChange = (e) => {
     const value = e.target.value;
@@ -744,13 +755,23 @@ function InterJoining() {
   };
 
   const handle_motherPhoneChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setmother_contactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setmother_contactdetails("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+
+    setmother_contactdetails(value);
   };
+
 
   const handleStatusChange = (event) => {
     const value = event.target.value;
@@ -812,13 +833,23 @@ function InterJoining() {
   };
 
   const handle_GuardianPhoneChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setGuardiancontactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setGuardiancontactdetails("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+
+    setGuardiancontactdetails(value);
   };
+
 
 
 
@@ -883,9 +914,9 @@ function InterJoining() {
       technology_name,
       duration,
       selectedModules,
-      training_mode, 
+      training_mode,
       intern_experience,
-      experience, 
+      experience,
       characteristics_describe,
       applicant_name,
       place,
@@ -924,7 +955,7 @@ function InterJoining() {
       console.log("Response Data:", responseData);
 
       if (response.ok) {
-        alert("Data submitted successfully!");
+        toast.success("Data submitted successfully!");
         navigate("/viewjoining");
       } else {
         if (responseData.errors) {
@@ -1029,7 +1060,7 @@ function InterJoining() {
                         style={{ fontFamily: "Century gothic" }}
                         className="d-none d-md-block"
                       >
-                        First Name:{" "}
+                        First Name : <span className="text-danger">*</span>{" "}
                       </b>
                     </Col>
                     <Col lg={2} className="d-none d-md-block">
@@ -1039,6 +1070,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
+
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={fname}
@@ -1135,7 +1167,7 @@ function InterJoining() {
                       </Form.Label>
                     </Col>
                   </Row>
-                  <Row className="d-block d-md-none">
+                  {/* <Row className="d-block d-md-none">
                     <Col lg={4} className="pt-4">
                       <b style={{ fontFamily: "Century gothic" }}>First Name</b>
                     </Col>
@@ -1233,11 +1265,11 @@ function InterJoining() {
                         </span>
                       )}
                     </Col>
-                  </Row>
+                  </Row> */}
                   <Row>
                     {/* email */}
                     <Col lg={4}>
-                      <b style={{ fontFamily: "Century gothic" }}>Email Id:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Email Id : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} className="mb-3">
                       <Form.Group
@@ -1261,7 +1293,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Permanent Address:
+                        Permanent Address : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -1289,7 +1321,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Current Address:
+                        Current Address : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -1315,7 +1347,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Contact Details:
+                        Contact Details : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1340,7 +1372,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Whatsapp No:
+                        Whatsapp No : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1355,6 +1387,7 @@ function InterJoining() {
                           placeholder="+91"
                           value={whatsappno}
                           onChange={handleWhatsappChange}
+                          readOnly
                         />
                       </Form.Group>
                       {errors.whatsappno && (
@@ -1366,7 +1399,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Date Of Birth:
+                        Date Of Birth : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1388,7 +1421,7 @@ function InterJoining() {
                       )}
                     </Col>
                     <Col lg={1} md={1} sm={12} className="m-0">
-                      <b style={{ fontFamily: "Century gothic" }}>Age: </b>
+                      <b style={{ fontFamily: "Century gothic" }}>Age : <span className="text-danger">*</span> </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">
                       <Form.Group
@@ -1406,7 +1439,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Gender:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Gender : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
@@ -1431,7 +1464,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Blood Group:
+                        Blood Group : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-3">
@@ -1439,22 +1472,14 @@ function InterJoining() {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Select
+                        <Form.Control
                           aria-label="Default select example"
                           className="FormStyeling transparent-input"
                           value={blood}
                           onChange={(e) => setblood(e.target.value)} readOnly
                         >
-                          <option>Select Blood Group</option>
-                          <option value="A+">A+</option>
-                          <option value="A-">A-</option>
-                          <option value="B+">B+</option>
-                          <option value="B-">B-</option>
-                          <option value="AB+">AB+</option>
-                          <option value="AB-">AB-</option>
-                          <option value="O+">O+</option>
-                          <option value="O-">O-</option>
-                        </Form.Select>
+
+                        </Form.Control>
                       </Form.Group>
                       {errors.blood && (
                         <span className="error text-danger">
@@ -1465,7 +1490,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Aadhar Card no:
+                        Aadhar Card no : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1652,7 +1677,7 @@ function InterJoining() {
                   <Row>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        School Name:
+                        School Name : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1676,7 +1701,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        10<sup>th</sup> Percentage:
+                        10<sup>th</sup> Percentage : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1700,7 +1725,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        12<sup>th</sup>/Diploma Percentage:
+                        12<sup>th</sup>/Diploma Percentage : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -1726,7 +1751,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Graduation Details:
+                        Graduation Details : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1752,7 +1777,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Graduation Percentage:
+                        Graduation Percentage : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1777,7 +1802,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Post Graduation Details:
+                        Post Graduation Details :
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1803,7 +1828,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Post Graduation Percentage:
+                        Post Graduation Percentage :
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1827,7 +1852,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Branch:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Branch : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       {/* <Form.Group className="fname" controlId="exampleForm.ControlInput1">
@@ -1959,7 +1984,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Any Other Certification:
+                        Any Other Certification : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -2026,7 +2051,7 @@ function InterJoining() {
                   <Row>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Name:
+                        Father Name : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2050,7 +2075,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Occupation:
+                        Father Occupation : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2075,7 +2100,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Father Contact Details:
+                        Father Contact Details : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2124,7 +2149,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Name:
+                        Mother Name : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2148,7 +2173,7 @@ function InterJoining() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Occupation:
+                        Mother Occupation : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2173,7 +2198,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Mother Contact Details:
+                        Mother Contact Details : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -2221,7 +2246,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Married:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Married : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2523,7 +2548,7 @@ function InterJoining() {
                 <Card.Text className="text-black">
                   <Row>
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century Gothic" }}>Date Of Joining:</b>
+                      <b style={{ fontFamily: "Century Gothic" }}>Date Of Joining : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
                       <Form.Group className="fname" controlId="exampleForm.ControlInput1">
@@ -2546,7 +2571,7 @@ function InterJoining() {
                   <Row>
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Technology Name:
+                        Technology Name : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-3">
@@ -2593,7 +2618,7 @@ function InterJoining() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Duration:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Duration : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2638,7 +2663,7 @@ function InterJoining() {
                       )}
                     </Col>
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Module:</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Module : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "20px" }}>
@@ -2703,7 +2728,7 @@ function InterJoining() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Training Mode:
+                        Training Mode : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
@@ -2736,7 +2761,7 @@ function InterJoining() {
                       )}
                     </Col>
 
-                    <Col lg={12} md={12} sm={12}><b style={{ fontFamily: 'Century gothic' }} >Do you have Previous Work , internship or Volunteer Experience ?</b></Col>
+                    <Col lg={12} md={12} sm={12}><b style={{ fontFamily: 'Century gothic' }} >Do you have Previous Work , internship or Volunteer Experience ? <span className="text-danger">*</span></b></Col>
                     <Col lg={4} md={4} sm={12}>
                       <div className="d-flex flex-wrap" style={{ gap: '20px' }}>
                         <Form.Check
@@ -2782,7 +2807,7 @@ function InterJoining() {
 
 
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Which characteristics best describe you?
+                      Which characteristics best describe you? <span className="text-danger">*</span>
                     </b>
                     <Form.Group
                       className="fname mb-3"
@@ -2840,7 +2865,9 @@ function InterJoining() {
                             {errors.applicant_name}
                           </span>
                         ) : (
-                          "Please Mention Applicant name"
+                          <p>
+                            Please Mention Applicant Name <span className="text-danger">*</span>
+                          </p>
                         )}
                       </Form.Label>
                     </Col>
@@ -2864,7 +2891,9 @@ function InterJoining() {
                             {errors.place}
                           </span>
                         ) : (
-                          "Please Mention place"
+                          <p>
+                            Please Mention Place <span className="text-danger">*</span>
+                          </p>
                         )}
                       </Form.Label>
                     </Col>
@@ -2928,7 +2957,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Social Media"
+                          placeholder="Enter Social Media Platform Name"
                           className="FormStyeling transparent-input"
                           value={refrance_social_media}
                           onChange={(e) =>
@@ -2955,7 +2984,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Friend Name"
+                          placeholder="Enter Friend Name"
                           className="FormStyeling transparent-input"
                           value={refrance_friend}
                           onChange={(e) =>
@@ -2982,7 +3011,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Family"
+                          placeholder="Enter Family Name"
                           className="FormStyeling transparent-input"
                           value={refrance_family}
                           onChange={(e) =>
@@ -3008,7 +3037,7 @@ function InterJoining() {
                       >
                         <Form.Control
                           type="text"
-                          placeholder="Relatives"
+                          placeholder="Enter Relatives Name"
                           className="FormStyeling transparent-input"
                           value={refrance_relatives}
                           onChange={(e) =>
@@ -3174,6 +3203,7 @@ function InterJoining() {
                         textAlign: "justify",
                       }}
                     >
+                      <Form.Check inline className="custom-checkbox" />
                       I certify that the information I have provided above is
                       true to the best of my knowledge and belief, without any
                       malice or intention to commit acts of misrepresentation. I
@@ -3185,7 +3215,7 @@ function InterJoining() {
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Name of Applicant :{" "}
+                        Name of Applicant : <span className="text-danger">*</span>{" "}
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-5">
@@ -3214,7 +3244,7 @@ function InterJoining() {
                         className="single-line"
                         style={{ fontFamily: "Century Gothic" }}
                       >
-                        Place:
+                        Place : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">
@@ -3315,7 +3345,7 @@ function InterJoining() {
                     </Button>
 
                     <Button
-                      variant="primary" 
+                      variant="primary"
                       onClick={handlePrint}
                       style={{
                         backgroundColor: "#17a2b8",

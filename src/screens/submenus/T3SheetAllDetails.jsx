@@ -94,7 +94,7 @@ const T3SheetAllDetails = () => {
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
-                                            value={`${fname} ${fathername} ${mname} ${lname}`}
+                                            value={`${fname} ${mname} ${fathername} ${lname}`}
                                             style={{ width: "50%" }}
                                         />
                                     </Col>

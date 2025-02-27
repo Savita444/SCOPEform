@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Card, Col, Form } from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
-
+import { toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import axios from "axios";
 
 const InternAllDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,27 +22,66 @@ const InternAllDetails = () => {
     const fetchInternDetails = async () => {
       const accessToken = localStorage.getItem("remember_token");
       try {
-        const response = await instance.get(`get-perticular-intern-by-studId/${id}`, {
+        const response = await axios.get(`https://api.sumagotraining.in/public/api/get-perticular-intern-by-studId/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
         });
-        setInternDetails(response.data[0]); // Assuming the first object contains intern details
+
+        console.log("API Response:", response.data); // Log the response
+
+        const data = response.data[0]; // Assuming the response is an array
+        if (!data) {
+          toast.error("Add Intern Details First", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            style: { marginTop: '80px' },
+            transition: Bounce,
+          });
+          
+          navigate(-1);
+          return;
+        }
+
+        // Set intern details if data is present
+        setInternDetails(data);
       } catch (err) {
         setError("Failed to fetch intern details. Please try again later.");
         console.error("Error fetching intern details:", err);
+        toast.error("Failed to fetch intern details. Please try again later!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          style: { marginTop: '80px' },
+          transition: Bounce,
+        });
+       
+        return;
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInternDetails();
+    if (id) fetchInternDetails(); // Ensure `id` is valid before calling
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!internDetails) return <p>No intern details found.</p>;
+    // Handling loading, error, and missing data states
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>{error}</p>;
+    if (!internDetails) return <p>No intern details found.</p>;
+  
 
   const {
     fname = "",
@@ -199,7 +242,7 @@ const InternAllDetails = () => {
                       type="text"
                       // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}`}
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                     />
                   </Form.Group>
                 </Col>
@@ -454,7 +497,7 @@ const InternAllDetails = () => {
                   {/* email */}
                   <Col lg={4} md={4} sm={12}>
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Linkdin Address :
+                      LinkedIn Address :
                     </b>
                   </Col>
                   <Col lg={8} md={8} sm={12} className="mb-3">
@@ -658,9 +701,9 @@ const InternAllDetails = () => {
                     >
                       <Form.Control
                         type="text"
-                        placeholder="Enter graduation details"
+                        placeholder="Enter post graduation details"
                         className="FormStyeling transparent-input"
-                        value={`${post_graduation_details}`}
+                        value={`${post_graduation_details}` || "Not Sepcified"}
                       />
                     </Form.Group>
                   </Col>
@@ -968,7 +1011,7 @@ const InternAllDetails = () => {
                   </Col>
                   <Col lg={2} md={2} sm={12} className="m-0 ">
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Occupation :
+                      Guardian Occupation:
                     </b>
                   </Col>
                   <Col lg={3} md={3} sm={12} className="mb-3">
@@ -1289,7 +1332,7 @@ const InternAllDetails = () => {
                         type="text"
                         placeholder="Social Media"
                         className="FormStyeling transparent-input"
-                        value={refrance_social_media}
+                        value={refrance_social_media || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1309,7 +1352,7 @@ const InternAllDetails = () => {
                       <Form.Control
                         type="text"
                         placeholder="Friend Name"
-                        value={refrance_friend}
+                        value={refrance_friend || "Not Specified"}
                         className="FormStyeling transparent-input"
 
                       />
@@ -1331,7 +1374,7 @@ const InternAllDetails = () => {
                         type="text"
                         placeholder="Family"
                         className="FormStyeling transparent-input"
-                        value={refrance_family}
+                        value={refrance_family || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1351,7 +1394,7 @@ const InternAllDetails = () => {
                         type="text"
                         placeholder="Relatives"
                         className="FormStyeling transparent-input"
-                        value={refrance_relatives}
+                        value={refrance_relatives || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1371,7 +1414,7 @@ const InternAllDetails = () => {
                         type="text"
                         placeholder="Other"
                         className="FormStyeling transparent-input"
-                        value={refrance_other}
+                        value={refrance_other || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1471,7 +1514,7 @@ const InternAllDetails = () => {
                       textAlign: "justify",
                     }}
                   >
-                    I certify that the information I have provided above is true
+                   <Form.Check inline className="custom-checkbox" />I certify that the information I have provided above is true
                     to the best of my knowledge and belief, without any malice
                     or intention to commit acts of misrepresentation. I am aware
                     that any false, misleading, or deceptive information

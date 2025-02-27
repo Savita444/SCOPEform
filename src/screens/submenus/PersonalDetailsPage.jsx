@@ -5,6 +5,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useNavigate } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function PersonalDetailsPage() {
   const navigate = useNavigate();
@@ -33,23 +34,42 @@ function PersonalDetailsPage() {
   }, [dob]);
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setcontact_details(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setcontact_details("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+  
+    setcontact_details(value);
   };
+  
 
   const handleWhatsappChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setwhatsappno(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setwhatsappno("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+  
+    setwhatsappno(value);
   };
-
+  
   const handleAadharChange = (e) => {
     const value = e.target.value;
 
@@ -204,7 +224,7 @@ function PersonalDetailsPage() {
       );
 
       if (response.ok) {
-        alert("Data submitted successfully!");
+        toast.success("Data submitted successfully!");
         navigate("/viewinterjoining");
       } else {
         const responseData = await response.json();
@@ -212,7 +232,7 @@ function PersonalDetailsPage() {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -236,7 +256,7 @@ function PersonalDetailsPage() {
         <Container>
           <div className="text-center title-container">
             <b className="title-text">
-              INTERNS JOINING <span className="highlight">FORM</span>
+              INTERNS PERSONAL <span className="highlight">DETAILS</span>
             </b>
           </div>
         </Container>
@@ -309,7 +329,7 @@ function PersonalDetailsPage() {
                         style={{ fontFamily: "Century gothic" }}
                         className="d-none d-md-block"
                       >
-                        First Name{" "}
+                        First Name : <span className="text-danger">*</span>{" "}
                       </b>
                     </Col>
                     <Col lg={2} className="d-none d-md-block">
@@ -509,7 +529,7 @@ function PersonalDetailsPage() {
                   <Row>
                     {/* email */}
                     <Col lg={4}>
-                      <b style={{ fontFamily: "Century gothic" }}>Email Id</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Email Id : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} className="mb-3">
                       <Form.Group
@@ -532,7 +552,7 @@ function PersonalDetailsPage() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Permanent Address
+                        Permanent Address : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -558,7 +578,7 @@ function PersonalDetailsPage() {
                     </Col>
                     <Col lg={4}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Current Address
+                        Current Address : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} className="mb-3">
@@ -584,7 +604,7 @@ function PersonalDetailsPage() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Contact Details
+                        Contact Details : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -609,7 +629,7 @@ function PersonalDetailsPage() {
                     </Col>
                     <Col lg={2} md={2} sm={12} className="m-0 ">
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Whatsapp No:
+                        Whatsapp No : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -635,7 +655,7 @@ function PersonalDetailsPage() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Date Of Birth
+                        Date Of Birth : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={3} md={3} sm={12} className="mb-3">
@@ -645,8 +665,6 @@ function PersonalDetailsPage() {
                       >
                         <Form.Control
                           type="date"
-                          // placeholder="enter first name"
-                          placeholder="+91"
                           className="FormStyeling transparent-input"
                           value={dob}
                           onChange={(e) => setdob(e.target.value)}
@@ -656,8 +674,9 @@ function PersonalDetailsPage() {
                         <span className="error text-danger">{errors.dob}</span>
                       )}
                     </Col>
+
                     <Col lg={1} md={1} sm={12} className="m-0">
-                      <b style={{ fontFamily: "Century gothic" }}>Age : </b>
+                      <b style={{ fontFamily: "Century gothic" }}>Age : <span className="text-danger">*</span> </b>
                     </Col>
                     <Col lg={4} md={4} sm={12} className="mb-3">
                       <Form.Group
@@ -675,7 +694,7 @@ function PersonalDetailsPage() {
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
-                      <b style={{ fontFamily: "Century gothic" }}>Gender</b>
+                      <b style={{ fontFamily: "Century gothic" }}>Gender : <span className="text-danger">*</span></b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">
                       <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
@@ -696,11 +715,16 @@ function PersonalDetailsPage() {
                           checked={gender === "Female"}
                         />
                       </div>
+                      {errors.gender && (
+                        <span className="error text-danger">
+                          {errors.gender}
+                        </span>
+                      )}
                     </Col>
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Blood Group
+                        Blood Group : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={5} md={5} sm={12} className="mb-3">
@@ -734,7 +758,7 @@ function PersonalDetailsPage() {
 
                     <Col lg={4} md={4} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
-                        Aadhar Card no
+                        Aadhar Card no : <span className="text-danger">*</span>
                       </b>
                     </Col>
                     <Col lg={8} md={8} sm={12} className="mb-3">

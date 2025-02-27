@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Card, Col, Form } from "react-bootstrap";
 import "./completion.css";
-
+import { toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -10,6 +11,7 @@ import corner from "../imgs/file (28).png";
 
 const IdCardAllDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +21,6 @@ const IdCardAllDetails = () => {
   useEffect(() => {
     const fetchInternDetails = async () => {
       const accessToken = localStorage.getItem("remember_token");
-      console.log("Fetching ID:", id);
 
       try {
         const response = await axios.get(
@@ -35,8 +36,21 @@ const IdCardAllDetails = () => {
         console.log("API Response:", response.data); // Debug log
         setInternDetails(response.data); // Ensure fields are at the root level
       } catch (err) {
-        setError("Failed to fetch intern details. Please try again later.");
+        setError("Add Id card details first.");
         console.error("Error fetching intern details:", err);
+        toast.error("Add Id Card Details First", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: false,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  style: { marginTop: '80px' }, 
+                  transition: Bounce, 
+                });
+        navigate(-1)
       } finally {
         setLoading(false);
       }
@@ -50,9 +64,10 @@ const IdCardAllDetails = () => {
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
 
+
   const {
     fname = "",
-    fathername ="",
+    fathername = "",
     mname = "",
     lname = "",
     technology_name = "",
@@ -121,7 +136,7 @@ const IdCardAllDetails = () => {
                     <Form.Control
                       type="text"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}` }
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                       name="name"
                       readOnly
                     />

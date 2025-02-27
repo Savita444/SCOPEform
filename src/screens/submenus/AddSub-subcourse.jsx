@@ -9,42 +9,160 @@ import { FaEye, FaPrint, FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const AddSubsubcourse = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
-  const [courses, setCourses] = useState([]);
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [courseName, setCourseName] = useState("");
-  const [subcourseName, setSubcourseName] = useState("");
+
+
+  const [subcoursedetails, setSubcoursedetails] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [subCourses, setSubCourses] = useState([]);
+  const [coursename, setCoursename] = useState("");
+  const [subcourses_name, setSubcourses_name] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [customtext, setCustomtext] = useState("");
-  const [courseFile, setCourseFile] = useState(null);
-  const [subcourseFile, setSubcourseFile] = useState(null);
+  const [custome_text, setcustome_text] = useState("");
+  const [banner, setBanner] = useState(null);
+  const [back_image, setBack_image] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetchSubcoursedetails();
     fetchCourses();
+    fetchSubCourses();
   }, []);
+
+
+  const BASE_URL = "https://api.sumagotraining.in/public/api";
 
   const fetchCourses = async () => {
     const accessToken = localStorage.getItem("remember_token");
     try {
-      const response = await instance.get("get-intern-personal-info", {
+      const response = await axios.get(`${BASE_URL}/get_course`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       });
-      setCourses(response.data);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
+
+      const coursesData = response.data?.data || [];
+      setCourses(coursesData); // Store fetched courses
+
+    } catch (err) {
+      console.error("Error fetching course details:", err);
     }
   };
+
+  const fetchSubCourses = async () => {
+    const accessToken = localStorage.getItem("remember_token");
+    try {
+      const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Ensure response.data.data is an array
+      const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+      setSubCourses(subCoursesData); // Store fetched subcourses
+    } catch (err) {
+      console.error("Error fetching subcourses:", err);
+    }
+  };
+
+
+
+  const fetchSubcoursedetails = async () => {
+    const accessToken = localStorage.getItem("remember_token");
+    try {
+      const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Ensure response.data.data is an array
+      const coursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+      // Sorting the data in descending order based on created_at
+      const sortedData = coursesData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setSubcoursedetails(sortedData);
+      setData(sortedData); // Update the SearchExportContext data
+
+    } catch (err) {
+      console.error("Error fetching course details:", err);
+    }
+  };
+
+
+
+
+  const handleDelete = async (id) => {
+    confirmAlert({
+      title: "Confirm to delete",
+      message: "Are you sure you want to delete this data?",
+      customUI: ({ onClose }) => (
+        <div
+          style={{
+            textAlign: "left",
+            padding: "20px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)",
+            maxWidth: "400px",
+            margin: "0 auto",
+          }}
+        >
+          <h2>Confirm to delete</h2>
+          <p>Are you sure you want to delete this data?</p>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+            <button
+              style={{ marginRight: "10px" }}
+              className="btn btn-primary"
+              onClick={async () => {
+                setLoading(true);
+                const accessToken = localStorage.getItem("remember_token");
+                try {
+                  await instance.delete(`delete_subcourse_details/${id}`, {
+                    headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                      "Content-Type": "application/json",
+                    },
+                  });
+                  toast.success("Data Deleted Successfully");
+                  fetchProducts();
+                } catch (error) {
+                  console.error("Error deleting data:", error);
+                  toast.error("Error deleting data");
+                } finally {
+                  setLoading(false);
+                }
+                onClose();
+              }}
+            >
+              Yes
+            </button>
+            <button className="btn btn-secondary" onClick={() => onClose()}>
+              No
+            </button>
+          </div>
+        </div>
+      ),
+    });
+  };
+
+
 
   const handleAddCourse = () => {
     setShowModal(true);
@@ -52,8 +170,8 @@ const AddSubsubcourse = () => {
 
   const handleClose = () => {
     setShowModal(false);
-    setCourseName("");
-    setCourseFile(null);
+    setCoursename("");
+    setBack_image(null);
   };
 
   const handleSubmit = async (e) => {
@@ -61,17 +179,17 @@ const AddSubsubcourse = () => {
 
     const token = localStorage.getItem("remember_token");
     const formData = new FormData();
-    formData.append("courseName", courseName);
-    formData.append("subcourseName", subcourseName);
+    formData.append("coursename", coursename);
+    formData.append("subcourses_name", subcourses_name);
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("customtext", customtext);
-    formData.append("courseFile", courseFile);
-    formData.append("subcourseFile", subcourseFile);
+    formData.append("customtext", custome_text);
+    formData.append("banner", banner);
+    formData.append("back_image", back_image);
 
     try {
       const response = await fetch(
-        "https://api.sumagotraining.in/public/api/intern-joining-personal-info/add",
+        "https://api.sumagotraining.in/public/api/add_subcourse_details",
         {
           method: "POST",
           headers: {
@@ -100,12 +218,25 @@ const AddSubsubcourse = () => {
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
     },
     {
-      name: "Name",
-      cell: (row) => `${row.courseName} `,
+      name: "Course name",
+      cell: (row) => `${row.courses_name} `,
+    },
+    {
+      name: "Banner image",
+      cell: (row) =>
+        row.banner ? (
+          <img
+            src={row.banner}
+            alt="Course"
+            style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover" }}
+          />
+        ) : (
+          "No Image"
+        ),
     },
     {
       name: "Subcourse name",
-      cell: (row) => `${row.subcourseName} `,
+      cell: (row) => `${row.subcourses_name} `,
     },
     {
       name: "Title",
@@ -113,27 +244,32 @@ const AddSubsubcourse = () => {
     },
     {
       name: "Description",
-      cell: (row) => `${row.description} `,
+      cell: (row) => (
+        <span title={row.description}>
+          {row.description?.substring(0, 80) || "No description available"}...
+        </span>
+
+      ),
     },
+
     {
       name: "Custom Text",
-      cell: (row) => `${row.customtext} `,
+      cell: (row) => `${row.custome_text} `,
     },
-    {
-      name: "Status",
-      cell: (row) => ``,
-    },
+
     {
       name: "Actions",
       cell: (row) => (
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/update-subcoursedetails/${row.id}`, { state: row })}>
+            <Button className="ms-1" onClick={() => navigate(`/update-subcoursedetails/${row.sub_course_id}`, { state: row })}>
               <FaEdit />
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
-            <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}>
+            <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
+              onClick={() => handleDelete(row.id)}
+            >
               <FaTrash />
             </Button>
           </OverlayTrigger>
@@ -168,7 +304,7 @@ const AddSubsubcourse = () => {
             <Card.Body>
               <DataTable
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : courses}
+                data={filteredData.length > 0 ? filteredData : subcoursedetails}
                 pagination
                 responsive
                 striped
@@ -189,21 +325,47 @@ const AddSubsubcourse = () => {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Select Course</Form.Label>
+              <Form.Label>Course Name</Form.Label>
               <Form.Select
-                type="text"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-              />
+                value={coursename}
+                onChange={(e) => {
+                  const selectedCourse = courses.find((course) => course.name === e.target.value);
+                  if (selectedCourse) {
+                    setCoursename(selectedCourse.name); // Set coursename
+                  }
+                }}
+              >
+                <option value="">-- Select Course --</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.name}>
+                    {course.name}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>Select Subcourse</Form.Label>
               <Form.Select
-                type="text"
-                value={courseName}
-                onChange={(e) => setSubcourseName(e.target.value)}
-              />
+                value={subcourses_name}
+                onChange={(e) => {
+                  const selectedSubcourse = subCourses.find((sub) => sub.subcourses_name === e.target.value);
+                  if (selectedSubcourse) {
+                    setSubcourses_name(selectedSubcourse.subcourses_name);
+                  }
+                }}
+              >
+                <option value="">-- Select Subcourse --</option>
+                {subCourses.map((sub) => (
+                  <option key={sub.subcourses_id} value={sub.subcourses_name}>
+                    {sub.subcourses_name} ({sub.coursename}) {/* Display Course Name too */}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
+
+
+
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
               <Form.Control
@@ -227,17 +389,17 @@ const AddSubsubcourse = () => {
               <Form.Control
                 type="text"
                 placeholder="Enter custom text"
-                value={customtext}
-                onChange={(e) => setCustomtext(e.target.value)}
+                value={custome_text}
+                onChange={(e) => setcustome_text(e.target.value)}
               />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Upload File</Form.Label>
-              <Form.Control type="file" onChange={(e) => setCourseFile(e.target.files[0])} />
+              <Form.Control type="file" onChange={(e) => setBanner(e.target.files[0])} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Upload File</Form.Label>
-              <Form.Control type="file" onChange={(e) => setSubcourseFile(e.target.files[0])} />
+              <Form.Control type="file" onChange={(e) => setBack_image(e.target.files[0])} />
             </Form.Group>
           </Form>
         </Modal.Body>

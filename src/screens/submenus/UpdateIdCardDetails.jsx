@@ -6,6 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
+import { toast, Bounce } from "react-toastify";
 
 function UpdateIdCardDetails() {
     const navigate = useNavigate();
@@ -55,6 +56,19 @@ function UpdateIdCardDetails() {
             } catch (err) {
                 setErrors("Failed to fetch intern details. Please try again later.");
                 console.error("Error fetching intern details:", err);
+                toast.error("Add Id Card Details First", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    style: { marginTop: '80px' }, 
+                    transition: Bounce, 
+                  });
+                navigate(-1)
             }
         };
 
@@ -142,12 +156,12 @@ function UpdateIdCardDetails() {
                     },
                 }
             );
-            alert("Data updated successfully!");
+            toast.success("Data updated successfully!");
             navigate("/ViewIdCard")
             console.log("Update Response:", response.data);
         } catch (error) {
             console.error("Error updating data:", error.response?.data || error.message);
-            alert(`Failed to update data. Error: ${error.response?.data?.message || error.message}`);
+            toast.error(`Failed to update data. Error: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -187,7 +201,7 @@ function UpdateIdCardDetails() {
                                     }}
                                 >
                                     <div className="personal-card-heading position-relative">
-                                        <b className="form-title">ID CARD DETAILS FORM</b>
+                                        <b className="form-title">UPDATE ID CARD DETAILS</b>
                                     </div>
                                 </div>
                             </Card.Header>
@@ -212,10 +226,10 @@ function UpdateIdCardDetails() {
                                             <Form.Control
                                                 type="text"
                                                 className="FormStyeling transparent-input"
-                                                value={`${fname} ${fathername} ${mname} ${lname}`}
+                                                value={`${fname} ${mname} ${fathername} ${lname}`}
                                                 name="name"
                                                 onChange={(e) => setfname(e.target.value)}
-readOnly
+                                                readOnly
                                             />
                                         </Form.Group>
                                         {errors.fname && (
@@ -273,7 +287,7 @@ readOnly
                                                 value={date_of_joining}
                                                 name="date_of_joining"
                                                 onChange={(e) => setdate_of_joining(e.target.value)}
-readOnly
+                                                readOnly
                                             />
                                         </Form.Group>
                                         {errors.date_of_joining && (
@@ -302,7 +316,7 @@ readOnly
                                                 value={contact_details}
                                                 name="contact_details"
                                                 onChange={(e) => setcontact_details(e.target.value)}
-readOnly
+                                                readOnly
                                             />
                                         </Form.Group>
                                         {errors.contact_details && (
@@ -331,7 +345,7 @@ readOnly
                                                 value={blood}
                                                 name="blood_group"
                                                 onChange={(e) => setblood(e.target.value)}
-readOnly
+                                                readOnly
                                             />
                                         </Form.Group>
                                         {errors.blood && (

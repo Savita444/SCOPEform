@@ -5,6 +5,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 function UpdatePersonalDetails() {
@@ -63,22 +64,42 @@ function UpdatePersonalDetails() {
   }, [dob]);
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setcontact_details(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setcontact_details("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+  
+    setcontact_details(value);
   };
+  
 
   const handleWhatsappChange = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setwhatsappno(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setwhatsappno("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+  
+    setwhatsappno(value);
   };
+  
 
   const handleAadharChange = (e) => {
     const value = e.target.value;
@@ -220,7 +241,7 @@ function UpdatePersonalDetails() {
       }
     )
       .then((result) => {
-        alert("Data updated successfully!");
+        toast.success("Data updated successfully!");
         navigate("/viewinterjoining");
 
       })

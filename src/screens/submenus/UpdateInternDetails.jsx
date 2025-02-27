@@ -5,6 +5,8 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { toast, Bounce  } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 function UpdateInternDetails() {
@@ -119,6 +121,26 @@ function UpdateInternDetails() {
                 );
                 const data = response.data[0]; // Assuming the response is an array
 
+                if (!data) {
+                    toast.error("Add Intern Details First", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        style: { marginTop: '80px' }, 
+                        transition: Bounce, 
+                    });
+                    navigate(-1);
+                    return;
+                }
+                
+
+
+
                 if (data) {
                     // Set all fields
                     setstudent_id(data.id)
@@ -197,6 +219,7 @@ function UpdateInternDetails() {
             } catch (err) {
                 setError("Failed to fetch intern details. Please try again later.");
                 console.error("Error fetching intern details:", err);
+               
             }
         };
 
@@ -991,7 +1014,7 @@ function UpdateInternDetails() {
                     },
                 }
             );
-            alert("Data updated successfully!");
+            toast.success("Data updated successfully!");
             navigate("/viewjoining")
             console.log("Update Response:", response.data);
         } catch (error) {
@@ -1831,7 +1854,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Enter Post Graduation Details"
                                                     className="FormStyeling transparent-input"
-                                                    value={post_graduation_details}
+                                                    value={post_graduation_details || "Not Specified"}
                                                     onChange={(e) =>
                                                         setPostGraduationDetails(e.target.value)
                                                     }
@@ -2449,7 +2472,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Enter Guardian Name"
                                                     className="FormStyeling transparent-input"
-                                                    value={guardian_name}
+                                                    value={guardian_name || "Not Specified"}
                                                     onChange={(e) => setguardian_name(e.target.value)}
                                                 />
                                             </Form.Group>
@@ -2473,7 +2496,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Enter Guardian Occupation"
                                                     className="FormStyeling transparent-input"
-                                                    value={GuardianOccupation}
+                                                    value={GuardianOccupation || "Not Specified"}
                                                     onChange={(e) =>
                                                         setGuardianOccupation(e.target.value)
                                                     }
@@ -2500,7 +2523,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="+91"
                                                     className="FormStyeling transparent-input"
-                                                    value={Guardian_contactdetails}
+                                                    value={Guardian_contactdetails || "Not Specified"}
                                                     onChange={handle_GuardianPhoneChange}
                                                 />
                                             </Form.Group>
@@ -2524,7 +2547,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Enter Guardian Aadhar card no"
                                                     className="FormStyeling transparent-input"
-                                                    value={Guardian_aadharno}
+                                                    value={Guardian_aadharno || "Not Specified"}
                                                     onChange={handle_GuardianAadharChange}
                                                 ></Form.Control>
                                             </Form.Group>
@@ -3004,7 +3027,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Social Media"
                                                     className="FormStyeling transparent-input"
-                                                    value={refrance_social_media}
+                                                    value={refrance_social_media || "Not Specified"}
                                                     onChange={(e) =>
                                                         setrefrance_social_media(e.target.value)
                                                     }
@@ -3031,7 +3054,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Friend Name"
                                                     className="FormStyeling transparent-input"
-                                                    value={refrance_friend}
+                                                    value={refrance_friend || "Not Specified"}
                                                     onChange={(e) =>
                                                         setrefrance_friend(e.target.value)
                                                     }
@@ -3058,7 +3081,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Family"
                                                     className="FormStyeling transparent-input"
-                                                    value={refrance_family}
+                                                    value={refrance_family || "Not Specified"}
                                                     onChange={(e) =>
                                                         setrefrance_family(e.target.value)
                                                     }
@@ -3084,7 +3107,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Relatives"
                                                     className="FormStyeling transparent-input"
-                                                    value={refrance_relatives}
+                                                    value={refrance_relatives || "Not Specified"}
                                                     onChange={(e) =>
                                                         setrefrance_relatives(e.target.value)
                                                     }
@@ -3110,7 +3133,7 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Other"
                                                     className="FormStyeling transparent-input"
-                                                    value={refrance_other}
+                                                    value={refrance_other || "Not Specified"}
                                                     onChange={(e) =>
                                                         setrefrance_other(e.target.value)
                                                     }

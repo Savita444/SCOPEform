@@ -22,18 +22,31 @@ import { FaDownLong } from "react-icons/fa6";
 
 
 const ViewIdCard = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Use useNavigate for routing
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]); // Fetch data when page changes
+  
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+useEffect(() => {
+  setForceUpdate((prev) => prev + 1);
+}, [products, filteredData]);
 
   const fetchProducts = async () => {
+    setLoading(true);
+
     const accessToken = localStorage.getItem("remember_token");
     try {
       const response = await instance.get("get-intern-id-card-details", {
@@ -47,8 +60,11 @@ const ViewIdCard = () => {
  const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
  setProducts(sortedData);
+ setData(sortedData);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,14 +129,14 @@ const ViewIdCard = () => {
   };
  
 
-  const handlePrint = (id) => {
-    const printUrl = `get-intern-id-card-details/${id}`;
-    const printWindow = window.open(printUrl, "_blank");
-    printWindow.onload = () => {
-      printWindow.focus();
-      printWindow.print();
-    };
-  };
+  // const handlePrint = (id) => {
+  //   const printUrl = `get-intern-id-card-details/${id}`;
+  //   const printWindow = window.open(printUrl, "_blank");
+  //   printWindow.onload = () => {
+  //     printWindow.focus();
+  //     printWindow.print();
+  //   };
+  // };
 
    const formatDate = (dateString) => {
       const date = new Date(dateString);
@@ -152,7 +168,9 @@ const ViewIdCard = () => {
     },
     {
       name: "Full Name",
-      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
+      cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
+      width:"250px",
+
     },
     {
       name: "Contact No",
@@ -176,7 +194,7 @@ const ViewIdCard = () => {
             overlay={<Tooltip id="view-tooltip">View</Tooltip>}
           >
             <Button
-              className="ms-1"
+              className="ms-1" variant="secondary"
               onClick={() => navigate(`/get-intern-id-card-details/${row.id}`, { state: row })}
             >
               <FaEye />
@@ -198,7 +216,7 @@ const ViewIdCard = () => {
               <FaTrash />
             </Button>
           </OverlayTrigger>
-          <OverlayTrigger
+          {/* <OverlayTrigger
             placement="top"
             overlay={<Tooltip id="print-tooltip">Print</Tooltip>}
           >
@@ -213,7 +231,7 @@ const ViewIdCard = () => {
             >
               <FaPrint />
             </Button>
-          </OverlayTrigger>
+          </OverlayTrigger> */}
         </div>
       ),
     },
@@ -249,19 +267,22 @@ const ViewIdCard = () => {
                             </Row>
             </Card.Header>
 
-            <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) =>
-                  setRowsPerPage(rowsPerPage)
-                }
-              />
+            <Card.Body> <DataTable
+  key={forceUpdate}
+  columns={tableColumns(currentPage, rowsPerPage)}
+  data={searchQuery ? filteredData : products} // Use filtered data only when searching
+  pagination
+  paginationServer
+  paginationTotalRows={products.length}
+  onChangePage={(page) => {
+    setCurrentPage(page);
+    handleSearch(""); // Reset search when changing pages
+  }}
+  responsive
+  striped
+  noDataComponent="No Data Available"
+/>
+
             </Card.Body>
           </Card>
         </Col>

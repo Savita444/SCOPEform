@@ -148,7 +148,7 @@ const CompletionDetailsPage = () => {
                       type="text"
                       // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}`}
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                     />
                   </Form.Group>
                 </Col>

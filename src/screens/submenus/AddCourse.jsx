@@ -14,14 +14,16 @@ import axios from "axios";
 
 
 const AddCourse = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
-  const [courses, setCourses] = useState([]);
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [errors, setErrors] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,21 +40,90 @@ const AddCourse = () => {
           "Content-Type": "application/json",
         },
       });
-  
-      console.log("Fetched API Response:", response.data); // Debugging log
-  
-      // Extract actual course data array
-      const coursesData = response.data?.data || [];  // Ensure it's always an array
-  
-      setCourses(coursesData);
+
+
+      // Ensure response.data.data is an array
+      const coursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+      // Sorting the data in descending order based on created_at
+      const sortedData = coursesData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setCourses(sortedData);
+      setData(sortedData); // Update the SearchExportContext data
+      
+
     } catch (err) {
       console.error("Error fetching course details:", err);
-    } finally {
-      setLoading(false);
     }
   };
-  
-  
+
+  const handleDelete = async (id) => {
+    confirmAlert({
+      title: "Confirm to delete",
+      message: "Are you sure you want to delete this data?",
+      customUI: ({ onClose }) => (
+        <div
+          style={{
+            textAlign: "left",
+            padding: "20px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)",
+            maxWidth: "400px",
+            margin: "0 auto",
+          }}
+        >
+          <h2>Confirm to delete</h2>
+          <p>Are you sure you want to delete this data?</p>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+            <button
+              style={{ marginRight: "10px" }}
+              className="btn btn-primary"
+              onClick={async () => {
+                setLoading(true);
+                const accessToken = localStorage.getItem("remember_token");
+                try {
+                  await instance.delete(`delete_course/${id}`, {
+                    headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                      "Content-Type": "application/json",
+                    },
+                  });
+                  toast.success("Data Deleted Successfully");
+
+                  // Update state directly after deletion
+                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+
+                } catch (error) {
+                  console.error("Error deleting data:", error);
+                } finally {
+                  setLoading(false);
+                }
+                onClose();
+              }}
+            >
+              Yes
+            </button>
+            <button className="btn btn-secondary" onClick={() => onClose()}>
+              No
+            </button>
+          </div>
+        </div>
+      ),
+    });
+  };
+
+  // Function to convert image to Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+
 
   const handleAddCourse = () => {
     setShowModal(true);
@@ -60,6 +131,7 @@ const AddCourse = () => {
 
   const handleClose = () => {
     setShowModal(false);
+    // navigate(-1); // Go back to the previous page
     setName("");
     setImage(null);
   };
@@ -68,9 +140,15 @@ const AddCourse = () => {
     e.preventDefault();
 
     const token = localStorage.getItem("remember_token");
+    if (!token) {
+      toast.error("Unauthorized: Token missing. Please log in again.");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("courseName", name);
-    formData.append("courseFile", image);
+    formData.append("name", name);
+    formData.append("image", image);
+
 
     try {
       const response = await fetch(
@@ -81,19 +159,27 @@ const AddCourse = () => {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
+          mode: "cors",
         }
       );
 
+
+      if (response.status === 401) {
+        toast.error("Unauthorized: Token may be invalid or expired.");
+        return;
+      }
+
       if (response.ok) {
         toast.success("Course added successfully!");
+        fetchCourses(); //  Refresh course list
         navigate("/addcourse");
-      } else {
-        const responseData = await response.json();
-        alert(`Submission failed: ${responseData.message || "Unknown error"}`);
+      }
+      else {
+        toast.error(`Submission failed`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -105,7 +191,9 @@ const AddCourse = () => {
     },
     {
       name: "Name",
-      selector: (row) => row.name || "N/A", // Avoids undefined error
+      selector: (row) => row.name || "N/A",
+
+
     },
     {
       name: "Course image",
@@ -114,7 +202,7 @@ const AddCourse = () => {
           <img
             src={row.image}
             alt="Course"
-            style={{ width: "50px", height: "50px", borderRadius:"50%", objectFit: "cover" }}
+            style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover" }}
           />
         ) : (
           "No Image"
@@ -134,7 +222,9 @@ const AddCourse = () => {
             </Button>
           </OverlayTrigger>
           <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
-            <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}>
+            <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
+              onClick={() => handleDelete(row.id)}
+            >
               <FaTrash />
             </Button>
           </OverlayTrigger>
@@ -142,8 +232,8 @@ const AddCourse = () => {
       ),
     },
   ];
-  
-  
+
+
   return (
     <Container fluid>
       <Row>
@@ -201,8 +291,24 @@ const AddCourse = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Upload File</Form.Label>
-              <Form.Control type="file" onChange={(e) => setImage(e.target.files[0])} />
+              <Form.Control
+                type="file"
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file && file.type.startsWith("image/")) {
+                    try {
+                      const base64 = await convertToBase64(file);
+                      setImage(base64);
+                    } catch (err) {
+                      console.error("Base64 Conversion Error:", err);
+                    }
+                  } else {
+                    setErrors("Only image files are allowed.");
+                  }
+                }}
+              />
             </Form.Group>
+
           </Form>
         </Modal.Body>
         <Modal.Footer>

@@ -13,18 +13,31 @@ import { FaDownLong } from "react-icons/fa6";
 import * as XLSX from 'xlsx';
 
 const ViewCompletionFrom = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]); // Fetch data when page changes
+  
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+useEffect(() => {
+  setForceUpdate((prev) => prev + 1);
+}, [products, filteredData]);
 
   const fetchProducts = async () => {
+    setLoading(true);
+
     const accessToken = localStorage.getItem("remember_token");
     try {
       
@@ -34,9 +47,14 @@ const ViewCompletionFrom = () => {
           "Content-Type": "application/json",
         },
       });
-      setProducts(response.data);
+      // Sort products by ID (assuming higher ID means newer record)
+      const sortedProducts = response.data.sort((a, b) => b.id - a.id);
+      setProducts(sortedProducts);
+      setData(sortedProducts)
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,14 +100,14 @@ const ViewCompletionFrom = () => {
     });
   };
 
-  const handlePrint = (id) => {
-    const printUrl = `/completion-details/${id}`;
-    const printWindow = window.open(printUrl, "_blank");
-    printWindow.onload = () => {
-      printWindow.focus();
-      printWindow.print();
-    };
-  };
+  // const handlePrint = (id) => {
+  //   const printUrl = `/completion-details/${id}`;
+  //   const printWindow = window.open(printUrl, "_blank");
+  //   printWindow.onload = () => {
+  //     printWindow.focus();
+  //     printWindow.print();
+  //   };
+  // };
 
 
 
@@ -120,8 +138,8 @@ const ViewCompletionFrom = () => {
     },
     {
       name: "Full Name",
-      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
-      width:"200px",
+      cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
+      width:"250px",
     },
     {
       name: "Email Id",
@@ -137,6 +155,7 @@ const ViewCompletionFrom = () => {
       cell: (row) => row.technology_name,
       sortable: true,
       sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
+      width:"190px",
       
     },
     {
@@ -157,7 +176,7 @@ const ViewCompletionFrom = () => {
         
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/completion-details/${row.id}`, { state: row })}>
+            <Button className="ms-1" variant="secondary" onClick={() => navigate(`/completion-details/${row.id}`, { state: row })}>
               <FaEye />
             </Button>
           </OverlayTrigger>
@@ -171,7 +190,7 @@ const ViewCompletionFrom = () => {
               <FaTrash />
             </Button>
           </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+          {/* <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
                           <Button
                             className="ms-1"
                             style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
@@ -179,7 +198,7 @@ const ViewCompletionFrom = () => {
                           >
                             <FaPrint/>
                           </Button>
-                        </OverlayTrigger>
+                        </OverlayTrigger> */}
         </div>
       ),
       
@@ -211,16 +230,22 @@ const ViewCompletionFrom = () => {
             </Card.Header>
 
             <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+            <DataTable
+  key={forceUpdate}
+  columns={tableColumns(currentPage, rowsPerPage)}
+  data={searchQuery ? filteredData : products} // Use filtered data only when searching
+  pagination
+  paginationServer
+  paginationTotalRows={products.length}
+  onChangePage={(page) => {
+    setCurrentPage(page);
+    handleSearch(""); // Reset search when changing pages
+  }}
+  responsive
+  striped
+  noDataComponent="No Data Available"
+/>
+
             </Card.Body>
           </Card>
         </Col>

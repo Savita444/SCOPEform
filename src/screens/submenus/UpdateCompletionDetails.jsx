@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./InterJoining.css";
+import { toast, Bounce } from "react-toastify";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -14,6 +15,8 @@ function UpdateCompletionDetails() {
     const [student_id, setstudent_id] = useState();
     const [formData, setFormData] = useState({
         fname: "",
+        mname:"",
+        fathername:"",
         lname: "",
         technology_name: "",
         email: "",
@@ -59,11 +62,13 @@ function UpdateCompletionDetails() {
                 const data = response.data;
 
                 if (data) {
-                    setstudent_id(data.id || id); 
+                    setstudent_id(data.id || id);
                     setFormData((prev) => ({
                         ...prev,
-                        
+
                         fname: data.fname || "",
+                        mname: data.mname || "",
+                        fathername: data.fathername || "",
                         lname: data.lname || "",
                         technology_name: data.technology_name || "",
                         email: data.email || "",
@@ -99,7 +104,19 @@ function UpdateCompletionDetails() {
                 }
             } catch (err) {
                 console.error("Error fetching details:", err);
-                alert("Failed to load data. Please try again.");
+                toast.error("Add Completion Details First", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    style: { marginTop: '80px' }, 
+                    transition: Bounce, 
+                  });
+                navigate(-1)
             } finally {
                 setIsLoading(false);
             }
@@ -222,7 +239,7 @@ function UpdateCompletionDetails() {
         const { name, files } = e.target;
         const file = files[0];
         if (!file) return;
-    
+
         let error = "";
         if (name === "review_image" && !file.type.startsWith("image/")) {
             error = "Only image files are allowed.";
@@ -235,12 +252,12 @@ function UpdateCompletionDetails() {
                 error = "Video size must not exceed 5 MB.";
             }
         }
-    
+
         if (error) {
             setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
             return;
         }
-    
+
         try {
             const base64 = await convertToBase64(file);
             setFormData((prevData) => {
@@ -253,7 +270,7 @@ function UpdateCompletionDetails() {
             setErrors((prevErrors) => ({ ...prevErrors, [name]: "File upload failed." }));
         }
     };
-    
+
 
 
 
@@ -266,32 +283,32 @@ function UpdateCompletionDetails() {
         });
 
 
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-            if (!validateForm()) return;
-        
-            console.log("Payload before API request:", formData);
-        
-            setIsSubmitting(true);
-            try {
-                const token = localStorage.getItem("remember_token");
-                const response = await axios.post(
-                    `https://api.sumagotraining.in/public/api/update-intern-completion-details/update/${student_id}`,
-                    formData,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                console.log("API Response after submit:", response.data);
-                alert("Data updated successfully!");
-                navigate('/viewcompletion');
-            } catch (err) {
-                console.error("Error updating data:", err);
-                alert("Failed to update data. Please try again.");
-            } finally {
-                setIsSubmitting(false);
-            }
-        };
-        
-        
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        console.log("Payload before API request:", formData);
+
+        setIsSubmitting(true);
+        try {
+            const token = localStorage.getItem("remember_token");
+            const response = await axios.post(
+                `https://api.sumagotraining.in/public/api/update-intern-completion-details/update/${student_id}`,
+                formData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log("API Response after submit:", response.data);
+            toast.success("Data updated successfully!");
+            navigate('/viewcompletion');
+        } catch (err) {
+            console.error("Error updating data:", err);
+            toast.error("Failed to update data. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+
 
 
 
@@ -361,11 +378,11 @@ function UpdateCompletionDetails() {
                                                 <Form.Control
                                                     type="text"
                                                     name="name"
-                                                    value={`${formData.fname} ${formData.lname}`}
+                                                    value={`${formData.fname} ${formData.mname} ${formData.fathername} ${formData.lname}`}
                                                     onChange={handleInputChange}
                                                     isInvalid={!!errors.fname}
                                                     className="FormStyeling transparent-input"
-                                                    placeholder="Enter Your Name" 
+                                                    placeholder="Enter Your Name"
                                                 />
                                             </Form.Group>
                                             <Form.Control.Feedback type="invalid">
@@ -386,7 +403,9 @@ function UpdateCompletionDetails() {
                                                 className="fname"
                                                 controlId="exampleForm.ControlInput1"
                                             >
-                                                <Form.Select
+                                                <Form.Control
+                                                    type="text"
+
                                                     aria-label="Default select example"
                                                     className="FormStyeling transparent-input"
                                                     value={formData.technology_name}
@@ -395,30 +414,8 @@ function UpdateCompletionDetails() {
 
                                                     name="technology" // this ensures the right field is updated
                                                 >
-                                                    <option>Select Technology</option>
-                                                    <option value="MERN Stack Development">
-                                                        MERN Stack Development
-                                                    </option>
-                                                    <option value="MEAN Stack Development">
-                                                        MEAN Stack Development
-                                                    </option>
-                                                    <option value="Full Stack Java Development">
-                                                        Full Stack Java Development
-                                                    </option>
-                                                    <option value="Python Development ">
-                                                        Python Development{" "}
-                                                    </option>
-                                                    <option value="AWS Devops">AWS Devops</option>
-                                                    <option value="Data Science">Data Science</option>
-                                                    <option value="Data Analytics">Data Analytics</option>
-                                                    <option value="AIML">AIML</option>
-                                                    <option value="UI-UX Designing">
-                                                        UI-UX Designing
-                                                    </option>
-                                                    <option value="Software Testing">
-                                                        Software Testing
-                                                    </option>
-                                                </Form.Select>
+
+                                                </Form.Control>
                                             </Form.Group>
                                             {errors.technology && (
                                                 <span className="error text-danger">

@@ -11,18 +11,55 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
 
 const ViewInternJoining = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
+
+  // const fetchProducts = async () => {
+  //   const accessToken = localStorage.getItem("remember_token");
+  //   try {
+  //     const response = await instance.get("get-intern-personal-info", {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     // Sort products by ID (assuming higher ID means newer record)
+  //     const sortedProducts = response.data.sort((a, b) => b.id - a.id);
+
+  //     setProducts(sortedProducts);
+  //   } catch (error) {
+  //     console.error("Error fetching products:", error);
+  //   }
+  // };
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
+
+
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]); // Fetch data when page changes
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+useEffect(() => {
+  setForceUpdate((prev) => prev + 1);
+}, [products, filteredData]);
 
   const fetchProducts = async () => {
+    setLoading(true);
     const accessToken = localStorage.getItem("remember_token");
     try {
       const response = await instance.get("get-intern-personal-info", {
@@ -31,11 +68,19 @@ const ViewInternJoining = () => {
           "Content-Type": "application/json",
         },
       });
-      setProducts(response.data);
+
+      const sortedProducts = response.data.sort((a, b) => b.id - a.id);
+
+      setProducts(sortedProducts);
+      setData(sortedProducts); // Update the SearchExportContext data
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -63,18 +108,30 @@ const ViewInternJoining = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`intern-personal-info/delete/${id}`, {
+                  console.log("Deleting record with ID:", id);
+
+                  const response = await instance.delete(`intern-personal-info/delete/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
                     },
                   });
-                  toast.success("Data Deleted Successfully");
-                  fetchProducts();
+
+                  console.log("Delete response:", response);
+
+                  // Check if deletion was successful
+                  if (response.status === 200 || response.status === 204) {
+                    toast.success("Data Deleted Successfully");
+                    setProducts((prevProducts) => prevProducts.filter((item) => item.id !== id)); // Update UI
+                  } else {
+                    console.error("Unexpected response:", response);
+                    toast.error("Failed to delete data. Please try again.");
+                  }
                 } catch (error) {
                   console.error("Error deleting data:", error);
-                  toast.error("Error deleting data");
-                } finally {
+                  toast.error("An error occurred while deleting data.");
+                }
+                finally {
                   setLoading(false);
                 }
                 onClose();
@@ -90,6 +147,7 @@ const ViewInternJoining = () => {
       ),
     });
   };
+
 
   //   const handlePrint = (id) => {
   //   const printUrl = `/intern-details/${id}`;
@@ -108,7 +166,7 @@ const ViewInternJoining = () => {
     },
     {
       name: "Full Name",
-      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
+      cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
     },
     {
       name: "Email Id",
@@ -128,10 +186,20 @@ const ViewInternJoining = () => {
         return (
           <div className="d-flex">
             <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-              <Button className="ms-1" onClick={() => navigate(`/intern-details/${row.id}`, { state: row })}>
+              <Button className="ms-1" variant="secondary" onClick={() => navigate(`/intern-details/${row.id}`, { state: row })}>
                 <FaEye />
               </Button>
             </OverlayTrigger>
+         
+            <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">Edit</Tooltip>}>
+              <Button className="ms-1" onClick={() =>
+                navigate(`/update-intern-personal-details/${row.id}`, { state: row })}>
+                <FaEdit />
+              </Button>
+            </OverlayTrigger>
+
+
+
             <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
               <Button
                 className="ms-1"
@@ -141,12 +209,9 @@ const ViewInternJoining = () => {
                 <FaTrash />
               </Button>
             </OverlayTrigger>
-            <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">Edit</Tooltip>}>
-              <Button className="ms-1" onClick={() =>
-                navigate(`/update-intern-personal-details/${row.id}`, { state: row })}>
-                <FaEdit />
-              </Button>
-            </OverlayTrigger>
+
+
+            
             {/* <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
               <Button
                 className="ms-1"
@@ -190,16 +255,24 @@ const ViewInternJoining = () => {
             </Card.Header>
 
             <Card.Body>
+           
               <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+              key={forceUpdate}
+              columns={tableColumns(currentPage, rowsPerPage)}
+              data={searchQuery ? filteredData : products} // Use filtered data only when searching
+              pagination
+              paginationServer
+              paginationTotalRows={products.length}
+              onChangePage={(page) => {
+                setCurrentPage(page);
+                handleSearch(""); // Reset search when changing pages
+              }}
+              responsive
+              striped
+              noDataComponent="No Data Available"
+            />
+            
+
             </Card.Body>
           </Card>
         </Col>

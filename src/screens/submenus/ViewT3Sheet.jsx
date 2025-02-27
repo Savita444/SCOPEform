@@ -13,18 +13,32 @@ import { FaDownLong } from "react-icons/fa6";
 import * as XLSX from 'xlsx';
 
 const ViewT3Sheet = () => {
-  const { searchQuery, handleSearch, filteredData } = useSearchExport();
+  const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]); // Fetch data when page changes
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+useEffect(() => {
+  setForceUpdate((prev) => prev + 1);
+}, [products, filteredData]);
 
   const fetchProducts = async () => {
+    setLoading(true);
+
     const accessToken = localStorage.getItem("remember_token");
     try {
       const response = await instance.get("get-intern-joining", {
@@ -33,9 +47,14 @@ const ViewT3Sheet = () => {
           "Content-Type": "application/json",
         },
       });
-      setProducts(response.data);
+      // Sort products by ID (assuming higher ID means newer record)
+      const sortedProducts = response.data.sort((a, b) => b.id - a.id);
+      setProducts(sortedProducts);
+      setData(sortedProducts)
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,33 +146,35 @@ const ViewT3Sheet = () => {
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      width: "60px",
 
     },
     {
       name: "Full Name",
-      cell: (row) => `${row.fname} ${row.fathername} ${row.mname} ${row.lname}`,
-      width: "200px",
+      cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
+      width: "180px",
     },
     {
       name: "Email Id",
       cell: (row) => row.email,
-      width: "200px",
+      width: "180px",
 
     },
     {
       name: "Contact Details",
       cell: (row) => row.contact_details,
+      width:"150px",
     },
     {
       name: "Whatsapp No.",
       cell: (row) => row.whatsappno,
+      width:"150px",
     },
     {
       name: "Technology",
       cell: (row) => row.technology_name,
       sortable: true,
       sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
+      width:"190px",
 
     },
     {
@@ -168,11 +189,11 @@ const ViewT3Sheet = () => {
       cell: (row) => (
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
-            <Button className="ms-1" onClick={() => navigate(`/T3SheetDetails/${row.id}`)}>
+            <Button className="ms-1" variant="secondary" onClick={() => navigate(`/T3SheetDetails/${row.id}`)}>
               <FaEye />
             </Button>
           </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
+          {/* <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
             <Button
               className="ms-1"
               style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
@@ -180,8 +201,8 @@ const ViewT3Sheet = () => {
             >
               <FaTrash />
             </Button>
-          </OverlayTrigger>
-          <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
+          </OverlayTrigger> */}
+          {/* <OverlayTrigger placement="top" overlay={<Tooltip id="print-tooltip">Print</Tooltip>}>
             <Button
               className="ms-1"
               style={{ backgroundColor: "blue", color: "white", borderColor: "blue" }}
@@ -189,7 +210,7 @@ const ViewT3Sheet = () => {
             >
               <FaPrint />
             </Button>
-          </OverlayTrigger>
+          </OverlayTrigger> */}
         </div>
       ),
     },
@@ -221,17 +242,22 @@ const ViewT3Sheet = () => {
       </Row>
             </Card.Header>
 
-            <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+            <Card.Body>  <DataTable
+  key={forceUpdate}
+  columns={tableColumns(currentPage, rowsPerPage)}
+  data={searchQuery ? filteredData : products} // Use filtered data only when searching
+  pagination
+  paginationServer
+  paginationTotalRows={products.length}
+  onChangePage={(page) => {
+    setCurrentPage(page);
+    handleSearch(""); // Reset search when changing pages
+  }}
+  responsive
+  striped
+  noDataComponent="No Data Available"
+/>
+
             </Card.Body>
           </Card>
         </Col>

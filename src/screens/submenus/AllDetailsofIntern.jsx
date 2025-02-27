@@ -203,7 +203,7 @@ const AllDetailsofIntern = () => {
                       type="text"
                       // placeholder="enter first name"
                       className="FormStyeling transparent-input"
-                      value={`${fname} ${fathername} ${mname} ${lname}`}
+                      value={`${fname} ${mname} ${fathername} ${lname}`}
                     />
                   </Form.Group>
                 </Col>
@@ -458,7 +458,7 @@ const AllDetailsofIntern = () => {
                   {/* email */}
                   <Col lg={4} md={4} sm={12}>
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Linkdin Address :
+                      LinkedIn Address :
                     </b>
                   </Col>
                   <Col lg={8} md={8} sm={12} className="mb-3">
@@ -664,7 +664,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Enter graduation details"
                         className="FormStyeling transparent-input"
-                        value={`${post_graduation_details}`}
+                        value={`${post_graduation_details}` || "Not Sepcified" }
                       />
                     </Form.Group>
                   </Col>
@@ -967,13 +967,13 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Enter Guardian Name"
                         className="FormStyeling transparent-input"
-                        value={`${guardian_name}`}
+                        value={`${guardian_name}` || "Not Sepcified"}
                       />
                     </Form.Group>
                   </Col>
                   <Col lg={2} md={2} sm={12} className="m-0 ">
                     <b style={{ fontFamily: "Century gothic" }}>
-                      Guardian Occupation :
+                      Guardian Occupation:
                     </b>
                   </Col>
                   <Col lg={3} md={3} sm={12} className="mb-3">
@@ -985,7 +985,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Enter Guardian Occupation"
                         className="FormStyeling transparent-input"
-                        alue={`${GuardianOccupation}`}
+                        value={`${GuardianOccupation}` || "Not Sepcified"}
                       ></Form.Control>
                     </Form.Group>
                   </Col>
@@ -1004,7 +1004,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="+91"
                         className="FormStyeling transparent-input"
-                        value={`${Guardian_contactdetails}`}
+                        value={`${Guardian_contactdetails}` || "Not Sepcified"}
                       />
                     </Form.Group>
                   </Col>
@@ -1022,7 +1022,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Enter Guardian Aadhar card no"
                         className="FormStyeling transparent-input"
-                        value={`${Guardian_aadharno}`}
+                        value={`${Guardian_aadharno}` || "Not Sepcified"}
                       ></Form.Control>
                     </Form.Group>
                   </Col>
@@ -1294,7 +1294,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Social Media"
                         className="FormStyeling transparent-input"
-                        value={refrance_social_media}
+                        value={refrance_social_media || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1314,7 +1314,7 @@ const AllDetailsofIntern = () => {
                       <Form.Control
                         type="text"
                         placeholder="Friend Name"
-                        value={refrance_friend}
+                        value={refrance_friend || "Not Specified"}
                         className="FormStyeling transparent-input"
 
                       />
@@ -1336,7 +1336,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Family"
                         className="FormStyeling transparent-input"
-                        value={refrance_family}
+                        value={refrance_family || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1356,7 +1356,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Relatives"
                         className="FormStyeling transparent-input"
-                        value={refrance_relatives}
+                        value={refrance_relatives || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1376,7 +1376,7 @@ const AllDetailsofIntern = () => {
                         type="text"
                         placeholder="Other"
                         className="FormStyeling transparent-input"
-                        value={refrance_other}
+                        value={refrance_other || "Not Specified"}
 
                       />
                     </Form.Group>
@@ -1474,7 +1474,7 @@ const AllDetailsofIntern = () => {
                       textAlign: "justify",
                     }}
                   >
-                    I certify that the information I have provided above is true
+                    <Form.Check inline className="custom-checkbox" />I certify that the information I have provided above is true
                     to the best of my knowledge and belief, without any malice
                     or intention to commit acts of misrepresentation. I am aware
                     that any false, misleading, or deceptive information

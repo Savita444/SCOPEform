@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import * as XLSX from 'xlsx';
 
 const ViewImplanttraining = () => {
-    const { searchQuery, handleSearch, filteredData } = useSearchExport();
+    const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -24,6 +24,8 @@ const ViewImplanttraining = () => {
     }, []);
 
     const fetchProducts = async () => {
+        setLoading(true);
+
         const accessToken = localStorage.getItem("remember_token");
         try {
             const response = await instance.get("get_implant_training_data", {
@@ -34,9 +36,14 @@ const ViewImplanttraining = () => {
             });
             const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            setProducts(sortedData);        } catch (error) {
+            setProducts(sortedData); 
+            setData(sortedData); // Update the SearchExportContext data
+     
+          } catch (error) {
             console.error("Error fetching products:", error);
-        }
+        } finally {
+            setLoading(false);
+          }
     };
 
     const formatDate = (dateString) => {
