@@ -15,8 +15,8 @@ function UpdateCompletionDetails() {
     const [student_id, setstudent_id] = useState();
     const [formData, setFormData] = useState({
         fname: "",
-        mname:"",
-        fathername:"",
+        mname: "",
+        fathername: "",
         lname: "",
         technology_name: "",
         email: "",
@@ -50,6 +50,8 @@ function UpdateCompletionDetails() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+
+    
     // Fetching data when component mounts
     useEffect(() => {
         const fetchDetails = async () => {
@@ -96,7 +98,7 @@ function UpdateCompletionDetails() {
                         name_contact_of_fifth_candidate: data.name_contact_of_fifth_candidate || "",
 
                         blog_on_your_selected_technology: data.blog_on_your_selected_technology || "",
-                        review_image: data.review_image || "",
+                        google_review_img: data.google_review_img || "",
                         resume_pdf: data.resume_pdf || "",
                         feedback_video: data.feedback_video || "",
 
@@ -113,9 +115,9 @@ function UpdateCompletionDetails() {
                     draggable: true,
                     progress: undefined,
                     theme: "light",
-                    style: { marginTop: '80px' }, 
-                    transition: Bounce, 
-                  });
+                    style: { marginTop: '80px' },
+                    transition: Bounce,
+                });
                 navigate(-1)
             } finally {
                 setIsLoading(false);
@@ -216,15 +218,15 @@ function UpdateCompletionDetails() {
                 "blog on your selected technology is required.";
 
 
-        // if (!review_image) {
-        //   errors.review_image = "Image upload is required.";
-        // }
-        // if (!resume_pdf) {
-        //   errors.resume_pdf = "PDF upload is required.";
-        // }
-        // if (!feedback_video) {
-        //   errors.feedback_video = "Video upload is required.";
-        // }
+        if (!formData.review_image) {
+            errors.review_image = "Image upload is required.";
+        }
+        if (!formData.resume_pdf) {
+            errors.resume_pdf = "PDF upload is required.";
+        }
+        if (!formData.feedback_video) {
+            errors.feedback_video = "Video upload is required.";
+        }
         setErrors(errors);
         return isValid;
     };
@@ -287,14 +289,20 @@ function UpdateCompletionDetails() {
         e.preventDefault();
         if (!validateForm()) return;
 
-        console.log("Payload before API request:", formData);
+        // Create a new object without empty file fields
+        const filteredFormData = { ...formData };
+        if (!filteredFormData.review_image) delete filteredFormData.review_image;
+        if (!filteredFormData.resume_pdf) delete filteredFormData.resume_pdf;
+        if (!filteredFormData.feedback_video) delete filteredFormData.feedback_video;
+
+        console.log("Payload before API request:", filteredFormData);
 
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem("remember_token");
             const response = await axios.post(
                 `https://api.sumagotraining.in/public/api/update-intern-completion-details/update/${student_id}`,
-                formData,
+                filteredFormData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("API Response after submit:", response.data);
@@ -307,6 +315,7 @@ function UpdateCompletionDetails() {
             setIsSubmitting(false);
         }
     };
+
 
 
 
@@ -379,7 +388,7 @@ function UpdateCompletionDetails() {
                                                     type="text"
                                                     name="name"
                                                     value={`${formData.fname} ${formData.mname} ${formData.fathername} ${formData.lname}`}
-                                                    onChange={handleInputChange}
+                                                    onChange={handleInputChange} readOnly
                                                     isInvalid={!!errors.fname}
                                                     className="FormStyeling transparent-input"
                                                     placeholder="Enter Your Name"
@@ -438,7 +447,7 @@ function UpdateCompletionDetails() {
                                                     type="email"
                                                     name="email"
                                                     value={formData.email}
-                                                    onChange={handleInputChange} className="FormStyeling transparent-input"
+                                                    onChange={handleInputChange} className="FormStyeling transparent-input" readOnly
                                                 />
                                             </Form.Group>
                                             {errors.email && (
@@ -1084,6 +1093,9 @@ function UpdateCompletionDetails() {
                                             {errors.review_image && (
                                                 <p className="text-danger">{errors.review_image}</p>
                                             )}
+                                            <p>
+                                                (Image size must not exceed 2 MB) <span className="text-danger">*</span>
+                                            </p>
                                             {/* {image && <p>Selected Image: {image.name}</p>} */}
                                         </Col>
                                         <Col lg={2} md={3} sm={12}>
@@ -1132,6 +1144,9 @@ function UpdateCompletionDetails() {
                                             {errors.feedback_video && (
                                                 <p className="text-danger">{errors.feedback_video}</p>
                                             )}
+                                            <p>
+                                                (Video size must not exceed 5 MB) <span className="text-danger">*</span>
+                                            </p>
                                         </Col>
                                         <Col lg={2} md={2} sm={12}>
                                             <b style={{ fontFamily: "Century gothic" }}>
@@ -1147,7 +1162,7 @@ function UpdateCompletionDetails() {
                                                     type="file"
                                                     name="resume_pdf"
                                                     accept=".pdf"
-                                                    onChange={handleFileChange}
+                                                     onChange={handleFileChange}
                                                     className="FormStyeling transparent-input"
                                                 />
                                             </Form.Group>
@@ -1155,6 +1170,10 @@ function UpdateCompletionDetails() {
                                             {errors.resume_pdf && (
                                                 <p className="text-danger">{errors.resume_pdf}</p>
                                             )}
+
+                                            <p>
+                                                (Only PDF files are allowed.)<span className="text-danger">*</span>
+                                            </p>
                                             {/* {pdf && <p>Selected PDF: {pdf.name}</p>} */}
                                         </Col>
                                         {/* <input type="file" ref={pdfRef} accept="application/pdf" />

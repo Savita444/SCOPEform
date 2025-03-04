@@ -1,18 +1,119 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Card, Col, Form } from "react-bootstrap";
+import { Container, Row, Card, Col, Form, Button} from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
-
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+
 
 const AllDetailsofIntern = () => {
   const { id } = useParams();
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+
+  const contentRef = useRef(null); // Reference to the entire webpage
+  const internshipRef = useRef(null); // Reference for "INTERNSHIP DETAILS" section
+  const printButtonRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) {
+      console.error("Content reference is null.");
+      return;
+    }
+  
+    if (printButtonRef.current) {
+      printButtonRef.current.style.display = "none"; // Hide print button before capturing
+    }
+  
+    html2canvas(contentRef.current, {
+      scale: 2, // Improve quality
+      useCORS: true,
+      backgroundColor: null, // Transparent background
+      willReadFrequently: true,  // Ensures proper transparency handling
+    }).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+  
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const marginTop = 10; // Top margin for 2nd page onwards
+      const marginBottom = 12; // Bottom margin for all pages
+      const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
+  
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      let pageCount = 0; // Track page number
+  
+      while (heightLeft > 0.5 * usableHeight) {
+        let pageCanvas = document.createElement("canvas");
+        let pageCtx = pageCanvas.getContext("2d");
+      
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(
+          usableHeight * (canvas.width / imgWidth), 
+          heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
+        );
+      
+        pageCtx.drawImage(
+          canvas,
+          0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
+          canvas.width, pageCanvas.height,
+          0, 0,
+          pageCanvas.width, pageCanvas.height
+        );
+      
+        const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
+        pdf.addImage(
+          pageImage,
+          "JPEG",
+          0,
+          pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
+          imgWidth,
+          pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
+        );
+      
+        heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
+        pageCount++;
+      
+        if (heightLeft > 0.5 * usableHeight) {
+          pdf.addPage();
+        }
+      }
+      
+      if (printButtonRef.current) {
+        printButtonRef.current.style.display = "block"; // Show print button again
+      }
+  
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl);
+    }).catch((error) => {
+      console.error("Error generating PDF:", error);
+  
+      // Ensure the button is visible again in case of an error
+      if (printButtonRef.current) {
+        printButtonRef.current.style.display = "block";
+      }
+    });
+  };
+  
+  
+  
+  
+  
+  
+
+
+
+
 
   useEffect(() => {
     const fetchInternDetails = async () => {
@@ -120,9 +221,17 @@ const AllDetailsofIntern = () => {
     buttom_place = "",
   } = internDetails;
 
+
+
+ 
+
+
+
+
+
   return (
     <>
-      <div className="container backimg">
+      <div className="container backimg" ref={contentRef}>
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -130,7 +239,7 @@ const AllDetailsofIntern = () => {
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} className="img-fluid logo2" alt="..." />
         </div>
-        {/* <Container>
+        <Container>
           <div className="text-center title-container">
             <b className="title-text">
               INTERNS JOINING <span className="highlight">FORM</span>
@@ -148,7 +257,7 @@ const AllDetailsofIntern = () => {
         </Container>
         <Container className="position-relative text-center welcommsg">
           <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
+            <b>Welcome To</b> <b>Sumago Center of Practical Experience!!</b>
           </p>
         </Container>
         <Container className="position-relative text-center para2">
@@ -158,7 +267,7 @@ const AllDetailsofIntern = () => {
             meaningful contributions. Let’s make this journey both rewarding and
             memorable!
           </p>
-        </Container> */}
+        </Container>
 
         {/* Intern Details */}
         <Container fluid>
@@ -1031,8 +1140,12 @@ const AllDetailsofIntern = () => {
             </Card.Body>
           </Card>
         </Container>
+
+
+
+
         <Container fluid>
-          <Card style={{ backgroundColor: "transparent", border: "none" }}>
+          <Card style={{ backgroundColor: "transparent", border: "none" }} ref={internshipRef} >
             <Card.Header
               className="cardpersonal_details"
               style={{ backgroundColor: "transparent", border: "none" }}
@@ -1241,7 +1354,8 @@ const AllDetailsofIntern = () => {
           </Card>
         </Container>
 
-        {/* R E F E R E N C E */}
+        {/* R E F E R E N C E */}                
+
         <Container fluid>
           {/* <Card style={{ backgroundColor: 'transparent', border: 'none' }}>
                             <Card.Header className="cardpersonal_details">
@@ -1558,27 +1672,26 @@ const AllDetailsofIntern = () => {
                     <div className="box"></div>
                   </Col>
                 </Row>
-                {/* <div className="button-container">
-                                        <Button
+                <div className="button-container">
+                                        {/* <Button
                                             variant="primary"
                                             type="submit"
                                             style={{ backgroundColor: "#28a745", borderColor: "#28a745" }} // Change to your desired color
                                         >
                                             Submit
-                                        </Button>
+                                        </Button> */}
 
                                         <Button
                                             variant="primary"
-                                            onClick={handlePrint}
+                                            onClick={handleDownloadPDF}
+                                            ref={printButtonRef}
                                             style={{ backgroundColor: "#17a2b8", borderColor: "#17a2b8" }} // Change to your desired color
                                         >
                                             Print
                                         </Button>
-                                    </div> */}
+                                    </div>
 
-                {/* <Button variant="primary" type='submit'>submit</Button>
-
-                                    <Button variant="primary" onClick={handlePrint}>Print</Button> */}
+              
               </Card.Text>
             </Card.Body>
           </Card>

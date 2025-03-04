@@ -6,6 +6,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 function InterJoining() {
   const { id } = useParams();
@@ -126,9 +128,100 @@ function InterJoining() {
 
 
 
-  const handlePrint = () => {
-    window.print();
+  // const handlePrint = () => {
+  //   window.print();
+  // };
+
+
+  const contentRef = useRef(null); // Reference to the entire webpage
+  const internshipRef = useRef(null); // Reference for "INTERNSHIP DETAILS" section
+  const printButtonRef = useRef(null);
+  const submitButtonRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) {
+      console.error("Content reference is null.");
+      return;
+    }
+  
+    // Hide buttons before capturing the PDF
+    if (printButtonRef.current) printButtonRef.current.style.display = "none";
+    if (submitButtonRef.current) submitButtonRef.current.style.display = "none";
+    html2canvas(contentRef.current, {
+      scale: 2, // Improve quality
+      useCORS: true,
+      backgroundColor: null, // Transparent background
+      willReadFrequently: true,  // Ensures proper transparency handling
+    }).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+  
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const marginTop = 10; // Top margin for 2nd page onwards
+      const marginBottom = 12; // Bottom margin for all pages
+      const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
+  
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      let pageCount = 0; // Track page number
+  
+      while (heightLeft > 0.5 * usableHeight) {
+        let pageCanvas = document.createElement("canvas");
+        let pageCtx = pageCanvas.getContext("2d");
+      
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(
+          usableHeight * (canvas.width / imgWidth), 
+          heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
+        );
+      
+        pageCtx.drawImage(
+          canvas,
+          0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
+          canvas.width, pageCanvas.height,
+          0, 0,
+          pageCanvas.width, pageCanvas.height
+        );
+      
+        const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
+        pdf.addImage(
+          pageImage,
+          "JPEG",
+          0,
+          pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
+          imgWidth,
+          pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
+        );
+      
+        heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
+        pageCount++;
+      
+        if (heightLeft > 0.5 * usableHeight) {
+          pdf.addPage();
+        }
+      }
+      
+      // Show buttons again after capturing
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
+      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+  
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl);
+    }).catch((error) => {
+      console.error("Error generating PDF:", error);
+  
+      // Ensure buttons are visible again in case of an error
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
+      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+    });
   };
+  
+  
+  
+  
+  
 
   // const handleRefereanceChange = (e) => {
   //   const { name, checked } = e.target;
@@ -976,7 +1069,7 @@ function InterJoining() {
 
   return (
     <>
-      <div className="container backimg ">
+      <div className="container backimg export-container" ref={contentRef}>
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -1003,7 +1096,7 @@ function InterJoining() {
 
         <Container className="position-relative text-center welcommsg">
           <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
+            <b>Welcome To </b> <b>Sumago Center of Practical Experience!!</b>
           </p>
         </Container>
 
@@ -2521,7 +2614,7 @@ function InterJoining() {
                                     </div>
                                 </div>
                             </Card.Header> */}
-            <Card style={{ backgroundColor: "transparent", border: "none" }}>
+            <Card style={{ backgroundColor: "transparent", border: "none" }} ref={internshipRef} className="section internship-section">
               <Card.Header
                 className="cardpersonal_details"
                 style={{ backgroundColor: "transparent", border: "none" }}
@@ -2840,7 +2933,7 @@ function InterJoining() {
                     </b>
 
                     <Col lg={4} md={4} sm={12}>
-                      <div class="box"></div>
+                      <div class="box signature-box"></div>
                       <Form.Label className="w-100 text-center">
                         Applicant Signature
                       </Form.Label>
@@ -2848,7 +2941,7 @@ function InterJoining() {
                     <Col lg={4} md={4} sm={12}>
                       <Form.Group
                         className="fname1 mb-2"
-                        controlId="exampleForm.ControlInput1"
+                        controlId="exampleForm.ControlInput1 signature-box"
                       >
                         <Form.Control
                           type="text"
@@ -2871,10 +2964,11 @@ function InterJoining() {
                         )}
                       </Form.Label>
                     </Col>
+                    {/* <div className="pdf-page-break"></div>  */}
                     <Col lg={4} md={4} sm={12}>
                       <Form.Group
                         className="fname1 mb-2"
-                        controlId="exampleForm.ControlInput1"
+                        controlId="exampleForm.ControlInput1 signature-box"
                       >
                         <Form.Control
                           type="text"
@@ -2904,6 +2998,7 @@ function InterJoining() {
           </Container>
 
           {/* R E F E R E N C E */}
+          {/* <div className="pdf-page-break"></div> */}
           <Container fluid>
             {/* <Card style={{ backgroundColor: 'transparent', border: 'none' }}>
                             <Card.Header className="cardpersonal_details">
@@ -2935,6 +3030,7 @@ function InterJoining() {
                   </div>
                 </div>
               </Card.Header>
+              {/* <div className="pdf-page-break"></div> */}
 
               <Card.Body
                 style={{ backgroundColor: "transparent", color: "white" }}
@@ -2942,8 +3038,8 @@ function InterJoining() {
               >
                 <Card.Title className="text-black"></Card.Title>
                 <Card.Text className="text-black">
+                  
                   <Row>
-
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -3335,6 +3431,7 @@ function InterJoining() {
                     <Button
                       variant="primary"
                       type="submit"
+                      ref={submitButtonRef}
                       style={{
                         backgroundColor: "#28a745",
                         borderColor: "#28a745",
@@ -3346,7 +3443,8 @@ function InterJoining() {
 
                     <Button
                       variant="primary"
-                      onClick={handlePrint}
+                      onClick={handleDownloadPDF}
+                      ref={printButtonRef}
                       style={{
                         backgroundColor: "#17a2b8",
                         borderColor: "#17a2b8",
@@ -3363,6 +3461,7 @@ function InterJoining() {
               </Card.Body>
             </Card>
           </Container>
+          
         </Form>
       </div>
     </>

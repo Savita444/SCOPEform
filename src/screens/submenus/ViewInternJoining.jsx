@@ -167,10 +167,12 @@ useEffect(() => {
     {
       name: "Full Name",
       cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
+      width:"250px",
     },
     {
       name: "Email Id",
       cell: (row) => row.email,
+      width:"250px",
     },
     {
       name: "Contact Details",

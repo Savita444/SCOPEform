@@ -51,6 +51,8 @@ input[type="radio"] {
     /* Maintains the aspect ratio */
     display: block;
     /* Removes inline spacing */
+    margin-left: -12px;
+
 }
 
 /* Mobile View (up to 600px) */
@@ -362,135 +364,39 @@ button:hover {
 
 @media print {
     * {
-        -webkit-print-color-adjust: exact;
-        /* Safari/Chrome */
-        print-color-adjust: exact;
-        /* Firefox */
+      font-size: 10pt; /* Adjust font size to fit content */
     }
-
-    .corner_img {
-        height: 130px;
-        max-width: 100%;
-    }
-
+    
     body {
-        background-size: 100% auto;
-        /* Ensures the image width is 100% of the page */
-        background-attachment: fixed;
-        /* Keeps the background fixed during printing */
-        margin: 0;
-        /* Remove margins to ensure the background covers the full page */
-        padding: 0;
-        /* Remove padding if needed */
+      margin: 0;
+      padding: 0;
+    }
+  
+    .export-container {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .form-group {
+      margin-bottom: 5px; /* Reduce spacing between form fields */
+    }
+  
+    .page-break {
+      break-after: always;
     }
 
-    .logo1,
-    .logo2 {
-        display: block !important;
-        /* Ensure visibility */
-        /* Maintain aspect ratio */
-        max-width: 100% !important;
-        margin-top: 40px;
+   
+        .pdf-page-break {
+          page-break-before: always;
+          page-break-after: always;
+          height: 1px;
+          visibility: hidden;
+        
+      }
+     
       
-        
-    }
-
-    .logo-container {
-        display: flex !important;
-        justify-content: center !important;
-        margin-right: 40px;
-        
-    }
-
-
-    .backimg {
-        background-image: url('../imgs/5.jpg');
-        background-size: 100%;
-        min-width: 100vw !important;
-        
-        min-height: 100vh !important;
-        height: auto;
-    }
-    
-    @media print {
-        * {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-    
-        body, html {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-    
-        .form-container {
-            width: 100%;
-            max-width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-    
-        .form-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-    
-        .form-group label {
-            width: 25%;
-            text-align: left;
-            font-weight: bold;
-            font-size: 12pt;
-        }
-    
-        .form-group input,
-        .form-group select {
-            width: 70%;
-            border: 1px solid #000;
-            padding: 5px;
-            font-size: 12pt;
-        }
-    
-        /* Fix multi-column fields like "First Name | Mother Name | Father Name | Last Name" */
-        .multi-field {
-            display: flex;
-            justify-content: space-between;
-            width: 70%;
-        }
-    
-        .multi-field input {
-            width: 24%;
-            text-align: center;
-        }
-    
-        /* Fix radio button alignment */
-        .radio-group {
-            display: flex;
-            align-items: center;
-            width: 70%;
-            gap: 10px;
-        }
-    
-        .radio-group input[type="radio"] {
-            display: inline-block;
-            width: auto;
-            height: auto;
-            transform: scale(1.2); /* Slightly bigger for visibility */
-            margin: 0 5px;
-        }
-    
-        .radio-group label {
-            margin: 0;
-            font-size: 12pt;
-        }
-    }
-    
-
-}
+  }
+  
 
 
 

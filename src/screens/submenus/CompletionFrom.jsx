@@ -7,12 +7,14 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+
 const CompletionFrom = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
-
 
     stude_id: id,
     name: "",
@@ -45,12 +47,65 @@ const CompletionFrom = () => {
     feedback_video: "",
   });
 
-
-
-  const [errors, setErrors] = useState({});
+const [errors, setErrors] = useState({});
   // const [technology, settechnology_name] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+
+  const contentRef = useRef(null); // Reference to the entire form
+  const printButtonRef = useRef(null);
+  const submitButtonRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) {
+      console.error("Content reference is null.");
+      return;
+    }
+  
+    // Hide buttons before capturing the PDF
+    if (printButtonRef.current) printButtonRef.current.style.display = "none";
+    if (submitButtonRef.current) submitButtonRef.current.style.display = "none";
+  
+    html2canvas(contentRef.current, {
+      scale: 1.5, // Improve quality but keep size reasonable
+      useCORS: true,
+    }).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+  
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+  
+      while (heightLeft > 0) {
+        pdf.addImage(canvas.toDataURL("image/jpeg", 0.8), "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        position -= pageHeight;
+  
+        if (heightLeft > 0) {
+          pdf.addPage();
+        }
+      }
+  
+      // Show buttons again after capturing
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
+      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+  
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl);
+    }).catch((error) => {
+      console.error("Error generating PDF:", error);
+  
+      // Ensure buttons are visible again in case of an error
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
+      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+    });
+  };
+  
+  
 
 
 
@@ -192,7 +247,16 @@ const CompletionFrom = () => {
     let error = "";
     if (name === "review_image" && !file.type.startsWith("image/")) {
       error = "Only image files are allowed.";
-    } else if (name === "resume_pdf" && file.type !== "application/pdf") {
+    
+    }
+    else if (name === "review_image") {
+      if (!file.type.startsWith("image/")) {
+        error = "Only video files are allowed.";
+      } else if (file.size > 2 * 1024 * 1024) { // 2 MB size limit
+        error = "Image size must not exceed 2 MB.";
+      }
+    } 
+    else if (name === "resume_pdf" && file.type !== "application/pdf") {
       error = "Only PDF files are allowed.";
     } else if (name === "feedback_video") {
       if (!file.type.startsWith("video/")) {
@@ -440,11 +504,16 @@ const CompletionFrom = () => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  // const handlePrint = () => {
+  //   window.print();
+  // };
+
+
+
   return (
     <>
+
+<div ref={contentRef}>
       <div className="backimg">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
@@ -473,7 +542,7 @@ const CompletionFrom = () => {
 
         <Container className="position-relative text-center welcommsg">
           <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
+            <b>Welcome To </b> <b>Sumago Center of Practical Experience!!</b>
           </p>
         </Container>
 
@@ -1169,6 +1238,7 @@ const CompletionFrom = () => {
                         </span>
                       )}
                     </Col>
+                    <div className="pdf-page-break"></div>  {/* Page break after Personal Details */}
 
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -1296,7 +1366,12 @@ const CompletionFrom = () => {
                         <p className="text-danger">{errors.review_image}</p>
                       )}
                       {/* {image && <p>Selected Image: {image.name}</p>} */}
+                      <p>
+                            (Image size must not exceed 2 MB) <span className="text-danger">*</span>
+                          </p>
                     </Col>
+
+
                     <Col lg={2} md={3} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
                         Write minimum one Blog on your selected technology: <span className="text-danger">*</span>{" "}
@@ -1342,7 +1417,9 @@ const CompletionFrom = () => {
                       </Form.Group>
                       {errors.feedback_video && (
                         <p className="text-danger">{errors.feedback_video}</p>
-                      )}
+                      )} <p>
+                      (Video size must not exceed 5 MB) <span className="text-danger">*</span>
+                    </p>
                     </Col>
                     <Col lg={2} md={2} sm={12}>
                       <b style={{ fontFamily: "Century gothic" }}>
@@ -1366,6 +1443,9 @@ const CompletionFrom = () => {
                       {errors.resume_pdf && (
                         <p className="text-danger">{errors.resume_pdf}</p>
                       )}
+                       <p>
+                            (Only PDF files are allowed.)<span className="text-danger">*</span>
+                          </p>
                       {/* {pdf && <p>Selected PDF: {pdf.name}</p>} */}
                     </Col>
                     {/* <input type="file" ref={pdfRef} accept="application/pdf" />
@@ -1389,6 +1469,7 @@ const CompletionFrom = () => {
                       <Button
                         variant="primary"
                         type="submit"
+                        ref={submitButtonRef}
                         disabled={isSubmitting} // Disable button while submitting
                         style={{
                           backgroundColor: "#28a745",
@@ -1402,7 +1483,8 @@ const CompletionFrom = () => {
 
                       <Button
                         variant="primary"
-                        onClick={handlePrint}
+                        onClick={handleDownloadPDF}
+                        ref={printButtonRef}
                         style={{
                           backgroundColor: "#17a2b8",
                           borderColor: "#17a2b8",
@@ -1421,6 +1503,7 @@ const CompletionFrom = () => {
             </Card>
           </Container>
         </Form>
+      </div>
       </div>
     </>
   );

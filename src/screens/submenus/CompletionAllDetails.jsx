@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Card, Col, Form } from "react-bootstrap";
+import { Container, Row, Card, Col, Form, Button } from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
 import pdficon from "../imgs/download.png";
 import { toast, Bounce  } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-
-
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+
 
 const CompletionAllDetails = () => {
   const { id } = useParams();
@@ -19,6 +19,96 @@ const CompletionAllDetails = () => {
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+  const contentRef = useRef(null); // Reference to the entire form
+  const printButtonRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) {
+      console.error("Content reference is null.");
+      return;
+    }
+  
+    if (printButtonRef.current) {
+      printButtonRef.current.style.display = "none"; // Hide print button before capturing
+    }
+  
+    html2canvas(contentRef.current, {
+      scale: 2, // Improve quality
+      useCORS: true,
+      backgroundColor: null, // Transparent background
+      willReadFrequently: true,  // Ensures proper transparency handling
+    }).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+  
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const marginTop = 10; // Top margin for 2nd page onwards
+      const marginBottom = 12; // Bottom margin for all pages
+      const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
+  
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      let pageCount = 0; // Track page number
+  
+      while (heightLeft > 0.5 * usableHeight) {
+        let pageCanvas = document.createElement("canvas");
+        let pageCtx = pageCanvas.getContext("2d");
+      
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(
+          usableHeight * (canvas.width / imgWidth), 
+          heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
+        );
+      
+        pageCtx.drawImage(
+          canvas,
+          0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
+          canvas.width, pageCanvas.height,
+          0, 0,
+          pageCanvas.width, pageCanvas.height
+        );
+      
+        const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
+        pdf.addImage(
+          pageImage,
+          "JPEG",
+          0,
+          pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
+          imgWidth,
+          pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
+        );
+      
+        heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
+        pageCount++;
+      
+        if (heightLeft > 0.5 * usableHeight) {
+          pdf.addPage();
+        }
+      }
+      
+      if (printButtonRef.current) {
+        printButtonRef.current.style.display = "block"; // Show print button again
+      }
+  
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl);
+    }).catch((error) => {
+      console.error("Error generating PDF:", error);
+  
+      // Ensure the button is visible again in case of an error
+      if (printButtonRef.current) {
+        printButtonRef.current.style.display = "block";
+      }
+    });
+  };
+  
+  
+
+
 
   useEffect(() => {
     const fetchInternDetails = async () => {
@@ -114,6 +204,7 @@ const CompletionAllDetails = () => {
 
   return (
     <>
+    <div ref={contentRef}>
       <div className="container backimg">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
@@ -122,35 +213,39 @@ const CompletionAllDetails = () => {
           <img src={logo1} class="img-fluid logo1" alt="..." />
           <img src={logo2} className="img-fluid logo2" alt="..." />
         </div>
-        {/* <Container>
-          <div className="text-center title-container">
-            <b className="title-text">
-              INTERNS JOINING <span className="highlight">FORM</span>
-            </b>
-          </div>
-        </Container>
-        <Container className="position-relative text-center homepara">
-          <p>
-            SCOPE, where we believe in empowering individuals through education
-            and skill development. Established with a vision to foster
-            excellence and innovation in learning, Scope is dedicated to
-            providing high-quality training programs tailored to meet the
-            diverse needs of our students.
-          </p>
-        </Container>
-        <Container className="position-relative text-center welcommsg">
-          <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
-          </p>
-        </Container>
-        <Container className="position-relative text-center para2">
-          <p style={{ textAlign: "justify" }}>
-            We’re glad to have you on board as part of our intern team. Get
-            ready to dive into hands-on learning, sharpen your skills, and make
-            meaningful contributions. Let’s make this journey both rewarding and
-            memorable!
-          </p>
-        </Container> */}
+          <Container>
+                  <div className="text-center title-container">
+                    <b className="title-text">
+                      INTERNS COMPLETION <span className="highlight">FORM</span>
+                    </b>
+                  </div>
+                </Container>
+        
+                <Container className="position-relative text-center homepara">
+                  <p>
+                    SCOPE, where we believe in empowering individuals through education
+                    and skill development. Established with a vision to foster
+                    excellence and innovation in learning, Scope is dedicated to
+                    providing high-quality training programs tailored to meet the
+                    diverse needs of our students.
+                  </p>
+                </Container>
+        
+                <Container className="position-relative text-center welcommsg">
+                  <p>
+                    <b>Welcome To </b> <b>Sumago Center of Practical Experience!!</b>
+                  </p>
+                </Container>
+        
+                <Container className="position-relative text-center para2">
+                  <p style={{ textAlign: "justify" }}>
+                    We’re glad to have you on board as part of our intern team. Get
+                    ready to dive into hands-on learning, sharpen your skills, and make
+                    meaningful contributions. Let’s make this journey both rewarding and
+                    memorable!
+                  </p>
+                </Container>
+                <div style={{ margin: "40px" }}></div>
 
         {/* Intern Details */}
         <Container fluid>
@@ -825,10 +920,29 @@ const CompletionAllDetails = () => {
       )}
         </Form.Group>
       </Col> */}
+
+
+<div className="button-container">
+                      
+
+                      <Button
+                        variant="primary"
+                        onClick={handleDownloadPDF}
+                        ref={printButtonRef}
+                        style={{
+                          backgroundColor: "#17a2b8",
+                          borderColor: "#17a2b8",
+                        }} // Change to your desired color
+                      >
+                        Print
+                      </Button>
+                    </div>
+
               </Row>
             </Card.Body>
           </Card>
         </Container>
+      </div>
       </div>
     </>
   );

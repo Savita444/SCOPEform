@@ -30,6 +30,7 @@
     /* Maintains the aspect ratio */
     display: block;
     /* Removes inline spacing */
+    margin-left: -12px;
 }
 
 /* Mobile View (up to 600px) */
@@ -300,39 +301,53 @@
     width: 100% !important;
     }
 }
+
+
+
 @media print {
     * {
-        -webkit-print-color-adjust: exact;  /* Safari/Chrome */
-        print-color-adjust: exact;          /* Firefox */
+      font-size: 10pt; /* Adjust font size to fit content */
     }
-    .corner_img {
-        height: 130px;
-        max-width: 100%;
+    
+    body {
+      margin: 0;
+      padding: 0;
     }
-    .corner_img1 {
+  
+    .export-container {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .form-group {
+      margin-bottom: 5px; /* Reduce spacing between form fields */
+    }
+  
+    .page-break {
+      break-after: always;
+    }
+
+   
+        .pdf-page-break {
+          page-break-before: always;
+          page-break-after: always;
+          height: 1px;
+          visibility: hidden;
         
-        max-width: 100%;
-    }
-    .body{
-        background-size: 100% auto;  /* Ensures the image width is 100% of the page */
-        background-attachment: fixed; /* Keeps the background fixed during printing */
-        margin: 0; /* Remove margins to ensure the background covers the full page */
-        padding: 0; /* Remove padding if needed */
+      }
+      
   }
-  .logo1 {
-    width: 100px;
-    margin-left: 50px;
+
+
+  .pdf-content {
+    margin: 0 !important;
+    padding: 0 !important;
 }
-.backimg {
-    background-image: url(/src/screens/imgs/5.jpg);
-    background-size: auto;
-    background-position: center;
-    background-repeat: repeat;
-    width: 100%;
-    min-height: 10vh;
-    height: auto;
-    box-sizing: border-box;
-}
+
+.pdf-content > *:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    height: auto !important;
 }
 
 

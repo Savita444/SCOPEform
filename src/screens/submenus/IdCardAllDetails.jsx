@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Card, Col, Form } from "react-bootstrap";
+import { Container, Row, Card, Col, Form, Button } from "react-bootstrap";
 import "./completion.css";
 import { toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,6 +8,9 @@ import axios from "axios";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 
 const IdCardAllDetails = () => {
   const { id } = useParams();
@@ -15,6 +18,81 @@ const IdCardAllDetails = () => {
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+  const contentRef = useRef(null); // Reference to the entire form
+  const printButtonRef = useRef(null);
+
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) {
+      console.error("Content reference is null.");
+      return;
+    }
+  
+    if (printButtonRef.current) printButtonRef.current.style.display = "none"; // Hide print button
+  
+    html2canvas(contentRef.current, {
+      scale: 2, // Improve quality
+      useCORS: true,
+      backgroundColor: null, // Transparent background
+    }).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+  
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Scale proportionally
+  
+      if (imgHeight <= pageHeight) {
+        // ✅ If content fits on a single page, add directly
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, imgWidth, imgHeight);
+      } else {
+        // ✅ If content is larger than one page, split it
+        let heightLeft = imgHeight;
+        let position = 0;
+  
+        while (heightLeft > 0) {
+          const pageCanvas = document.createElement("canvas");
+          const pageCtx = pageCanvas.getContext("2d");
+  
+          const sliceHeight = Math.min(canvas.height - position, (pageHeight * canvas.width) / imgWidth);
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sliceHeight;
+  
+          pageCtx.drawImage(
+            canvas,
+            0, position, // Capture only the needed section
+            canvas.width, sliceHeight,
+            0, 0,
+            pageCanvas.width, pageCanvas.height
+          );
+  
+          const pageImage = pageCanvas.toDataURL("image/png");
+  
+          pdf.addImage(pageImage, "PNG", 0, 0, imgWidth, (sliceHeight * imgWidth) / canvas.width);
+  
+          heightLeft -= sliceHeight * (imgWidth / canvas.width);
+          position += sliceHeight;
+  
+          if (heightLeft > 0) {
+            pdf.addPage();
+          }
+        }
+      }
+        
+        if (printButtonRef.current) printButtonRef.current.style.display = "block"; // Show print button
+    
+        const pdfBlob = pdf.output("blob");
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(pdfUrl);
+      }).catch((error) => {
+        console.error("Error generating PDF:", error);
+    
+        if (printButtonRef.current) printButtonRef.current.style.display = "block";
+      });
+    };
+
+
+
 
   const BASE_URL = "https://api.sumagotraining.in/public/api";
 
@@ -79,6 +157,8 @@ const IdCardAllDetails = () => {
 
   return (
     <>
+        <div ref={contentRef}>
+
       <div className="container idcardbackimg">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
@@ -261,6 +341,23 @@ const IdCardAllDetails = () => {
             </Card.Body>
           </Card>
         </Container>
+        <div className="button-container">
+            
+
+            <Button
+              variant="primary"
+              onClick={handleDownloadPDF}
+              ref={printButtonRef}
+
+              style={{
+                backgroundColor: "#17a2b8",
+                borderColor: "#17a2b8",
+              }} // Change to your desired color
+            >
+              Print
+            </Button>
+          </div>
+      </div>
       </div>
     </>
   );

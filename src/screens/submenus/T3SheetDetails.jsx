@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Card, Col, Form, Button, Table } from "react-bootstrap";
 import instance from "../../api/AxiosInstance";
-
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import "./T3SheetDetails.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -13,6 +14,50 @@ const T3SheetDetails = () => {
     const [internDetails, setInternDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+
+    const contentRef = useRef(null); // Reference to the entire form
+
+    const handleDownloadPDF = () => {
+        if (!contentRef.current) {
+            console.error("Content reference is null.");
+            return;
+        }
+    
+        html2canvas(contentRef.current, {
+            scale: 2,  // Improves resolution
+            useCORS: true,
+            allowTaint: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: document.documentElement.offsetWidth,
+            windowHeight: document.documentElement.scrollHeight
+        })
+        .then((canvas) => {
+            const pdf = new jsPDF("p", "mm", "a4"); // Portrait mode
+    
+            const imgWidth = 210;  // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+    
+            if (imgHeight > 297) {
+                // Scale down if content is too tall
+                const scaleFactor = 297 / imgHeight;
+                pdf.addImage(canvas.toDataURL("image/jpeg", 0.8), "JPEG", 0, 0, imgWidth, imgHeight * scaleFactor);
+            } else {
+                pdf.addImage(canvas.toDataURL("image/jpeg", 0.8), "JPEG", 0, 0, imgWidth, imgHeight);
+            }
+    
+            // Open the PDF in a new tab
+            const pdfBlob = pdf.output("blob");
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, "_blank");  // Opens in a new tab
+        })
+        .catch((error) => console.error("Error generating PDF:", error));
+    };
+    
+
+
+
 
     useEffect(() => {
         const fetchInternDetails = async () => {
@@ -60,7 +105,7 @@ const T3SheetDetails = () => {
 
     return (
         <>
-            <div className="container backimg">
+            <div className="container backimg" ref={contentRef}>
                 <div>
                     <img src={corner} className="corner_img" alt="Responsive Corner" />
                 </div>
@@ -337,7 +382,7 @@ const T3SheetDetails = () => {
                                 <div className="print-button text-center">
                                     <Button
                                         variant="primary"
-                                        onClick={handlePrint}
+                                        onClick={handleDownloadPDF}
                                         style={{
                                             backgroundColor: "#17a2b8",
                                             borderColor: "#17a2b8",
