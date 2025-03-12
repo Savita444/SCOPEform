@@ -22,7 +22,16 @@ const InternAllDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
+  const formatDate = (dob) => {
+    if (!dob) return ""; // Handle empty case
+  
+    let dateObj = new Date(dob); // Convert string to Date object
+    let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+    let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    let year = dateObj.getFullYear();
+  
+    return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+  };
 
   const contentRef = useRef(null); // Reference to the entire webpage
   const internshipRef = useRef(null); // Reference for "INTERNSHIP DETAILS" section
@@ -98,16 +107,23 @@ const InternAllDetails = () => {
         printButtonRef.current.style.display = "block"; // Show print button again
       }
   
-      const pdfBlob = pdf.output("blob");
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl);
-    }).catch((error) => {
-      console.error("Error generating PDF:", error);
-  
-      // Ensure the button is visible again in case of an error
-      if (printButtonRef.current) {
-        printButtonRef.current.style.display = "block";
-      }
+     
+      // Generate filename based on student's name
+      const fileName = `${fname}_${lname}_Joining_form.pdf`.replace(/\s+/g, "_"); // Replace spaces with underscores
+
+      // Save the PDF
+      pdf.save(fileName);
+
+      
+    //   const pdfBlob = pdf.output("blob");
+    //   const pdfUrl = URL.createObjectURL(pdfBlob);
+    //   window.open(pdfUrl);
+    // }).catch((error) => {
+    //   console.error("Error generating PDF:", error);
+
+
+      // Ensure buttons are visible again in case of an error
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
     });
   };
   
@@ -476,7 +492,7 @@ const InternAllDetails = () => {
                       // placeholder="enter first name"
                       placeholder="+91"
                       className="FormStyeling transparent-input"
-                      value={`${dob}`}
+                      value={`${formatDate(dob)}`}
                     />
                   </Form.Group>
                 </Col>
@@ -1212,8 +1228,8 @@ const InternAllDetails = () => {
                         type="text"
                         // placeholder="enter first name"
                         className="FormStyeling transparent-input"
-                        value={`${date_of_joining}`}
-                      />
+                        value={`${formatDate(date_of_joining)}`}
+                        />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -1303,7 +1319,7 @@ const InternAllDetails = () => {
                       />
                     </Form.Group>
                   </Col>
-                  <Col lg={8} md={8} sm={12} className="mb-5">
+                  <Col lg={8} md={8} sm={12} className="mb-2">
                     {intern_experience == "Yes" && (
                       <div>
                         <Form.Group

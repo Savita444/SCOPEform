@@ -17,6 +17,7 @@ const T3SheetDetails = () => {
 
 
     const contentRef = useRef(null); // Reference to the entire form
+    const printButtonRef = useRef(null);
 
     const handleDownloadPDF = () => {
         if (!contentRef.current) {
@@ -24,37 +25,61 @@ const T3SheetDetails = () => {
             return;
         }
     
+        // Hide the button before capturing the PDF
+        if (printButtonRef.current) {
+            printButtonRef.current.style.visibility = "hidden";
+        }
+    
         html2canvas(contentRef.current, {
-            scale: 2,  // Improves resolution
+            scale: 3,  // Improves resolution
             useCORS: true,
+            backgroundColor: null,
             allowTaint: true,
             scrollX: 0,
             scrollY: 0,
             windowWidth: document.documentElement.offsetWidth,
             windowHeight: document.documentElement.scrollHeight
         })
-        .then((canvas) => {
-            const pdf = new jsPDF("p", "mm", "a4"); // Portrait mode
+            .then((canvas) => {
+                const pdf = new jsPDF("p", "mm", "a4");
     
-            const imgWidth = 210;  // A4 width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+                const imgWidth = 210;  
+                const imgHeight = (canvas.height * imgWidth) / canvas.width; 
     
-            if (imgHeight > 297) {
-                // Scale down if content is too tall
-                const scaleFactor = 297 / imgHeight;
-                pdf.addImage(canvas.toDataURL("image/jpeg", 0.8), "JPEG", 0, 0, imgWidth, imgHeight * scaleFactor);
-            } else {
-                pdf.addImage(canvas.toDataURL("image/jpeg", 0.8), "JPEG", 0, 0, imgWidth, imgHeight);
-            }
+                if (imgHeight > 297) {
+                    const scaleFactor = 297 / imgHeight;
+                    pdf.addImage(canvas.toDataURL("image/jpeg", 1), "JPEG", 0, 0, imgWidth, imgHeight * scaleFactor);
+                } else {
+                    pdf.addImage(canvas.toDataURL("image/jpeg", 1), "JPEG", 0, 0, imgWidth, imgHeight);
+                }
     
-            // Open the PDF in a new tab
-            const pdfBlob = pdf.output("blob");
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            window.open(pdfUrl, "_blank");  // Opens in a new tab
-        })
-        .catch((error) => console.error("Error generating PDF:", error));
-    };
+                // Show the button again after capturing
+                if (printButtonRef.current) {
+                    printButtonRef.current.style.visibility = "visible";
+                }
     
+                   // Generate filename based on student's name
+            const fileName = `${fname}_${lname}_T3Sheet.pdf`.replace(/\s+/g, "_"); // Replace spaces with underscores
+
+            // Save the PDF
+            pdf.save(fileName);
+
+            
+    //   const pdfBlob = pdf.output("blob");
+    //   const pdfUrl = URL.createObjectURL(pdfBlob);
+    //   window.open(pdfUrl);
+    // }).catch((error) => {
+    //   console.error("Error generating PDF:", error);
+
+    
+        if (printButtonRef.current) {
+            printButtonRef.current.style.visibility = "visible";
+        }
+    });
+}
+
+    
+
 
 
 
@@ -125,9 +150,9 @@ const T3SheetDetails = () => {
                                 className="cardpersonal_details"
                                 style={{ backgroundColor: "transparent", border: "none" }}
                             >
-                                <div className="personal-card-heading position-relative">
+                                {/* <div className="personal-card-heading position-relative">
                                     <b className="form-title"> SCOPE INTERNSHIP DETAILS</b>
-                                </div>
+                                </div> */}
                             </Card.Header>
                             <Card.Body style={{ backgroundColor: "transparent", color: "white" }} className="pt-5">
 
@@ -135,23 +160,23 @@ const T3SheetDetails = () => {
                                 <Row>
                                     {/* Name of Candidate */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Name of Candidate:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px" ,fontSize: "18px"}}>Name of Candidate:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${fname} ${mname} ${fathername} ${lname}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%", fontSize: "18px" }  }
                                         />
                                     </Col>
 
                                     {/* Technology Name */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Technology Name:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px",fontSize: "18px" }}>Technology Name:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${technology_name}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%",fontSize: "18px" }}
                                         />
                                     </Col>
                                 </Row>
@@ -159,23 +184,23 @@ const T3SheetDetails = () => {
                                 <Row className="mt-2">
                                     {/* Duration of Training */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Duration of Training:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px",fontSize: "18px" }}>Duration of Training:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${duration}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%",fontSize: "18px" }}
                                         />
                                     </Col>
 
                                     {/* Qualification */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Qualification:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px",fontSize: "18px" }}>Qualification:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={post_graduation_details || graduation_details}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%" , fontSize: "18px"}}
                                         />
                                     </Col>
                                 </Row>
@@ -183,23 +208,23 @@ const T3SheetDetails = () => {
                                 <Row className="mt-2">
                                     {/* Date of Joining */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Date of Joining:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px", fontSize: "18px" }}>Date of Joining:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${date_of_joining}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%", fontSize: "18px" }}
                                         />
                                     </Col>
 
                                     {/* Training Mode */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Training Mode:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px", fontSize: "18px" }}>Training Mode:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${training_mode}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%", fontSize: "18px" }}
                                         />
                                     </Col>
                                 </Row>
@@ -207,12 +232,12 @@ const T3SheetDetails = () => {
                                 <Row className="mt-2">
                                     {/* Selected Module */}
                                     <Col lg={6} md={6} sm={12} className="d-flex align-items-center flex-nowrap">
-                                        <b className="label-colour me-3" style={{ width: "180px" }}>Selected Module:</b>
+                                        <b className="label-colour me-3" style={{ width: "180px", fontSize: "18px" }}>Selected Module:</b>
                                         <Form.Control
                                             type="text"
                                             className="FormStyeling transparent-input"
                                             value={`${selectedModules}`}
-                                            style={{ width: "50%" }}
+                                            style={{ width: "50%", fontSize: "18px" }}
                                         />
                                     </Col>
                                 </Row>
@@ -220,7 +245,7 @@ const T3SheetDetails = () => {
 
 
                                 <div className="container mt-4">
-                                    <Table bordered hover responsive className="text-center fs-5 rounded">
+                                    <Table  responsive className="text-center fs-5 rounded custom-table">
                                         <thead className="table-danger">
                                             <tr>
                                                 <th className="w-25">Contents</th>
@@ -269,7 +294,7 @@ const T3SheetDetails = () => {
                                                 <td className="text-start">
                                                     System Arrangement:<br /> System/Laptop/Own Laptop
                                                 </td>
-                                                <td>Operation Department</td>
+                                                <td className="align-middle text-center py-2">Operation Department</td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>
@@ -342,7 +367,7 @@ const T3SheetDetails = () => {
 
                                             <tr>
                                                 <td className="text-start">Experience Letter / Completion Letter</td>
-                                                <td>HR Department</td>
+                                                <td className="text-center align-middle py-2">HR Department</td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>
@@ -383,6 +408,7 @@ const T3SheetDetails = () => {
                                     <Button
                                         variant="primary"
                                         onClick={handleDownloadPDF}
+                                        ref={printButtonRef}
                                         style={{
                                             backgroundColor: "#17a2b8",
                                             borderColor: "#17a2b8",

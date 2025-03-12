@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./InterJoining.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -6,8 +6,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+// import html2canvas from "html2canvas";
+// import jsPDF from "jspdf";
 
 function InterJoining() {
   const { id } = useParams();
@@ -104,28 +104,45 @@ function InterJoining() {
   const [buttom_place, setbuttom_place] = useState("");
   const [errors, setErrors] = useState({});
 
-  const location = useLocation()
+  const location = useLocation();
+
   useEffect(() => {
     if (location) {
-      console.log("location?.state", location?.state)
-      setfname(location?.state?.fname ? location.state.fname : "");
-      setmname(location?.state?.mname ? location.state.mname : "");
-      setfathername(location?.state?.fathername ? location.state.fathername : "");
-      setlname(location?.state?.lname ? location.state.lname : "");
-      setemail(location?.state?.email ? location.state.email : "");
-      setparmanenat_address(location?.state?.parmanenat_address ? location.state.parmanenat_address : "");
-      setcurrent_address(location?.state?.current_address ? location.state.current_address : "");
-      setcontact_details(location?.state?.contact_details ? location?.state?.contact_details : "")
-      setwhatsappno(location?.state?.whatsappno ? location.state.whatsappno : "");
-      setdob(location?.state?.dob ? location.state.dob : "");
-      setAge(location?.state?.Age ? location.state.Age : "");
-      setgender(location?.state?.gender ? location.state.gender : "");
-      setblood(location?.state?.blood ? location.state.blood : "");
-      setaadhar(location?.state?.aadhar ? location.state.aadhar : "");
-
+      console.log("location?.state", location?.state);
+  
+      setfname(location?.state?.fname || "");
+      setmname(location?.state?.mname || "");
+      setfathername(location?.state?.fathername || "");
+      setlname(location?.state?.lname || "");
+      setemail(location?.state?.email || "");
+      setparmanenat_address(location?.state?.parmanenat_address || "");
+      setcurrent_address(location?.state?.current_address || "");
+      setcontact_details(location?.state?.contact_details || "");
+      setwhatsappno(location?.state?.whatsappno || "");
+      setdob(location?.state?.dob || "");
+      setAge(location?.state?.Age || "");
+      setgender(location?.state?.gender || "");
+      setblood(location?.state?.blood || "");
+      setaadhar(location?.state?.aadhar || "");
+      setfather_name(location?.state?.fathername || ""); 
+      setmother_name(location?.state?.mname || ""); 
+  
+      // Ensure that fullName and bottomapplicantName are set AFTER fname and lname are updated
+      setTimeout(() => {
+        setapplicant_name(`${location?.state?.fname || ""} ${location?.state?.lname || ""}`.trim());
+        setbuttonapplicantname(`${location?.state?.fname || ""} ${location?.state?.lname || ""}`.trim());
+      }, 0);
     }
-  }, [location])
+  }, [location]);
+  
 
+
+
+
+  // Sync buttom_place with place
+useEffect(() => {
+  setbuttom_place(place); 
+}, [place]);
 
 
   // const handlePrint = () => {
@@ -133,95 +150,103 @@ function InterJoining() {
   // };
 
 
-  const contentRef = useRef(null); // Reference to the entire webpage
-  const internshipRef = useRef(null); // Reference for "INTERNSHIP DETAILS" section
-  const printButtonRef = useRef(null);
-  const submitButtonRef = useRef(null);
+  // const contentRef = useRef(null); // Reference to the entire webpage
+  // const internshipRef = useRef(null); // Reference for "INTERNSHIP DETAILS" section
+  // const printButtonRef = useRef(null);
+  // const submitButtonRef = useRef(null);
 
-  const handleDownloadPDF = () => {
-    if (!contentRef.current) {
-      console.error("Content reference is null.");
-      return;
-    }
-  
-    // Hide buttons before capturing the PDF
-    if (printButtonRef.current) printButtonRef.current.style.display = "none";
-    if (submitButtonRef.current) submitButtonRef.current.style.display = "none";
-    html2canvas(contentRef.current, {
-      scale: 2, // Improve quality
-      useCORS: true,
-      backgroundColor: null, // Transparent background
-      willReadFrequently: true,  // Ensures proper transparency handling
-    }).then((canvas) => {
-      const pdf = new jsPDF("p", "mm", "a4");
-  
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const marginTop = 10; // Top margin for 2nd page onwards
-      const marginBottom = 12; // Bottom margin for all pages
-      const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
-  
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-      let pageCount = 0; // Track page number
-  
-      while (heightLeft > 0.5 * usableHeight) {
-        let pageCanvas = document.createElement("canvas");
-        let pageCtx = pageCanvas.getContext("2d");
-      
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = Math.min(
-          usableHeight * (canvas.width / imgWidth), 
-          heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
-        );
-      
-        pageCtx.drawImage(
-          canvas,
-          0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
-          canvas.width, pageCanvas.height,
-          0, 0,
-          pageCanvas.width, pageCanvas.height
-        );
-      
-        const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
-        pdf.addImage(
-          pageImage,
-          "JPEG",
-          0,
-          pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
-          imgWidth,
-          pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
-        );
-      
-        heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
-        pageCount++;
-      
-        if (heightLeft > 0.5 * usableHeight) {
-          pdf.addPage();
-        }
-      }
-      
-      // Show buttons again after capturing
-      if (printButtonRef.current) printButtonRef.current.style.display = "block";
-      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
-  
-      const pdfBlob = pdf.output("blob");
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl);
-    }).catch((error) => {
-      console.error("Error generating PDF:", error);
-  
-      // Ensure buttons are visible again in case of an error
-      if (printButtonRef.current) printButtonRef.current.style.display = "block";
-      if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
-    });
-  };
-  
-  
-  
-  
-  
+  // const handleDownloadPDF = () => {
+  //   if (!contentRef.current) {
+  //     console.error("Content reference is null.");
+  //     return;
+  //   }
+
+  //   // Hide buttons before capturing the PDF
+  //   if (printButtonRef.current) printButtonRef.current.style.display = "none";
+  //   if (submitButtonRef.current) submitButtonRef.current.style.display = "none";
+
+
+
+  //   html2canvas(contentRef.current, {
+  //     scale: 2, // Improve quality
+  //     useCORS: true,
+  //     backgroundColor: null, // Transparent background
+  //     willReadFrequently: true,  // Ensures proper transparency handling
+  //   }).then((canvas) => {
+  //     const pdf = new jsPDF("p", "mm", "a4");
+
+  //     const imgWidth = 210; // A4 width in mm
+  //     const pageHeight = 297; // A4 height in mm
+  //     const marginTop = 10; // Top margin for 2nd page onwards
+  //     const marginBottom = 20; // Bottom margin for all pages
+  //     const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
+
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //     let heightLeft = imgHeight;
+  //     let position = 0;
+  //     let pageCount = 0; // Track page number
+
+  //     while (heightLeft > 0.5 * usableHeight) {
+  //       let pageCanvas = document.createElement("canvas");
+  //       let pageCtx = pageCanvas.getContext("2d");
+
+  //       pageCanvas.width = canvas.width;
+  //       pageCanvas.height = Math.min(
+  //         usableHeight * (canvas.width / imgWidth),
+  //         heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
+  //       );
+
+  //       pageCtx.drawImage(
+  //         canvas,
+  //         0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
+  //         canvas.width, pageCanvas.height,
+  //         0, 0,
+  //         pageCanvas.width, pageCanvas.height
+  //       );
+
+  //       const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
+  //       pdf.addImage(
+  //         pageImage,
+  //         "JPEG",
+  //         0,
+  //         pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
+  //         imgWidth,
+  //         pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
+  //       );
+
+  //       heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
+  //       pageCount++;
+
+  //       if (heightLeft > 0.5 * usableHeight) {
+  //         pdf.addPage();
+  //       }
+  //     }
+
+
+  //     // Show buttons again after capturing
+  //     if (printButtonRef.current) printButtonRef.current.style.display = "block";
+  //     if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+
+
+
+  //     // Generate filename based on student's name
+  //     const fileName = `${fname}_${lname}_Joining_form.pdf`.replace(/\s+/g, "_"); // Replace spaces with underscores
+
+  //     // Save the PDF
+  //     pdf.save(fileName);
+
+  //     // Ensure buttons are visible again in case of an error
+  //     if (printButtonRef.current) printButtonRef.current.style.display = "block";
+  //     if (submitButtonRef.current) submitButtonRef.current.style.display = "block";
+  //   });
+  // };
+
+
+
+
+
+
+
 
   // const handleRefereanceChange = (e) => {
   //   const { name, checked } = e.target;
@@ -336,6 +361,8 @@ function InterJoining() {
         "10th percentage must be a number between 0 and 100 (can include decimals)";
       isValid = false;
     }
+
+
     // 12th/Diploma Percentage Validation (Numeric and within 0-100)
     if (!twelve_diploma_per.trim()) {
       errors.twelve_diploma_per = "12th/Diploma percentage is required";
@@ -349,15 +376,25 @@ function InterJoining() {
         "12th/Diploma percentage must be a number between 0 and 100 (can include decimals)";
       isValid = false;
     }
+
     // Graduation Details Validation
-    if (!graduation_details.trim()) {
-      errors.graduation_details = "Graduation details are required";
-      isValid = false;
-    } else if (graduation_details.length > 100) {
-      errors.graduation_details =
-        "Graduation details must be less than or equal to 100 characters";
-      isValid = false;
-    }
+    // Graduation Details Validation
+const graduationDetailsPattern = /^[A-Za-z]+$/; // Only letters, no spaces
+
+if (!graduation_details.trim()) {
+  errors.graduation_details = "Graduation details are required";
+  isValid = false;
+} else if (graduation_details.length > 20) {
+  errors.graduation_details =
+    "Graduation details must be less than or equal to 20 characters";
+  isValid = false;
+} else if (!graduationDetailsPattern.test(graduation_details)) {
+  errors.graduation_details =
+    "Graduation details must only contain letters without spaces";
+  isValid = false;
+}
+
+
     // Graduation Percentage Validation (Numeric and within 0-100)
     if (!graduation_per.trim()) {
       errors.graduation_per = "Graduation percentage is required";
@@ -664,32 +701,163 @@ function InterJoining() {
     return isValid;
   };
 
-  const handlePconatactnumberChange = (e) => {
+  const handleLinkChange = (e, platform) => {
     const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setcontact_number(value.slice(0, 13)); // Limit to "+91" and 10 digits
-    } else {
-      setcontact_number("+91" + value.slice(0, 10));
+    let isValid = false;
+    let errorMessage = null;
+  
+    // Validation for LinkedIn
+    if (platform === 'linkedin') {
+      const regex = /^https:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9\-]+$/;
+      isValid = regex.test(value);
+      errorMessage = isValid ? null : "Please enter a valid LinkedIn URL starting with https://www.linkedin.com/in/";
     }
+    
+    // Validation for Facebook
+    else if (platform === 'facebook') {
+      const regex = /^https:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9\.]+$/;
+      isValid = regex.test(value);
+      errorMessage = isValid ? null : "Please enter a valid Facebook URL starting with https://www.facebook.com/";
+    }
+  
+    // Validation for YouTube
+    else if (platform === 'youtube') {
+      const regex = /^https:\/\/(www\.)?youtube\.com\/(channel|user|c)\/[a-zA-Z0-9_-]+$/;
+      isValid = regex.test(value);
+      errorMessage = isValid ? null : "Please enter a valid YouTube URL starting with https://www.youtube.com/";
+    }
+  
+    // Validation for any other URL
+    else if (platform === 'anyother') {
+      const regex = /^(https:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,6}(\/[a-zA-Z0-9\-_]+)*\/?$/;
+      isValid = regex.test(value);
+      errorMessage = isValid ? null : "Please enter a valid URL.";
+    }
+  
+    // Set the state based on platform
+    if (platform === 'linkedin') {
+      setlinkdin(value);
+    } else if (platform === 'facebook') {
+      setfacebook(value);
+    } else if (platform === 'youtube') {
+      setyoutube(value);
+    } else if (platform === 'anyother') {
+      setanyother_add(value);
+    }
+  
+    // Set the error state
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [platform]: errorMessage,
+    }));
   };
+
+
+
+
+
+
+
+
+
+  // const handlePconatactnumberChange = (e) => {
+  //   const value = e.target.value;
+  //   if (value.startsWith("+91")) {
+  //     setcontact_number(value.slice(0, 13)); // Limit to "+91" and 10 digits
+  //   } else {
+  //     setcontact_number("+91" + value.slice(0, 10));
+  //   }
+  // };
+
+  const handlePconatactnumberChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
+    } else {
+      value = "+91" + value.slice(0, 10);
+    }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+   // Enforce mobile number to start only with 6,7,8,9
+   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+    if (!["6", "7", "8", "9"].includes(firstDigit)) {
+      return; // Stop updating state if invalid number is entered
+    }
+  }
+
+  setcontact_number(value);
+  };
+
+  // const handlePconatactnumber2Change = (e) => {
+  //   const value = e.target.value;
+  //   if (value.startsWith("+91")) {
+  //     setcontact_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
+  //   } else {
+  //     setcontact_number1("+91" + value.slice(0, 10));
+  //   }
+  // };
+
 
   const handlePconatactnumber2Change = (e) => {
-    const value = e.target.value;
-    if (value.startsWith("+91")) {
-      setcontact_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Ensure "+91" is always the prefix
+    if (value.startsWith("91")) {
+      value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
-      setcontact_number1("+91" + value.slice(0, 10));
+      value = "+91" + value.slice(0, 10);
     }
+  
+    // If user deletes everything, reset to "+91"
+    if (value.length < 3) {
+      value = "+91";
+    }
+   // Enforce mobile number to start only with 6,7,8,9
+   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+    if (!["6", "7", "8", "9"].includes(firstDigit)) {
+      return; // Stop updating state if invalid number is entered
+    }
+  }
+
+  setcontact_number1(value);
   };
 
+
   const handleHusbandDetailsChange = (field, value) => {
+    if (field === "name") {
+      // Allow only letters and spaces, and limit to 20 characters
+      value = value.replace(/[^a-zA-Z\s]/g, "").slice(0, 20);
+    }
+
+    if (field === "occupation") {
+      // Allow only letters and spaces, and limit to 20 characters
+      value = value.replace(/[^a-zA-Z\s]/g, "").slice(0, 20);
+    }
+    
+    
     if (field === "contact") {
-      if (value.startsWith("+91")) {
-        value = value.slice(0, 13); // Ensure it doesn't exceed "+91" + 10 digits
+      value = value.replace(/\D/g, ""); // Remove all non-numeric characters
+  
+      // Ensure "+91" is always the prefix
+      if (value.startsWith("91")) {
+        value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
       } else {
-        value = value.slice(0, 10); // Auto-append "+91" and limit to 10 digits
+        value = "+91" + value.slice(0, 10); // Forcefully append "+91"
+      }
+  
+      // Prevent deletion of "+91"
+      if (value.length < 3) {
+        value = "+91";
       }
     }
+  
 
     if (field === "aadhar") {
       // Check if input is a number and has at most 12 digits
@@ -774,6 +942,17 @@ function InterJoining() {
     }
   }, [dob]);
 
+  const formatDate = (dob) => {
+    if (!dob) return ""; // Handle empty case
+  
+    let dateObj = new Date(dob); // Convert string to Date object
+    let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+    let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    let year = dateObj.getFullYear();
+  
+    return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+  };
+  
   const handleAadharChange = (e) => {
     const value = e.target.value;
 
@@ -810,22 +989,31 @@ function InterJoining() {
     }
   };
 
+  
+
   const handle_fatherPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-
+  
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-
+  
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
+   // Enforce mobile number to start only with 6,7,8,9
+   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+    if (!["6", "7", "8", "9"].includes(firstDigit)) {
+      return; // Stop updating state if invalid number is entered
+    }
+  }
 
-    setfather_contactdetails(value);
+  setfather_contactdetails(value);
   };
 
 
@@ -847,22 +1035,32 @@ function InterJoining() {
     }
   };
 
+ 
+
+
   const handle_motherPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-
+  
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-
+  
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
+   // Enforce mobile number to start only with 6,7,8,9
+   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+    if (!["6", "7", "8", "9"].includes(firstDigit)) {
+      return; // Stop updating state if invalid number is entered
+    }
+  }
 
-    setmother_contactdetails(value);
+  setmother_contactdetails(value);
   };
 
 
@@ -925,25 +1123,32 @@ function InterJoining() {
     }
   };
 
+ 
+
   const handle_GuardianPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-
+  
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-
+  
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
+   // Enforce mobile number to start only with 6,7,8,9
+   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+    if (!["6", "7", "8", "9"].includes(firstDigit)) {
+      return; // Stop updating state if invalid number is entered
+    }
+  }
 
-    setGuardiancontactdetails(value);
+  setGuardiancontactdetails(value);
   };
-
-
 
 
   const handleSubmit = async (e) => {
@@ -1069,7 +1274,7 @@ function InterJoining() {
 
   return (
     <>
-      <div className="container backimg export-container" ref={contentRef}>
+      <div className="container backimg export-container">
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -1501,11 +1706,11 @@ function InterJoining() {
                         controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
-                          type="date"
+                          type="text"
                           // placeholder="enter first name"
                           placeholder="+91"
                           className="FormStyeling transparent-input"
-                          value={dob}
+                          value={formatDate(dob)}
                           onChange={(e) => setdob(e.target.value)} readOnly
                         />
                       </Form.Group>
@@ -1662,8 +1867,10 @@ function InterJoining() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={linkdin}
-                          onChange={(e) => setlinkdin(e.target.value)}
+                          onChange={(e) => handleLinkChange(e, 'linkedin')}
+                          placeholder="LinkedIn URL"
                         />
+                        {errors.linkedin && <span>{errors.linkedin}</span>}
                       </Form.Group>
                       {/* {errors.linkdin && <span className="error text-danger">{errors.linkdin}</span>} */}
                     </Col>
@@ -1682,8 +1889,10 @@ function InterJoining() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={facebook}
-                          onChange={(e) => setfacebook(e.target.value)}
-                        />
+                          onChange={(e) => handleLinkChange(e, 'facebook')}
+      placeholder="Facebook URL"
+    />
+    {errors.facebook && <span>{errors.facebook}</span>}
                       </Form.Group>
                       {/* {errors.facebook && <span className="error text-danger">{errors.facebook}</span>} */}
                     </Col>
@@ -1702,8 +1911,11 @@ function InterJoining() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={youtube}
-                          onChange={(e) => setyoutube(e.target.value)}
+                          onChange={(e) => handleLinkChange(e, 'youtube')}
+                          placeholder="YouTube URL"
                         />
+                        {errors.youtube && <span>{errors.youtube}</span>}
+                    
                       </Form.Group>
                       {/* {errors.youtube && <span className="error text-danger">{errors.youtube}</span>} */}
                     </Col>
@@ -1722,8 +1934,10 @@ function InterJoining() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={anyother_add}
-                          onChange={(e) => setanyother_add(e.target.value)}
+                          onChange={(e) => handleLinkChange(e, 'anyother')}
+                          placeholder="Other URL"
                         />
+                        {errors.anyother && <span>{errors.anyother}</span>}
                       </Form.Group>
                       {/* {errors.anyother_add && <span className="error text-danger">{errors.anyother_add}</span>} */}
                     </Col>
@@ -1783,7 +1997,13 @@ function InterJoining() {
                           placeholder="Enter School Name"
                           className="FormStyeling transparent-input"
                           value={school_name}
-                          onChange={(e) => setschool_name(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 50) { // Set max length to 30 characters
+                              setschool_name(onlyLetters);
+                            }
+                          }}
+                          maxLength={50}
                         />
                       </Form.Group>
                       {errors.school_name && (
@@ -1807,7 +2027,23 @@ function InterJoining() {
                           placeholder="Enter 10th Percentage"
                           className="FormStyeling transparent-input"
                           value={tenth_per}
-                          onChange={(e) => settenth_per(e.target.value)}
+                          onChange={(e) => {
+                            let inputValue = e.target.value;
+                        
+                            // Allow only numbers with a single optional decimal point
+                            if (/^\d*\.?\d*$/.test(inputValue)) {
+                              if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                settenth_per(inputValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Ensure the value is at least 35 when user leaves the input field
+                            if (tenth_per && parseFloat(tenth_per) < 35) {
+                              settenth_per("35");
+                            }
+                          }}
+                          maxLength={6} // Prevents excessively long input
                         />
                       </Form.Group>
                       {errors.tenth_per && (
@@ -1831,9 +2067,23 @@ function InterJoining() {
                           placeholder="Enter 12th/Diploma percentage"
                           className="FormStyeling transparent-input"
                           value={twelve_diploma_per}
-                          onChange={(e) =>
-                            settwelve_diploma_per(e.target.value)
-                          }
+                          onChange={(e) => {
+                            let inputValue = e.target.value;
+                        
+                            // Allow only numbers with a single optional decimal point
+                            if (/^\d*\.?\d*$/.test(inputValue)) {
+                              if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                settwelve_diploma_per(inputValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Ensure the value is at least 35 when user leaves the input field
+                            if (twelve_diploma_per && parseFloat(twelve_diploma_per) < 35) {
+                              settwelve_diploma_per("35");
+                            }
+                          }}
+                          maxLength={6} // Prevents excessively long input
                         />
                       </Form.Group>
                       {errors.twelve_diploma_per && (
@@ -1852,15 +2102,19 @@ function InterJoining() {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter Graduation Details"
-                          className="FormStyeling transparent-input"
-                          value={graduation_details}
-                          onChange={(e) =>
-                            setgraduation_details(e.target.value)
-                          }
-                        />
+                       <Form.Control
+  type="text"
+  placeholder="Enter Graduation Details"
+  className="FormStyeling transparent-input"
+  value={graduation_details}
+  onChange={(e) => {
+    let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Remove spaces
+    if (newValue.length <= 20) {
+      setgraduation_details(newValue); // Update state only if within 10 characters
+    }
+  }}
+/>
+
                       </Form.Group>
                       {errors.graduation_details && (
                         <span className="error text-danger">
@@ -1883,7 +2137,23 @@ function InterJoining() {
                           placeholder="Enter Graduation Percentage"
                           className="FormStyeling transparent-input"
                           value={graduation_per}
-                          onChange={(e) => setgraduation_per(e.target.value)}
+                          onChange={(e) => {
+                            let inputValue = e.target.value;
+                        
+                            // Allow only numbers with a single optional decimal point
+                            if (/^\d*\.?\d*$/.test(inputValue)) {
+                              if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                setgraduation_per(inputValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Ensure the value is at least 35 when user leaves the input field
+                            if (graduation_per && parseFloat(graduation_per) < 35) {
+                              setgraduation_per("35");
+                            }
+                          }}
+                          maxLength={6} // Prevents excessively long input
                         />
                       </Form.Group>
                       {errors.graduation_per && (
@@ -1904,14 +2174,18 @@ function InterJoining() {
                         controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
-                          type="text"
-                          placeholder="Enter Post Graduation Details"
-                          className="FormStyeling transparent-input"
-                          value={post_graduation_details}
-                          onChange={(e) =>
-                            setPostGraduationDetails(e.target.value)
-                          }
-                        />
+  type="text"
+  placeholder="Enter Post Graduation Details"
+  className="FormStyeling transparent-input"
+  value={post_graduation_details}
+  onChange={(e) => {
+    let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Allow only letters and '.'
+    if (newValue.length <= 20) {
+      setPostGraduationDetails(newValue); // Update state only if within 20 characters
+    }
+  }}
+/>
+
                       </Form.Group>
                       {errors.post_graduation_details && (
                         <span className="error text-danger">
@@ -1934,7 +2208,23 @@ function InterJoining() {
                           placeholder="Enter Post Graduation Percentage"
                           className="FormStyeling transparent-input"
                           value={post_graduation_per}
-                          onChange={(e) => setPostGraduationPer(e.target.value)}
+                          onChange={(e) => {
+                            let inputValue = e.target.value;
+                        
+                            // Allow only numbers with a single optional decimal point
+                            if (/^\d*\.?\d*$/.test(inputValue)) {
+                              if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                setPostGraduationPer(inputValue);
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // Ensure the value is at least 35 when user leaves the input field
+                            if (post_graduation_per && parseFloat(post_graduation_per) < 35) {
+                              setPostGraduationPer("35");
+                            }
+                          }}
+                          maxLength={6} // Prevents excessively long input
                         />
                       </Form.Group>
                       {errors.post_graduation_per && (
@@ -2085,12 +2375,17 @@ function InterJoining() {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                        <Form.Control
-                          type="text"
-                          className="FormStyeling transparent-input"
-                          value={anyother_cirt}
-                          onChange={(e) => setanyother_cirt(e.target.value)}
-                        />
+                       <Form.Control
+  type="text"
+  className="FormStyeling transparent-input"
+  value={anyother_cirt}
+  onChange={(e) => {
+    if (e.target.value.length <= 50) {
+      setanyother_cirt(e.target.value); // Update state only if within 50 characters
+    }
+  }}
+/>
+
                       </Form.Group>
                       {errors.anyother_cirt && (
                         <span className="error text-danger">
@@ -2157,7 +2452,13 @@ function InterJoining() {
                           placeholder="Enter Father Name"
                           className="FormStyeling transparent-input"
                           value={father_name}
-                          onChange={(e) => setfather_name(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setfather_name(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.father_name && (
@@ -2181,7 +2482,13 @@ function InterJoining() {
                           placeholder="Enter Father Occupation"
                           className="FormStyeling transparent-input"
                           value={fatherOccupation}
-                          onChange={(e) => setfatherOccupation(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setfatherOccupation(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.fatherOccupation && (
@@ -2255,7 +2562,13 @@ function InterJoining() {
                           placeholder="Enter Mother Name"
                           className="FormStyeling transparent-input"
                           value={mother_name}
-                          onChange={(e) => setmother_name(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setmother_name(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.mother_name && (
@@ -2279,7 +2592,13 @@ function InterJoining() {
                           placeholder="Enter Mother Occupation"
                           className="FormStyeling transparent-input"
                           value={motherOccupation}
-                          onChange={(e) => setmotherOccupation(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setmotherOccupation(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.motherOccupation && (
@@ -2511,7 +2830,13 @@ function InterJoining() {
                           placeholder="Enter Guardian Name"
                           className="FormStyeling transparent-input"
                           value={guardian_name}
-                          onChange={(e) => setguardian_name(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setguardian_name(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {/* {errors.guardian_name && (
@@ -2534,11 +2859,15 @@ function InterJoining() {
                           type="text"
                           placeholder="Enter Guardian Occupation"
                           className="FormStyeling transparent-input"
-                          alue={GuardianOccupation}
-                          onChange={(e) =>
-                            setGuardianOccupation(e.target.value)
-                          }
-                        ></Form.Control>
+                          value={GuardianOccupation}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setGuardianOccupation(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
+                        />
                       </Form.Group>
                       {/* {errors.GuardianOccupation && (
                         <span className="error text-danger">
@@ -2614,7 +2943,7 @@ function InterJoining() {
                                     </div>
                                 </div>
                             </Card.Header> */}
-            <Card style={{ backgroundColor: "transparent", border: "none" }} ref={internshipRef} className="section internship-section">
+            <Card style={{ backgroundColor: "transparent", border: "none" }}  className="section internship-section">
               <Card.Header
                 className="cardpersonal_details"
                 style={{ backgroundColor: "transparent", border: "none" }}
@@ -2882,7 +3211,7 @@ function InterJoining() {
                       {intern_experience === 'Yes' && (
                         <div>
                           <Form.Group className="fname" controlId="exampleForm.ControlInput1">
-                            <Form.Control type="text" placeholder="Enter experince" className='FormStyeling transparent-input' value={experience}
+                            <Form.Control type="text" placeholder="Enter Experience" className='FormStyeling transparent-input' value={experience}
                               onChange={(e) => setexperience(e.target.value)}></Form.Control>
                           </Form.Group>
                           {/* {errors.experince && <span className="error text-danger">{errors.experince}</span>} */}
@@ -2890,7 +3219,7 @@ function InterJoining() {
                             {errors.experience ? (
                               <span className="error text-danger">{errors.experience}</span>
                             ) : (
-                              'Please Mention Your Experinace'
+                              'Please Mention Your Experience'
                             )}
                           </Form.Label>
                         </div>
@@ -2912,10 +3241,14 @@ function InterJoining() {
                         as="textarea"
                         rows={4}
                         value={characteristics_describe}
-                        onChange={(e) =>
-                          setcharacteristics_describe(e.target.value)
-                        }
-                      ></Form.Control>
+                        onChange={(e) => {
+                          const onlyLetters = e.target.value.replace(/[^a-zA-Z\s,]/g, ""); // Allow only letters & spaces
+                          if (onlyLetters.length <= 50) { // Set max length to 30 characters
+                            setcharacteristics_describe(onlyLetters);
+                          }
+                        }}
+                        maxLength={50}
+                      />
                     </Form.Group>
                     {errors.characteristics_describe && (
                       <div className="text-danger">
@@ -2949,7 +3282,7 @@ function InterJoining() {
                           as="textarea"
                           rows={4}
                           value={applicant_name}
-                          onChange={(e) => setapplicant_name(e.target.value)}
+                          onChange={(e) => setapplicant_name(e.target.value)} readOnly
                         ></Form.Control>
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -2976,9 +3309,15 @@ function InterJoining() {
                           as="textarea"
                           rows={4}
                           value={place}
-                          onChange={(e) => setplace(e.target.value)}
-                        ></Form.Control>
-                      </Form.Group>
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setplace(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
+                        />
+                          </Form.Group>
                       <Form.Label className="w-100 text-center">
                         {errors.place ? (
                           <span className="error text-danger">
@@ -3038,7 +3377,7 @@ function InterJoining() {
               >
                 <Card.Title className="text-black"></Card.Title>
                 <Card.Text className="text-black">
-                  
+
                   <Row>
 
                     <Col lg={2} md={2} sm={12}>
@@ -3056,9 +3395,13 @@ function InterJoining() {
                           placeholder="Enter Social Media Platform Name"
                           className="FormStyeling transparent-input"
                           value={refrance_social_media}
-                          onChange={(e) =>
-                            setrefrance_social_media(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setrefrance_social_media(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.refrance_social_media && (
@@ -3083,9 +3426,13 @@ function InterJoining() {
                           placeholder="Enter Friend Name"
                           className="FormStyeling transparent-input"
                           value={refrance_friend}
-                          onChange={(e) =>
-                            setrefrance_friend(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setrefrance_friend(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.refrance_friend && (
@@ -3110,9 +3457,13 @@ function InterJoining() {
                           placeholder="Enter Family Name"
                           className="FormStyeling transparent-input"
                           value={refrance_family}
-                          onChange={(e) =>
-                            setrefrance_family(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setrefrance_family(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.refrance_family && (
@@ -3136,9 +3487,13 @@ function InterJoining() {
                           placeholder="Enter Relatives Name"
                           className="FormStyeling transparent-input"
                           value={refrance_relatives}
-                          onChange={(e) =>
-                            setrefrance_relatives(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setrefrance_relatives(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.refrance_relatives && (
@@ -3162,9 +3517,13 @@ function InterJoining() {
                           placeholder="Other"
                           className="FormStyeling transparent-input"
                           value={refrance_other}
-                          onChange={(e) =>
-                            setrefrance_other(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setrefrance_other(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       {errors.refrance_other && (
@@ -3216,7 +3575,13 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           value={reference_name}
-                          onChange={(e) => setRefereance_name(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setRefereance_name(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
@@ -3235,7 +3600,13 @@ function InterJoining() {
                           type="text"
                           className="FormStyeling transparent-input"
                           value={reference_name1}
-                          onChange={(e) => setRefereance_name1(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setRefereance_name1(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center"></Form.Label>
@@ -3326,7 +3697,7 @@ function InterJoining() {
                           value={buttom_applicant_name}
                           onChange={(e) =>
                             setbuttonapplicantname(e.target.value)
-                          }
+                          } readOnly
                         />
                       </Form.Group>
                       {errors.buttom_applicant_name && (
@@ -3353,8 +3724,8 @@ function InterJoining() {
                           placeholder="Enter Place"
                           className="FormStyeling transparent-input"
                           value={buttom_place}
-                          onChange={(e) => setbuttom_place(e.target.value)}
-                        />
+                          onChange={(e) => setbuttom_place(e.target.value)} // Updates `buttom_place`
+                          />
                       </Form.Group>
                       {errors.buttom_place && (
                         <span className="error text-danger">
@@ -3431,7 +3802,7 @@ function InterJoining() {
                     <Button
                       variant="primary"
                       type="submit"
-                      ref={submitButtonRef}
+                      // ref={submitButtonRef}
                       style={{
                         backgroundColor: "#28a745",
                         borderColor: "#28a745",
@@ -3441,7 +3812,7 @@ function InterJoining() {
                       Submit
                     </Button>
 
-                    <Button
+                    {/* <Button
                       variant="primary"
                       onClick={handleDownloadPDF}
                       ref={printButtonRef}
@@ -3451,7 +3822,7 @@ function InterJoining() {
                       }}
                     >
                       Print
-                    </Button>
+                    </Button> */}
                   </div>
 
                   {/* <Button variant="primary" type='submit'>submit</Button>
@@ -3461,7 +3832,7 @@ function InterJoining() {
               </Card.Body>
             </Card>
           </Container>
-          
+
         </Form>
       </div>
     </>

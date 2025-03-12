@@ -7,11 +7,37 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import corner from "../imgs/file (28).png";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
+import { FileUploader } from "react-drag-drop-files";
 
 function UpdateCompletionDetails() {
 
     const navigate = useNavigate();
     const { id } = useParams();
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [fileError, setFileError] = useState("");
+
+
+    const formatDate = (dob) => {
+        if (!dob) return ""; // Handle empty case
+
+        let dateObj = new Date(dob); // Convert string to Date object
+        let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+        let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        let year = dateObj.getFullYear();
+
+        return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+    };
+
+
+
+
+
+
+
+
+
+
+
     const [student_id, setstudent_id] = useState();
     const [formData, setFormData] = useState({
         fname: "",
@@ -51,7 +77,7 @@ function UpdateCompletionDetails() {
     const [isLoading, setIsLoading] = useState(true);
 
 
-    
+
     // Fetching data when component mounts
     useEffect(() => {
         const fetchDetails = async () => {
@@ -218,9 +244,9 @@ function UpdateCompletionDetails() {
                 "blog on your selected technology is required.";
 
 
-        if (!formData.review_image) {
-            errors.review_image = "Image upload is required.";
-        }
+        // if (!formData.review_image) {
+        //     errors.review_image = "Image upload is required.";
+        // }
         if (!formData.resume_pdf) {
             errors.resume_pdf = "PDF upload is required.";
         }
@@ -234,55 +260,127 @@ function UpdateCompletionDetails() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
 
-    const handleFileChange = async (e) => {
-        const { name, files } = e.target;
-        const file = files[0];
-        if (!file) return;
+        // Always update the formData first
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
 
-        let error = "";
-        if (name === "review_image" && !file.type.startsWith("image/")) {
-            error = "Only image files are allowed.";
-        } else if (name === "resume_pdf" && file.type !== "application/pdf") {
-            error = "Only PDF files are allowed.";
-        } else if (name === "feedback_video") {
-            if (!file.type.startsWith("video/")) {
-                error = "Only video files are allowed.";
-            } else if (file.size > 5 * 1024 * 1024) { // 5 MB size limit
-                error = "Video size must not exceed 5 MB.";
+        let isValid = true;
+        let errorMessage = "";
+
+        // Validation for Project Title (max 100 characters)
+        if (name === "project_title" && value.length > 100) {
+            isValid = false;
+            errorMessage = "Project title cannot exceed 100 characters";
+        }
+
+        // Validation for Describe Project (max 100 characters)
+        else if (name === "describe_project" && value.length > 100) {
+            isValid = false;
+            errorMessage = "Project description cannot exceed 100 characters";
+        }
+
+        // LinkedIn URL Validation for task_links_1 to task_links_5
+        else if (
+            ["task_links_1", "task_links_2", "task_links_3", "task_links_4", "task_links_5"].includes(name)
+        ) {
+            const linkedInRegex = /^https:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9\-]+\/?$/;
+            if (!linkedInRegex.test(value)) {
+                isValid = false;
+                errorMessage = "Please enter a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/username)";
             }
         }
 
-        if (error) {
-            setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+        // Set the error message if validation fails
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: isValid ? "" : errorMessage,
+        }));
+    };
+
+
+
+    const handleFileChange = async (file, name) => {
+        if (!file) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: "Please select a valid file.",
+            }));
+            return;
+        }
+
+        // File validation rules
+        let isValid = true;
+        let errorMessage = "";
+        const fileType = file.type;
+        const fileSize = file.size;
+
+        if (name === "review_image") {
+            if (!fileType.startsWith("image/")) {
+                isValid = false;
+                errorMessage = "Only image files are allowed.";
+            } else if (fileSize > 2 * 1024 * 1024) { // 2MB limit
+                isValid = false;
+                errorMessage = "Image size must not exceed 2MB.";
+            }
+        }
+
+        if (name === "feedback_video") {
+            if (!fileType.startsWith("video/")) {
+                isValid = false;
+                errorMessage = "Only video files are allowed.";
+            } else if (fileSize > 5 * 1024 * 1024) { // 5MB limit
+                isValid = false;
+                errorMessage = "Video size must not exceed 5MB.";
+            }
+        }
+
+        if (name === "resume_pdf") {
+            if (fileType !== "application/pdf") {
+                isValid = false;
+                errorMessage = "Only PDF files are allowed.";
+            }
+        }
+
+        if (!isValid) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: errorMessage,
+            }));
             return;
         }
 
         try {
             const base64 = await convertToBase64(file);
-            setFormData((prevData) => {
-                const updatedForm = { ...prevData, [name]: base64 };
-                console.log("Updated FormData after file upload:", updatedForm);
-                return updatedForm;
-            });
-            setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-        } catch {
-            setErrors((prevErrors) => ({ ...prevErrors, [name]: "File upload failed." }));
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: base64,
+                [`${name}_fileName`]: file.name, // Store file name
+            }));
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: "",
+            }));
+        } catch (error) {
+            console.error("Error converting file to Base64:", error);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: "Failed to process the file.",
+            }));
         }
     };
 
-
-
-
-    const convertToBase64 = (file) =>
-        new Promise((resolve, reject) => {
+    // Convert File to Base64
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
+            reader.readAsDataURL(file);
             reader.onload = () => resolve(reader.result);
             reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(file);
         });
+    };
 
 
     const handleSubmit = async (e) => {
@@ -414,11 +512,10 @@ function UpdateCompletionDetails() {
                                             >
                                                 <Form.Control
                                                     type="text"
-
                                                     aria-label="Default select example"
                                                     className="FormStyeling transparent-input"
                                                     value={formData.technology_name}
-                                                    onChange={handleInputChange}
+                                                    onChange={handleInputChange} readOnly
                                                     // onChange={(e) => settechnology_name(e.target.value)}
 
                                                     name="technology" // this ensures the right field is updated
@@ -468,10 +565,11 @@ function UpdateCompletionDetails() {
                                                 controlId="exampleForm.ControlInput1"
                                             >
                                                 <Form.Control
-                                                    type="date"
+                                                    type="text"
                                                     name="date_of_joining"
-                                                    value={formData.date_of_joining}
-                                                    onChange={handleInputChange} className="FormStyeling transparent-input"
+                                                    value={`${formatDate(formData.date_of_joining)}`}
+
+                                                    onChange={handleInputChange} className="FormStyeling transparent-input" readOnly
                                                 />
                                             </Form.Group>
                                             {errors.date_of_joining && (
@@ -499,7 +597,7 @@ function UpdateCompletionDetails() {
                                                 name="selected_mode"
                                                 value="Online"
                                                 checked={formData.selected_mode === "Online"}
-                                                onChange={(e) => setFormData((prev) => ({ ...prev, selected_mode: e.target.value }))}
+                                                onChange={(e) => setFormData((prev) => ({ ...prev, selected_mode: e.target.value }))} readOnly
                                             />
                                             <Form.Check
                                                 type="radio"
@@ -508,7 +606,7 @@ function UpdateCompletionDetails() {
                                                 name="selected_mode"
                                                 value="Offline"
                                                 checked={formData.selected_mode === "Offline"}
-                                                onChange={(e) => setFormData((prev) => ({ ...prev, selected_mode: e.target.value }))}
+                                                onChange={(e) => setFormData((prev) => ({ ...prev, selected_mode: e.target.value }))} readOnly
 
                                             />
 
@@ -609,8 +707,18 @@ function UpdateCompletionDetails() {
                                                     name="project_title"
                                                     className="FormStyeling transparent-input"
                                                     value={formData.project_title}
-                                                    onChange={handleInputChange}
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 100) { // Set max length to 100 characters
+                                                            setFormData((prevData) => ({
+                                                                ...prevData,
+                                                                project_title: onlyLetters,
+                                                            }));
+                                                        }
+                                                    }}
+                                                    maxLength={100}
                                                 />
+
                                             </Form.Group>
                                             {errors.project_title && (
                                                 <span className="error text-danger">
@@ -721,9 +829,18 @@ function UpdateCompletionDetails() {
                                                     name="designation_in_current_company"
                                                     className="FormStyeling transparent-input"
                                                     value={formData.designation_in_current_company}
-                                                    onChange={handleInputChange}
-
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 100) { // Set max length to 100 characters
+                                                            setFormData((prevData) => ({
+                                                                ...prevData,
+                                                                designation_in_current_company: onlyLetters,
+                                                            }));
+                                                        }
+                                                    }}
+                                                    maxLength={100}
                                                 />
+
                                             </Form.Group>
                                             {errors.designation_in_current_company && (
                                                 <span className="error text-danger">
@@ -1073,31 +1190,23 @@ function UpdateCompletionDetails() {
                                         </Col>
                                         <Col lg={2} md={3} sm={12}>
                                             <b style={{ fontFamily: "Century gothic" }}>
-                                                Upload the screenshots of Google review
+                                                Upload the screenshots of Google review: <span className="text-danger">*</span>
                                             </b>
                                         </Col>
                                         <Col lg={4} md={3} sm={12} className="mb-5">
-                                            <Form.Group
-                                                className="fname"
-                                                controlId="exampleForm.ControlInput1"
-                                            >
-                                                <Form.Control
-                                                    type="file"
-                                                    name="review_image"
-                                                    accept="image/*"
-                                                    onChange={handleFileChange}
-                                                    className="FormStyeling transparent-input"
-                                                />
-                                            </Form.Group>
-
-                                            {errors.review_image && (
-                                                <p className="text-danger">{errors.review_image}</p>
-                                            )}
-                                            <p>
-                                                (Image size must not exceed 2 MB) <span className="text-danger">*</span>
-                                            </p>
-                                            {/* {image && <p>Selected Image: {image.name}</p>} */}
+                                            <FileUploader
+                                                handleChange={(file) => handleFileChange(file, "review_image")}
+                                                name="review_image"
+                                                types={["JPG", "PNG"]}
+                                                maxSize={2}
+                                            />
+                                            {formData.review_image_fileName && <p>Uploaded File: {formData.review_image_fileName}</p>}
+                                            {errors.review_image && <p className="text-danger">{errors.review_image}</p>}
+                                            <p>(Image size must not exceed 2 MB) <span className="text-danger">*</span></p>
                                         </Col>
+
+
+
                                         <Col lg={2} md={3} sm={12}>
                                             <b style={{ fontFamily: "Century gothic" }}>
                                                 Write minimum one Blog on your selected technology{" "}
@@ -1125,57 +1234,38 @@ function UpdateCompletionDetails() {
 
                                         <Col lg={2} md={2} sm={12}>
                                             <b style={{ fontFamily: "Century gothic" }}>
-                                                Upload your training video feedback
+                                                Upload your training video feedback: <span className="text-danger">*</span>
                                             </b>
                                         </Col>
                                         <Col lg={4} md={4} sm={12} className="mb-5">
-                                            <Form.Group
-                                                className="fname"
-                                                controlId="exampleForm.ControlInput1"
-                                            >
-                                                <Form.Control
-                                                    type="file"
-                                                    name="feedback_video"
-                                                    accept="video/*"
-                                                    onChange={handleFileChange}
-                                                    className="FormStyeling transparent-input"
-                                                />
-                                            </Form.Group>
-                                            {errors.feedback_video && (
-                                                <p className="text-danger">{errors.feedback_video}</p>
-                                            )}
-                                            <p>
-                                                (Video size must not exceed 5 MB) <span className="text-danger">*</span>
-                                            </p>
+                                            <FileUploader
+                                                handleChange={(file) => handleFileChange(file, "feedback_video")}
+                                                name="feedback_video"
+                                                types={["MP4", "AVI", "MOV"]}
+                                                maxSize={5}
+                                            />
+                                            {formData.feedback_video_fileName && <p>Uploaded File: {formData.feedback_video_fileName}</p>}
+                                            {errors.feedback_video && <p className="text-danger">{errors.feedback_video}</p>}
+                                            <p>(Video size must not exceed 5 MB) <span className="text-danger">*</span></p>
                                         </Col>
+
                                         <Col lg={2} md={2} sm={12}>
                                             <b style={{ fontFamily: "Century gothic" }}>
-                                                Upload your updated Resume
+                                                Upload your updated Resume: <span className="text-danger">*</span>
                                             </b>
                                         </Col>
                                         <Col lg={4} md={4} sm={12} className="mb-5">
-                                            <Form.Group
-                                                className="fname"
-                                                controlId="exampleForm.ControlInput1"
-                                            >
-                                                <Form.Control
-                                                    type="file"
-                                                    name="resume_pdf"
-                                                    accept=".pdf"
-                                                     onChange={handleFileChange}
-                                                    className="FormStyeling transparent-input"
-                                                />
-                                            </Form.Group>
-
-                                            {errors.resume_pdf && (
-                                                <p className="text-danger">{errors.resume_pdf}</p>
-                                            )}
-
-                                            <p>
-                                                (Only PDF files are allowed.)<span className="text-danger">*</span>
-                                            </p>
-                                            {/* {pdf && <p>Selected PDF: {pdf.name}</p>} */}
+                                            <FileUploader
+                                                handleChange={(file) => handleFileChange(file, "resume_pdf")}
+                                                name="resume_pdf"
+                                                types={["PDF"]}
+                                            />
+                                            {formData.resume_pdf_fileName && <p>Uploaded File: {formData.resume_pdf_fileName}</p>}
+                                            {errors.resume_pdf && <p className="text-danger">{errors.resume_pdf}</p>}
+                                            <p>(Only PDF files are allowed.)<span className="text-danger">*</span></p>
                                         </Col>
+
+
                                         {/* <input type="file" ref={pdfRef} accept="application/pdf" />
                     <input type="file" ref={imageRef} accept="image/*" />
                     <input type="file" ref={videoRef} accept="video/*" /> */}

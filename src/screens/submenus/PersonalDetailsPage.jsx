@@ -14,11 +14,14 @@ function PersonalDetailsPage() {
   const [fathername, setfathername] = useState("");
   const [lname, setlname] = useState("");
   const [email, setemail] = useState("");
+  const [emailError, setemailError] = useState("");
+
   const [parmanenat_address, setparmanenat_address] = useState("");
   const [current_address, setcurrent_address] = useState("");
   const [contact_details, setcontact_details] = useState("");
   const [whatsappno, setwhatsappno] = useState("");
   const [dob, setdob] = useState("");
+  const [formattedDob, setFormattedDob] = useState("");
   const [age, setAge] = useState("");
   const [gender, setselected_gender] = useState("");
   const [blood, setblood] = useState("");
@@ -35,41 +38,102 @@ function PersonalDetailsPage() {
 
   const handlePhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-  
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
+    }
+
     setcontact_details(value);
   };
-  
+
+
+
+  // Calculate max & min date for age restriction
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0]; // 10 years ago
+  const minDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0]; // 80 years ago
+
+  const handleDateChange = (e) => {
+    let inputDate = e.target.value; // YYYY-MM-DD format
+    setdob(inputDate);
+
+    if (inputDate < minDate || inputDate > maxDate) {
+      setErrors("Age must be between 10 and 80 years.");
+      setFormattedDob("");
+      return;
+    } else {
+      setErrors("");
+    }
+    // Convert to DD/MM/YYYY format
+    let [year, month, day] = inputDate.split("-");
+    setFormattedDob(`${day}/${month}/${year}`);
+  };
+
+
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const inputEmail = e.target.value;
+    setemail(inputEmail);
+
+    if (!validateEmail(inputEmail)) {
+      setemailError("Please enter a valid email address.");
+    } else {
+      setemailError("");
+    }
+  };
+
+
+
 
   const handleWhatsappChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-  
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
+    }
+
     setwhatsappno(value);
   };
-  
+
   const handleAadharChange = (e) => {
     const value = e.target.value;
 
@@ -208,7 +272,7 @@ function PersonalDetailsPage() {
       aadhar,
     };
 
-    
+
     try {
       const response = await fetch(
         // "https://api.sumagotraining.in/public/api/intern-joining/add",
@@ -272,7 +336,7 @@ function PersonalDetailsPage() {
 
         <Container className="position-relative text-center welcommsg">
           <p>
-            <b>Welcome</b> To <b>Sumago Center of Practical Experience!!</b>
+            <b>Welcome To</b> <b>Sumago Center of Practical Experience!!</b>
           </p>
         </Container>
 
@@ -342,8 +406,13 @@ function PersonalDetailsPage() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={fname}
-                          // onChange={handleChange}
-                          onChange={(e) => setfname(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setfname(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -368,8 +437,13 @@ function PersonalDetailsPage() {
                           // placeholder="enter mother name"
                           className="FormStyeling transparent-input"
                           value={mname}
-                          // onChange={handleChange}
-                          onChange={(e) => setmname(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setmname(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -392,8 +466,13 @@ function PersonalDetailsPage() {
                           // placeholder="enter father name"
                           className="FormStyeling transparent-input"
                           value={fathername}
-                          // onChange={handleChange}
-                          onChange={(e) => setfathername(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setfathername(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -416,8 +495,13 @@ function PersonalDetailsPage() {
                           // placeholder="enter last name"
                           className="FormStyeling transparent-input"
                           value={lname}
-                          // onChange={handleChange}
-                          onChange={(e) => setlname(e.target.value)}
+                          onChange={(e) => {
+                            const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                            if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                              setlname(onlyLetters);
+                            }
+                          }}
+                          maxLength={20}
                         />
                       </Form.Group>
                       <Form.Label className="w-100 text-center">
@@ -526,6 +610,8 @@ function PersonalDetailsPage() {
                       )}
                     </Col>
                   </Row>
+
+
                   <Row>
                     {/* email */}
                     <Col lg={4}>
@@ -541,8 +627,7 @@ function PersonalDetailsPage() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={email}
-                          onChange={(e) => setemail(e.target.value)}
-                        />
+                          onChange={handleEmailChange} />
                       </Form.Group>
                       {errors.email && (
                         <span className="error text-danger">
@@ -565,9 +650,14 @@ function PersonalDetailsPage() {
                           // placeholder="enter first name"
                           className="FormStyeling transparent-input"
                           value={parmanenat_address}
-                          onChange={(e) =>
-                            setparmanenat_address(e.target.value)
-                          }
+                          onChange={(e) => {
+                            const inputText = e.target.value;
+
+                            if (inputText.length <= 100) { // Limit to 100 characters
+                              setparmanenat_address(inputText);
+                            }
+                          }}
+                          maxLength={100}
                         />
                       </Form.Group>
                       {errors.parmanenat_address && (
@@ -592,7 +682,14 @@ function PersonalDetailsPage() {
 
                           className="FormStyeling transparent-input"
                           value={current_address}
-                          onChange={(e) => setcurrent_address(e.target.value)}
+                          onChange={(e) => {
+                            const inputText = e.target.value;
+
+                            if (inputText.length <= 100) { // Limit to 100 characters
+                              setcurrent_address(inputText);
+                            }
+                          }}
+                          maxLength={100} // Optional: Prevents further typing beyond 100 characters
                         />
                       </Form.Group>
                       {errors.current_address && (
@@ -667,7 +764,9 @@ function PersonalDetailsPage() {
                           type="date"
                           className="FormStyeling transparent-input"
                           value={dob}
-                          onChange={(e) => setdob(e.target.value)}
+                          onChange={handleDateChange}
+                          max={maxDate} // Max age is 10 years old
+                          min={minDate} // Min age is 80 years old
                         />
                       </Form.Group>
                       {errors.dob && (

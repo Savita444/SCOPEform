@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Card, Col, Form, Button } from "react-bootstrap";
 import pdficon from "../imgs/download.png";
+import imageicon from "../imgs/imagethumbnail.png"
 import instance from "../../api/AxiosInstance";
 import environment from "../../../src/App";
 import "./completion.css";
@@ -11,6 +12,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import CompletionFormSkeleton from "./CompletionFormSkeleton"; // Import the skeleton component
 
 
 
@@ -19,7 +21,31 @@ const CompletionDetailsPage = () => {
   const [internDetails, setInternDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  
+  const openImageModal = (image) => {
+    setSelectedImage(image);
+    setShowImageModal(true);
+  };
+  
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+  };
 
+
+
+  const formatDate = (dob) => {
+    if (!dob) return ""; // Handle empty case
+  
+    let dateObj = new Date(dob); // Convert string to Date object
+    let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+    let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    let year = dateObj.getFullYear();
+  
+    return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+  };
 
   const contentRef = useRef(null); // Reference to the entire form
   const printButtonRef = useRef(null);
@@ -36,84 +62,49 @@ const CompletionDetailsPage = () => {
       printButtonRef.current.style.display = "none";
     }
   
+   
     html2canvas(contentRef.current, {
-      scale: 2, // Improve quality
+      scale: 2,  // Improves resolution
       useCORS: true,
-      backgroundColor: null, // Transparent background
-      willReadFrequently: true,  // Ensures proper transparency handling
-    }).then((canvas) => {
-      const pdf = new jsPDF("p", "mm", "a4");
-  
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const marginTop = 10; // Top margin for 2nd page onwards
-      const marginBottom = 12; // Bottom margin for all pages
-      const usableHeight = pageHeight - marginBottom; // Reduce height by bottom margin
-  
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-      let pageCount = 0; // Track page number
-  
-      while (heightLeft > 0.5 * usableHeight) {
-        let pageCanvas = document.createElement("canvas");
-        let pageCtx = pageCanvas.getContext("2d");
-      
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = Math.min(
-          usableHeight * (canvas.width / imgWidth), 
-          heightLeft * (canvas.width / imgWidth) // Ensure last page height is correct
-        );
-      
-        pageCtx.drawImage(
-          canvas,
-          0, pageCount * usableHeight * (canvas.width / imgWidth), // Capture correct slice
-          canvas.width, pageCanvas.height,
-          0, 0,
-          pageCanvas.width, pageCanvas.height
-        );
-      
-        const pageImage = pageCanvas.toDataURL("image/jpeg", 0.8);
-        pdf.addImage(
-          pageImage,
-          "JPEG",
-          0,
-          pageCount === 0 ? 0 : marginTop, // Adjust margin only for second page onwards
-          imgWidth,
-          pageCanvas.height * (imgWidth / canvas.width) // Maintain aspect ratio
-        );
-      
-        heightLeft -= pageCanvas.height * (imgWidth / canvas.width); // Reduce remaining height
-        pageCount++;
-      
-        if (heightLeft > 0.5 * usableHeight) {
-          pdf.addPage();
+      backgroundColor: null,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: document.documentElement.offsetWidth,
+      windowHeight: document.documentElement.scrollHeight
+  })
+      .then((canvas) => {
+        const imgWidth = 210;  // A4 width in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+    
+        const pdf = new jsPDF("p", "mm", [imgWidth, imgHeight]); // Set custom page size
+    
+        pdf.addImage(canvas.toDataURL("image/jpeg", 0.9), "JPEG", 0, 0, imgWidth, imgHeight);
+
+        // Show the button again after capturing
+        if (printButtonRef.current) {
+          printButtonRef.current.style.display = "block";
         }
-      }
-      
   
-      // Show the button again after capturing
-      if (printButtonRef.current) {
-        printButtonRef.current.style.display = "block";
-      }
-  
-      const pdfBlob = pdf.output("blob");
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl);
-    }).catch((error) => {
-      console.error("Error generating PDF:", error);
-  
-      // Ensure the button is visible again in case of an error
-      if (printButtonRef.current) {
-        printButtonRef.current.style.display = "block";
-      }
+        // Generate filename based on student's name
+      const fileName = `${fname}_${lname}_Completion_form.pdf`.replace(/\s+/g, "_"); // Replace spaces with underscores
+
+      // Save the PDF
+      pdf.save(fileName);
+
+
+    //   const pdfBlob = pdf.output("blob");
+    //   const pdfUrl = URL.createObjectURL(pdfBlob);
+    //   window.open(pdfUrl);
+    // }).catch((error) => {
+    //   console.error("Error generating PDF:", error);
+
+
+      // Ensure buttons are visible again in case of an error
+      if (printButtonRef.current) printButtonRef.current.style.display = "block";
     });
   };
   
-
-
-
-
 
 
 
@@ -148,9 +139,14 @@ const CompletionDetailsPage = () => {
   }, [id]);
 
   // Handling loading, error, and missing data states
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!internDetails) return <p>No intern details found.</p>;
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>{error}</p>;
+  // if (!internDetails) return <p>No intern details found.</p>;
+
+  if (loading) return <CompletionFormSkeleton />;
+if (error) return <p>{error}</p>;
+if (!internDetails) return <p>No intern details found.</p>;
+
 
   const {
     fname = "",
@@ -186,19 +182,30 @@ const CompletionDetailsPage = () => {
     feedback_video = "",
   } = internDetails;
 
+
+ 
+  
+
+ 
+
   // URLs for assets (if present)
-  const googleReviewImgUrl = google_review_img ? `${google_review_img}` : null;
+  const googleReviewImgUrl = google_review_img?.startsWith("data:image")
+  ? google_review_img // Already a valid Base64 data URL, use as is
+  : `data:image/jpeg;base64,${google_review_img}`; // Prepend only if missing
+
   const resumePdfUrl = resume_pdf ? `${resume_pdf}` : null;
   const feedbackVideoUrl = feedback_video
     ? feedback_video.replace("video\\/mp4", "video/mp4")
     : null;
 
 
+
+
   return (
     <>
 
-<div ref={contentRef}>
-      <div className="container backimg">
+
+      <div className="container backimg" ref={contentRef}>
         <div>
           <img src={corner} className="corner_img" alt="Responsive Corner" />
         </div>
@@ -213,31 +220,22 @@ const CompletionDetailsPage = () => {
                     </b>
                   </div>
                 </Container>
-        
-                <Container className="position-relative text-center homepara">
-                  <p>
-                    SCOPE, where we believe in empowering individuals through education
-                    and skill development. Established with a vision to foster
-                    excellence and innovation in learning, Scope is dedicated to
-                    providing high-quality training programs tailored to meet the
-                    diverse needs of our students.
-                  </p>
-                </Container>
-        
-                <Container className="position-relative text-center welcommsg">
-                  <p>
-                    <b>Welcome To </b> <b>Sumago Center of Practical Experience!!</b>
-                  </p>
-                </Container>
-        
-                <Container className="position-relative text-center para2">
-                  <p style={{ textAlign: "justify" }}>
-                    We’re glad to have you on board as part of our intern team. Get
-                    ready to dive into hands-on learning, sharpen your skills, and make
-                    meaningful contributions. Let’s make this journey both rewarding and
-                    memorable!
-                  </p>
-                </Container>
+
+               <Container className="position-relative text-center homepara">
+                        <p style={{ textAlign: "justify" }}>
+                        We appreciate your dedication, enthusiasm, and commitment to hands-on learning at the Sumago Center of Practical Experience. This journey has equipped you with valuable skills and insights to excel in your future endeavors. 
+                        </p>
+                      </Container>
+                      <Container className="position-relative text-center welcommsg">
+                        <p>
+                          <b>Congratulations on completing your internship at SCOPE! </b> 
+                        </p>
+                      </Container>
+                      <Container className="position-relative text-center para2">
+                        <p style={{ textAlign: "justify" }}>
+                        As you move forward, we hope you continue to grow, innovate, and make meaningful contributions. Wishing you success in all your future pursuits—stay connected and keep striving for excellence!
+                        </p>
+                      </Container>
                 <div style={{ margin: "40px" }}></div>
         
 
@@ -351,7 +349,7 @@ const CompletionDetailsPage = () => {
                       // placeholder="enter first name"
 
                       className="FormStyeling transparent-input"
-                      value={`${date_of_joining}`}
+                      value={`${formatDate(date_of_joining)}`}
                     />
                   </Form.Group>
                 </Col>
@@ -798,24 +796,80 @@ const CompletionDetailsPage = () => {
                 </Col>
 
                 <Col lg={2} md={3} sm={12}>
-                  <b
-                    style={{ fontFamily: "Century gothic" }}
-                    className="label-colour"
-                  >
-                    Upload the screenshots of Google review
-                  </b>
-                </Col>
-                <Col lg={4} md={3} sm={12} className="mb-5">
-                  {googleReviewImgUrl && (
-                    <Form.Group className="fname" controlId="googleReview">
-                      <img
-                        src={googleReviewImgUrl}
-                        alt="Google Review"
-                        style={{ maxWidth: "200px" }}
-                      />
-                    </Form.Group>
-                  )}
-                </Col>
+  <b style={{ fontFamily: "Century Gothic" }} className="label-colour">
+    Upload the screenshots of Google review
+  </b>
+</Col>
+
+<Col lg={4} md={3} sm={12} className="mb-5">
+  <Form.Group className="fname" controlId="googleReview">
+    {googleReviewImgUrl && (
+      <>
+        {/* Clickable Thumbnail */}
+        <img
+          src={imageicon} // Small icon for thumbnail
+          className="img-fluid"
+          alt="Google Review Thumbnail"
+          style={{ maxWidth: "70px", cursor: "pointer" }}
+          onClick={() => openImageModal(googleReviewImgUrl)}
+        />
+        <p
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => openImageModal(googleReviewImgUrl)}
+        >
+          Click to View Full Image
+        </p>
+      </>
+    )}
+  </Form.Group>
+</Col>
+
+{showImageModal && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.8)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000
+    }}
+  >
+    <div style={{ position: "relative" }}>
+      {/* Close Button */}
+      <button
+        onClick={closeImageModal}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          background: "white",
+          border: "none",
+          fontSize: "18px",
+          cursor: "pointer",
+          padding: "5px 10px",
+          borderRadius: "5px"
+        }}
+      >
+        ✖
+      </button>
+
+      {/* Full Image */}
+      <img
+        src={selectedImage}
+        alt="Full Google Review"
+        style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: "5px" }}
+      />
+    </div>
+  </div>
+)}
+
+
+
                 <Col lg={2} md={3} sm={12}>
                   <b
                     style={{ fontFamily: "Century gothic" }}
@@ -934,7 +988,7 @@ const CompletionDetailsPage = () => {
           </Card>
         </Container>
       </div>
-      </div>
+      
     </>
   );
 };

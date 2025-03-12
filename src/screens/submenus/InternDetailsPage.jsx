@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Card,
-  Col,
-  Form,
-  Button,
-  OverlayTrigger,
-  Tooltip,
-} from "react-bootstrap";
+import {Container, Row, Card, Col, Form, Button, OverlayTrigger, Tooltip,} from "react-bootstrap";
 import { FaEdit, FaTrash, FaRegAddressBook, FaEye } from "react-icons/fa";
 import { HiUserAdd } from "react-icons/hi";
 import instance from "../../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
-
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -55,59 +45,59 @@ const InternDetailsPage = () => {
   if (!internDetails) return <p>No intern details found.</p>;
 
 
-  const handleDelete = async (id) => {
-    confirmAlert({
-      title: "Confirm to delete",
-      message: "Are you sure you want to delete this data?",
-      customUI: ({ onClose }) => (
-        <div
-          style={{
-            textAlign: "left",
-            padding: "20px",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)",
-            maxWidth: "400px",
-            margin: "0 auto",
-          }}
-        >
-          <h2>Confirm to delete</h2>
-          <p>Are you sure you want to delete this data?</p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
-            <button
-              style={{ marginRight: "10px" }}
-              className="btn btn-primary"
-              onClick={async () => {
-                setLoading(true);
-                const accessToken = localStorage.getItem("remember_token");
-                try {
-                  await instance.delete(`/intern-joining/delete/${id}`, {
-                    headers: {
-                      Authorization: `Bearer ${accessToken}`,
-                      "Content-Type": "application/json",
-                    },
-                  });
-                  toast.success("Data Deleted Successfully");
-                  fetchProducts();
-                } catch (error) {
-                  console.error("Error deleting data:", error);
-                  toast.error("Error deleting data");
-                } finally {
-                  setLoading(false);
-                }
-                onClose();
-              }}
-            >
-              Yes
-            </button>
-            <button className="btn btn-secondary" onClick={() => onClose()}>
-              No
-            </button>
-          </div>
-        </div>
-      ),
-    });
-  };
+  // const handleDelete = async (id) => {
+  //   confirmAlert({
+  //     title: "Confirm to delete",
+  //     message: "Are you sure you want to delete this data?",
+  //     customUI: ({ onClose }) => (
+  //       <div
+  //         style={{
+  //           textAlign: "left",
+  //           padding: "20px",
+  //           backgroundColor: "white",
+  //           borderRadius: "8px",
+  //           boxShadow: "0 4px 8px rgba(5, 5, 5, 0.2)",
+  //           maxWidth: "400px",
+  //           margin: "0 auto",
+  //         }}
+  //       >
+  //         <h2>Confirm to delete</h2>
+  //         <p>Are you sure you want to delete this data?</p>
+  //         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+  //           <button
+  //             style={{ marginRight: "10px" }}
+  //             className="btn btn-primary"
+  //             onClick={async () => {
+  //               setLoading(true);
+  //               const accessToken = localStorage.getItem("remember_token");
+  //               try {
+  //                 await instance.delete(`/intern-joining/delete/${id}`, {
+  //                   headers: {
+  //                     Authorization: `Bearer ${accessToken}`,
+  //                     "Content-Type": "application/json",
+  //                   },
+  //                 });
+  //                 toast.success("Data Deleted Successfully");
+  //                 fetchProducts();
+  //               } catch (error) {
+  //                 console.error("Error deleting data:", error);
+  //                 toast.error("Error deleting data");
+  //               } finally {
+  //                 setLoading(false);
+  //               }
+  //               onClose();
+  //             }}
+  //           >
+  //             Yes
+  //           </button>
+  //           <button className="btn btn-secondary" onClick={() => onClose()}>
+  //             No
+  //           </button>
+  //         </div>
+  //       </div>
+  //     ),
+  //   });
+  // };
 
   const {
     fname = "",

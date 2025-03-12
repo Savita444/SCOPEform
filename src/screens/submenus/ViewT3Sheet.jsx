@@ -156,7 +156,7 @@ useEffect(() => {
     {
       name: "Email Id",
       cell: (row) => row.email,
-      width: "180px",
+      width: "200px",
 
     },
     {

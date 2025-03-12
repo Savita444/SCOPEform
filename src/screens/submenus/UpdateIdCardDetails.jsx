@@ -24,6 +24,19 @@ function UpdateIdCardDetails() {
     const [errors, setErrors] = useState("");
 
 
+    const formatDate = (dob) => {
+        if (!dob) return ""; // Handle empty case
+      
+        let dateObj = new Date(dob); // Convert string to Date object
+        let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+        let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        let year = dateObj.getFullYear();
+      
+        return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+      };
+
+
+
     useEffect(() => {
         const fetchInternDetails = async () => {
             const accessToken = localStorage.getItem("remember_token");
@@ -284,7 +297,8 @@ function UpdateIdCardDetails() {
                                             <Form.Control
                                                 type="text"
                                                 className="FormStyeling transparent-input"
-                                                value={date_of_joining}
+                                                value={`${formatDate(date_of_joining)}`}
+
                                                 name="date_of_joining"
                                                 onChange={(e) => setdate_of_joining(e.target.value)}
                                                 readOnly

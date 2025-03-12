@@ -14,6 +14,25 @@ function IdCardIssue() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+
+  const formatDate = (dob) => {
+    if (!dob) return ""; // Handle empty case
+  
+    let dateObj = new Date(dob); // Convert string to Date object
+    let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+    let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    let year = dateObj.getFullYear();
+  
+    return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+  };
+
+
+
+
+
+
+  
+
   const contentRef = useRef(null); // Reference to the entire form
   const printButtonRef = useRef(null);
   const submitButtonRef = useRef(null);
@@ -357,7 +376,7 @@ function IdCardIssue() {
                             <Form.Control
                               type="date"
                               className="FormStyeling transparent-input"
-                              value={formData.date_of_joining}
+                              value={formData.date_of_joining}  
                               onChange={handleInputChange}
                               name="date_of_joining"
                               readOnly

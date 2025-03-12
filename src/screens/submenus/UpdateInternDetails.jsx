@@ -106,6 +106,24 @@ function UpdateInternDetails() {
     const [errors, setErrors] = useState({});
 
 
+    const formatDate = (dob) => {
+        if (!dob) return ""; // Handle empty case
+      
+        let dateObj = new Date(dob); // Convert string to Date object
+        let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
+        let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        let year = dateObj.getFullYear();
+      
+        return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
+      };
+
+
+
+
+
+
+
+
     useEffect(() => {
         const fetchInternDetails = async () => {
             const accessToken = localStorage.getItem("remember_token");
@@ -227,8 +245,6 @@ function UpdateInternDetails() {
     }, [id]);
 
    
-   
-    
 
     useEffect(() => {
         if (dob) {
@@ -684,7 +700,7 @@ function UpdateInternDetails() {
             if (!contact.trim()) {
                 errors.contact = "Husband/Wife contact details are required.";
                 isValid = false;
-            } else if (!/^\d{10}$/.test(contact)) {
+            }else if (!/^\+91\d{10}$/.test(contact)) {
                 errors.contact = "Enter a valid 10-digit contact number.";
                 isValid = false;
             }
@@ -712,26 +728,105 @@ function UpdateInternDetails() {
     };
 
     const handlePconatactnumberChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("+91")) {
-            setcontact_number(value.slice(0, 13)); // Limit to "+91" and 10 digits
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
         } else {
-            setcontact_number("+91" + value.slice(0, 10));
+          value = "+91" + value.slice(0, 10);
         }
-    };
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setcontact_number(value);
+      };
 
     const handlePconatactnumber2Change = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("+91")) {
-            setcontact_number1(value.slice(0, 13)); // Limit to "+91" and 10 digits
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
         } else {
-            setcontact_number1("+91" + value.slice(0, 10));
+          value = "+91" + value.slice(0, 10);
         }
-    };
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setcontact_number1(value);
+      };
+
+
+
     const handleHusbandDetailsChange = (field, value) => {
+        if (field === "name") {
+          // Allow only letters and spaces, and limit to 20 characters
+          value = value.replace(/[^a-zA-Z\s]/g, "").slice(0, 20);
+        }
+    
+        if (field === "occupation") {
+          // Allow only letters and spaces, and limit to 20 characters
+          value = value.replace(/[^a-zA-Z\s]/g, "").slice(0, 20);
+        }
+        
+        
+        if (field === "contact") {
+          value = value.replace(/\D/g, ""); // Remove all non-numeric characters
+      
+          // Ensure "+91" is always the prefix
+          if (value.startsWith("91")) {
+            value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
+          } else {
+            value = "+91" + value.slice(0, 10); // Forcefully append "+91"
+          }
+      
+          // Prevent deletion of "+91"
+          if (value.length < 3) {
+            value = "+91";
+          }
+        }
+      
+    
+        if (field === "aadhar") {
+          // Check if input is a number and has at most 12 digits
+          if (/^\d{0,12}$/.test(value)) {
+            if (value.length === 12) {
+              setHusbandErrors((prevErrors) => ({ ...prevErrors, aadhar: null }));
+            } else {
+              setHusbandErrors((prevErrors) => ({
+                ...prevErrors,
+                aadhar: "Aadhar number must be exactly 12 digits.",
+              }));
+            }
+          } else {
+            return; // Prevent invalid input (non-numeric or exceeding 12 digits)
+          }
+        }
+    
         setHusbandDetails((prev) => ({ ...prev, [field]: value }));
-        setHusbandErrors((prev) => ({ ...prev, [field]: "" })); // Clear error on input change
-    };
+      };
+    
 
     const handlePhoneChange = (e) => {
         const value = e.target.value;
@@ -796,6 +891,63 @@ function UpdateInternDetails() {
         }
     }, [dob]);
 
+
+    const handleLinkChange = (e, platform) => {
+        const value = e.target.value;
+        let isValid = false;
+        let errorMessage = null;
+      
+        // Validation for LinkedIn
+        if (platform === 'linkedin') {
+          const regex = /^https:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9\-]+$/;
+          isValid = regex.test(value);
+          errorMessage = isValid ? null : "Please enter a valid LinkedIn URL starting with https://www.linkedin.com/in/";
+        }
+        
+        // Validation for Facebook
+        else if (platform === 'facebook') {
+          const regex = /^https:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9\.]+$/;
+          isValid = regex.test(value);
+          errorMessage = isValid ? null : "Please enter a valid Facebook URL starting with https://www.facebook.com/";
+        }
+      
+        // Validation for YouTube
+        else if (platform === 'youtube') {
+          const regex = /^https:\/\/(www\.)?youtube\.com\/(channel|user|c)\/[a-zA-Z0-9_-]+$/;
+          isValid = regex.test(value);
+          errorMessage = isValid ? null : "Please enter a valid YouTube URL starting with https://www.youtube.com/";
+        }
+      
+        // Validation for any other URL
+        else if (platform === 'anyother') {
+          const regex = /^(https:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,6}(\/[a-zA-Z0-9\-_]+)*\/?$/;
+          isValid = regex.test(value);
+          errorMessage = isValid ? null : "Please enter a valid URL.";
+        }
+      
+        // Set the state based on platform
+        if (platform === 'linkedin') {
+          setlinkdin(value);
+        } else if (platform === 'facebook') {
+          setfacebook(value);
+        } else if (platform === 'youtube') {
+          setyoutube(value);
+        } else if (platform === 'anyother') {
+          setanyother_add(value);
+        }
+      
+        // Set the error state
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [platform]: errorMessage,
+        }));
+      };
+
+
+
+
+
+
     const handleAadharChange = (e) => {
         const value = e.target.value;
 
@@ -814,33 +966,65 @@ function UpdateInternDetails() {
         }
     };
 
+    const handle_fatherPhoneChange = (e) => {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
+        } else {
+          value = "+91" + value.slice(0, 10);
+        }
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setfather_contactdetails(value);
+      };
+
+    // const handle_fatherPhoneChange = (e) => {
+    //     const value = e.target.value;
+    //     if (value.startsWith("+91")) {
+    //         setfather_contactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+    //     } else {
+    //         setfather_contactdetails("+91" + value.slice(0, 10));
+    //     }
+    // };
+
+    
+    
     const handle_fatherAadharChange = (e) => {
         const value = e.target.value;
-
+    
         // Check if the input is a number and has exactly 12 digits
         if (/^\d{0,12}$/.test(value)) {
-            setfather_aadharno(value);
-            // Clear error if input is valid
-            if (value.length === 12) {
-                setErrors((prevErrors) => ({ ...prevErrors, father_aadharno: null }));
-            } else {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    father_aadharno: "Aadhar number must be exactly 12 digits.",
-                }));
-            }
+          setfather_aadharno(value);
+          // Clear error if input is valid
+          if (value.length === 12) {
+            setErrors((prevErrors) => ({ ...prevErrors, father_aadharno: null }));
+          } else {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              father_aadharno: "Aadhar number must be exactly 12 digits.",
+            }));
+          }
         }
-    };
-
-    const handle_fatherPhoneChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("+91")) {
-            setfather_contactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
-        } else {
-            setfather_contactdetails("+91" + value.slice(0, 10));
-        }
-    };
-
+      };
+    
+    
+    
+    
+    
+    
     const handlemotherAadharChange = (e) => {
         const value = e.target.value;
 
@@ -860,13 +1044,29 @@ function UpdateInternDetails() {
     };
 
     const handle_motherPhoneChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("+91")) {
-            setmother_contactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
         } else {
-            setmother_contactdetails("+91" + value.slice(0, 10));
+          value = "+91" + value.slice(0, 10);
         }
-    };
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setmother_contactdetails(value);
+      };
 
     const handle_husbandAadharChange = (e) => {
         const value = e.target.value;
@@ -914,13 +1114,29 @@ function UpdateInternDetails() {
     };
 
     const handle_GuardianPhoneChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith("+91")) {
-            setGuardiancontactdetails(value.slice(0, 13)); // Limit to "+91" and 10 digits
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
         } else {
-            setGuardiancontactdetails("+91" + value.slice(0, 10));
+          value = "+91" + value.slice(0, 10);
         }
-    };
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setGuardiancontactdetails(value);
+      };
 
 
     
@@ -928,7 +1144,7 @@ function UpdateInternDetails() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) {
-            alert("Validation failed. Please check the highlighted fields.");
+            alert("Fill all the details. Please check the highlighted fields.");
             return;
         }
     
@@ -1413,7 +1629,7 @@ function UpdateInternDetails() {
                                                     className="FormStyeling transparent-input"
                                                     placeholder="+91"
                                                     value={whatsappno}
-                                                    onChange={handleWhatsappChange}
+                                                    onChange={handleWhatsappChange} readOnly
                                                     
                                                 />
                                             </Form.Group>
@@ -1435,11 +1651,12 @@ function UpdateInternDetails() {
                                                 controlId="exampleForm.ControlInput1"
                                             >
                                                 <Form.Control
-                                                    type="date"
+                                                    type="text"
                                                     // placeholder="enter first name"
                                                     placeholder="+91"
                                                     className="FormStyeling transparent-input"
-                                                    value={dob}
+                                                    value={`${formatDate(dob)}`}
+
                                                     onChange={(e) => setdob(e.target.value)}
                                                     readOnly
                                                 />
@@ -1502,23 +1719,16 @@ function UpdateInternDetails() {
                                                 className="fname"
                                                 controlId="exampleForm.ControlInput1"
                                             >
-                                                <Form.Select
+                                                <Form.Control
+                                                  type="text"
                                                     aria-label="Default select example"
                                                     className="FormStyeling transparent-input"
                                                     value={blood}
                                                     onChange={(e) => setblood(e.target.value)}
                                                     readOnly
                                                 >
-                                                    <option>Select Blood Group</option>
-                                                    <option value="A+">A+</option>
-                                                    <option value="A-">A-</option>
-                                                    <option value="B+">B+</option>
-                                                    <option value="B-">B-</option>
-                                                    <option value="AB+">AB+</option>
-                                                    <option value="AB-">AB-</option>
-                                                    <option value="O+">O+</option>
-                                                    <option value="O-">O-</option>
-                                                </Form.Select>
+                                                    
+                                                </Form.Control>
                                             </Form.Group>
                                             {errors.blood && (
                                                 <span className="error text-danger">
@@ -1609,8 +1819,10 @@ function UpdateInternDetails() {
                                                     // placeholder="enter first name"
                                                     className="FormStyeling transparent-input"
                                                     value={linkdin}
-                                                    onChange={(e) => setlinkdin(e.target.value)}
-                                                />
+                                                    onChange={(e) => handleLinkChange(e, 'linkedin')}
+                                                    placeholder="LinkedIn URL"
+                                                  />
+                                                  {errors.linkedin && <span>{errors.linkedin}</span>}
                                             </Form.Group>
                                             {/* {errors.linkdin && <span className="error text-danger">{errors.linkdin}</span>} */}
                                         </Col>
@@ -1629,8 +1841,10 @@ function UpdateInternDetails() {
                                                     // placeholder="enter first name"
                                                     className="FormStyeling transparent-input"
                                                     value={facebook}
-                                                    onChange={(e) => setfacebook(e.target.value)}
-                                                />
+                                                    onChange={(e) => handleLinkChange(e, 'facebook')}
+                                                    placeholder="Facebook URL"
+                                                  />
+                                                  {errors.facebook && <span>{errors.facebook}</span>}
                                             </Form.Group>
                                             {/* {errors.facebook && <span className="error text-danger">{errors.facebook}</span>} */}
                                         </Col>
@@ -1649,8 +1863,10 @@ function UpdateInternDetails() {
                                                     // placeholder="enter first name"
                                                     className="FormStyeling transparent-input"
                                                     value={youtube}
-                                                    onChange={(e) => setyoutube(e.target.value)}
-                                                />
+                                                    onChange={(e) => handleLinkChange(e, 'youtube')}
+                          placeholder="YouTube URL"
+                        />
+                        {errors.youtube && <span>{errors.youtube}</span>}
                                             </Form.Group>
                                             {/* {errors.youtube && <span className="error text-danger">{errors.youtube}</span>} */}
                                         </Col>
@@ -1669,8 +1885,10 @@ function UpdateInternDetails() {
                                                     // placeholder="enter first name"
                                                     className="FormStyeling transparent-input"
                                                     value={anyother_add}
-                                                    onChange={(e) => setanyother_add(e.target.value)}
-                                                />
+                                                    onChange={(e) => handleLinkChange(e, 'anyother')}
+                                                    placeholder="Other URL"
+                                                  />
+                                                  {errors.anyother && <span>{errors.anyother}</span>}
                                             </Form.Group>
                                             {/* {errors.anyother_add && <span className="error text-danger">{errors.anyother_add}</span>} */}
                                         </Col>
@@ -1730,8 +1948,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter School Name"
                                                     className="FormStyeling transparent-input"
                                                     value={school_name}
-                                                    onChange={(e) => setschool_name(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setschool_name(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.school_name && (
                                                 <span className="error text-danger">
@@ -1754,8 +1978,24 @@ function UpdateInternDetails() {
                                                     placeholder="Enter 10th Percentage"
                                                     className="FormStyeling transparent-input"
                                                     value={tenth_per}
-                                                    onChange={(e) => settenth_per(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        let inputValue = e.target.value;
+                                                    
+                                                        // Allow only numbers with a single optional decimal point
+                                                        if (/^\d*\.?\d*$/.test(inputValue)) {
+                                                          if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                                            settenth_per(inputValue);
+                                                          }
+                                                        }
+                                                      }}
+                                                      onBlur={() => {
+                                                        // Ensure the value is at least 35 when user leaves the input field
+                                                        if (tenth_per && parseFloat(tenth_per) < 35) {
+                                                          settenth_per("35");
+                                                        }
+                                                      }}
+                                                      maxLength={6} // Prevents excessively long input
+                                                    />
                                             </Form.Group>
                                             {errors.tenth_per && (
                                                 <span className="error text-danger">
@@ -1778,10 +2018,24 @@ function UpdateInternDetails() {
                                                     placeholder="Enter 12th/Diploma percentage"
                                                     className="FormStyeling transparent-input"
                                                     value={twelve_diploma_per}
-                                                    onChange={(e) =>
-                                                        settwelve_diploma_per(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        let inputValue = e.target.value;
+                                                    
+                                                        // Allow only numbers with a single optional decimal point
+                                                        if (/^\d*\.?\d*$/.test(inputValue)) {
+                                                          if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                                            settwelve_diploma_per(inputValue);
+                                                          }
+                                                        }
+                                                      }}
+                                                      onBlur={() => {
+                                                        // Ensure the value is at least 35 when user leaves the input field
+                                                        if (twelve_diploma_per && parseFloat(twelve_diploma_per) < 35) {
+                                                          settwelve_diploma_per("35");
+                                                        }
+                                                      }}
+                                                      maxLength={6} // Prevents excessively long input
+                                                    />
                                             </Form.Group>
                                             {errors.twelve_diploma_per && (
                                                 <span className="error text-danger">
@@ -1804,10 +2058,13 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Graduation Details"
                                                     className="FormStyeling transparent-input"
                                                     value={graduation_details}
-                                                    onChange={(e) =>
-                                                        setgraduation_details(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Remove spaces
+                                                        if (newValue.length <= 20) {
+                                                          setgraduation_details(newValue); // Update state only if within 10 characters
+                                                        }
+                                                      }}
+                                                    />
                                             </Form.Group>
                                             {errors.graduation_details && (
                                                 <span className="error text-danger">
@@ -1830,8 +2087,24 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Graduation Percentage"
                                                     className="FormStyeling transparent-input"
                                                     value={graduation_per}
-                                                    onChange={(e) => setgraduation_per(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        let inputValue = e.target.value;
+                                                    
+                                                        // Allow only numbers with a single optional decimal point
+                                                        if (/^\d*\.?\d*$/.test(inputValue)) {
+                                                          if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                                            setgraduation_per(inputValue);
+                                                          }
+                                                        }
+                                                      }}
+                                                      onBlur={() => {
+                                                        // Ensure the value is at least 35 when user leaves the input field
+                                                        if (graduation_per && parseFloat(graduation_per) < 35) {
+                                                          setgraduation_per("35");
+                                                        }
+                                                      }}
+                                                      maxLength={6} // Prevents excessively long input
+                                                    />
                                             </Form.Group>
                                             {errors.graduation_per && (
                                                 <span className="error text-danger">
@@ -1855,10 +2128,13 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Post Graduation Details"
                                                     className="FormStyeling transparent-input"
                                                     value={post_graduation_details || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setPostGraduationDetails(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Allow only letters and '.'
+                                                        if (newValue.length <= 20) {
+                                                          setPostGraduationDetails(newValue); // Update state only if within 20 characters
+                                                        }
+                                                      }}
+                                                    />
                                             </Form.Group>
                                             {errors.post_graduation_details && (
                                                 <span className="error text-danger">
@@ -1880,9 +2156,25 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     placeholder="Enter Post Graduation Percentage"
                                                     className="FormStyeling transparent-input"
-                                                    value={post_graduation_per}
-                                                    onChange={(e) => setPostGraduationPer(e.target.value)}
-                                                />
+                                                    value={post_graduation_per || "Not Specified"}
+                                                    onChange={(e) => {
+                                                        let inputValue = e.target.value;
+                                                    
+                                                        // Allow only numbers with a single optional decimal point
+                                                        if (/^\d*\.?\d*$/.test(inputValue)) {
+                                                          if (inputValue === "" || parseFloat(inputValue) <= 100) {
+                                                            setPostGraduationPer(inputValue);
+                                                          }
+                                                        }
+                                                      }}
+                                                      onBlur={() => {
+                                                        // Ensure the value is at least 35 when user leaves the input field
+                                                        if (post_graduation_per && parseFloat(post_graduation_per) < 35) {
+                                                          setPostGraduationPer("35");
+                                                        }
+                                                      }}
+                                                      maxLength={6} // Prevents excessively long input
+                                                    />
                                             </Form.Group>
                                             {errors.post_graduation_per && (
                                                 <span className="error text-danger">
@@ -1958,20 +2250,8 @@ function UpdateInternDetails() {
                                                     {errors.selected_branches}
                                                 </span>
                                             )}
-                                            {selected_branches.includes("Other") && (
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Enter other certification"
-                                                    className="FormStyeling transparent-input"
-                                                    value={other_branch}
-                                                    onChange={handleother_branchChange}
-                                                />
-                                            )}
-                                            {errors.other_branch && (
-                                                <span className="error text-danger">
-                                                    {errors.other_branch}
-                                                </span>
-                                            )}
+                                           
+                                          
                                             {/* <div className="d-flex flex-wrap" style={{ gap: '10px' }}>
                                                           <Form.Check
                                                               type="checkbox"
@@ -2049,8 +2329,12 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     className="FormStyeling transparent-input"
                                                     value={anyother_cirt}
-                                                    onChange={(e) => setanyother_cirt(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        if (e.target.value.length <= 50) {
+                                                          setanyother_cirt(e.target.value); // Update state only if within 50 characters
+                                                        }
+                                                      }}
+                                                    />
                                             </Form.Group>
                                             {errors.anyother_cirt && (
                                                 <span className="error text-danger">
@@ -2117,8 +2401,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Father Name"
                                                     className="FormStyeling transparent-input"
                                                     value={father_name}
-                                                    onChange={(e) => setfather_name(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setfather_name(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.father_name && (
                                                 <span className="error text-danger">
@@ -2141,8 +2431,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Father Occupation"
                                                     className="FormStyeling transparent-input"
                                                     value={fatherOccupation}
-                                                    onChange={(e) => setfatherOccupation(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setfatherOccupation(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.fatherOccupation && (
                                                 <span className="error text-danger">
@@ -2215,8 +2511,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Mother Name"
                                                     className="FormStyeling transparent-input"
                                                     value={mother_name}
-                                                    onChange={(e) => setmother_name(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setmother_name(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.mother_name && (
                                                 <span className="error text-danger">
@@ -2239,8 +2541,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Mother Occupation"
                                                     className="FormStyeling transparent-input"
                                                     value={motherOccupation}
-                                                    onChange={(e) => setmotherOccupation(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setmotherOccupation(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.motherOccupation && (
                                                 <span className="error text-danger">
@@ -2473,8 +2781,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Guardian Name"
                                                     className="FormStyeling transparent-input"
                                                     value={guardian_name || "Not Specified"}
-                                                    onChange={(e) => setguardian_name(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setguardian_name(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {/* {errors.guardian_name && (
                                   <span className="error text-danger">
@@ -2497,10 +2811,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Guardian Occupation"
                                                     className="FormStyeling transparent-input"
                                                     value={GuardianOccupation || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setGuardianOccupation(e.target.value)
-                                                    }
-                                                ></Form.Control>
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setGuardianOccupation(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {/* {errors.GuardianOccupation && (
                                   <span className="error text-danger">
@@ -2893,10 +3211,14 @@ function UpdateInternDetails() {
                                                 as="textarea"
                                                 rows={4}
                                                 value={characteristics_describe}
-                                                onChange={(e) =>
-                                                    setcharacteristics_describe(e.target.value)
-                                                }
-                                            ></Form.Control>
+                                                onChange={(e) => {
+                                                    const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                    if (onlyLetters.length <= 50) { // Set max length to 30 characters
+                                                      setcharacteristics_describe(onlyLetters);
+                                                    }
+                                                  }}
+                                                  maxLength={50}
+                                                />
                                         </Form.Group>
                                         {errors.characteristics_describe && (
                                             <div className="text-danger">
@@ -2954,8 +3276,14 @@ function UpdateInternDetails() {
                                                     as="textarea"
                                                     rows={4}
                                                     value={place}
-                                                    onChange={(e) => setplace(e.target.value)}
-                                                ></Form.Control>
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setplace(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             <Form.Label className="w-100 text-center">
                                                 {errors.place ? (
@@ -3028,10 +3356,14 @@ function UpdateInternDetails() {
                                                     placeholder="Social Media"
                                                     className="FormStyeling transparent-input"
                                                     value={refrance_social_media || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setrefrance_social_media(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setrefrance_social_media(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.refrance_social_media && (
                                                 <span className="error text-danger">
@@ -3055,10 +3387,14 @@ function UpdateInternDetails() {
                                                     placeholder="Friend Name"
                                                     className="FormStyeling transparent-input"
                                                     value={refrance_friend || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setrefrance_friend(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setrefrance_friend(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.refrance_friend && (
                                                 <span className="error text-danger">
@@ -3082,10 +3418,14 @@ function UpdateInternDetails() {
                                                     placeholder="Family"
                                                     className="FormStyeling transparent-input"
                                                     value={refrance_family || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setrefrance_family(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setrefrance_family(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.refrance_family && (
                                                 <span className="error text-danger">
@@ -3108,10 +3448,14 @@ function UpdateInternDetails() {
                                                     placeholder="Relatives"
                                                     className="FormStyeling transparent-input"
                                                     value={refrance_relatives || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setrefrance_relatives(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setrefrance_relatives(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.refrance_relatives && (
                                                 <span className="error text-danger">
@@ -3134,10 +3478,14 @@ function UpdateInternDetails() {
                                                     placeholder="Other"
                                                     className="FormStyeling transparent-input"
                                                     value={refrance_other || "Not Specified"}
-                                                    onChange={(e) =>
-                                                        setrefrance_other(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setrefrance_other(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.refrance_other && (
                                                 <span className="error text-danger">
@@ -3189,8 +3537,14 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     className="FormStyeling transparent-input"
                                                     value={reference_name}
-                                                    onChange={(e) => setRefereance_name(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setRefereance_name(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             <Form.Label className="w-100 text-center"></Form.Label>
                                             {errors.reference_name && (
@@ -3208,8 +3562,14 @@ function UpdateInternDetails() {
                                                     type="text"
                                                     className="FormStyeling transparent-input"
                                                     value={reference_name1}
-                                                    onChange={(e) => setRefereance_name1(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setRefereance_name1(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             <Form.Label className="w-100 text-center"></Form.Label>
                                             {errors.reference_name1 && (
@@ -3296,10 +3656,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Applicant Name"
                                                     className="FormStyeling transparent-input"
                                                     value={buttom_applicant_name}
-                                                    onChange={(e) =>
-                                                        setbuttonapplicantname(e.target.value)
-                                                    }
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setbuttonapplicantname(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.buttom_applicant_name && (
                                                 <span className="error text-danger">
@@ -3325,8 +3689,14 @@ function UpdateInternDetails() {
                                                     placeholder="Enter Place"
                                                     className="FormStyeling transparent-input"
                                                     value={buttom_place}
-                                                    onChange={(e) => setbuttom_place(e.target.value)}
-                                                />
+                                                    onChange={(e) => {
+                                                        const onlyLetters = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only letters & spaces
+                                                        if (onlyLetters.length <= 20) { // Set max length to 30 characters
+                                                          setbuttom_place(onlyLetters);
+                                                        }
+                                                      }}
+                                                      maxLength={20}
+                                                    />
                                             </Form.Group>
                                             {errors.buttom_place && (
                                                 <span className="error text-danger">

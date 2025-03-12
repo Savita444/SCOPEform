@@ -1,5 +1,5 @@
 ////sos
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.scss";
 import { ToastContainer } from "react-toastify";
@@ -45,9 +45,14 @@ import ProgramfeesCategory from "./screens/submenus/ProgramfeesCategory";
 import AddCoursefees from "./screens/submenus/AddCoursefees";
 import Updatefeecategory from "./screens/submenus/Updatefeecategory";
 import Updatecoursefees from "./screens/submenus/Updatecoursefees";
+import LazyCompletionFrom from "./screens/submenus/LazyCompletionFrom";
+import CompletionFormSkeleton from "./screens/submenus/CompletionFormSkeleton"; // Skeleton component
 
 function App() {
   // REACT_APP_IMAGE_URL= "https://api.sumagotraining.in/";
+  const LazyCompletionDetailsPage = lazy(() =>
+    import("./screens/submenus/CompletionDetailsPage")
+  );
   return (
     <>
       <ToastContainer autoClose={2000} />
@@ -104,14 +109,34 @@ function App() {
             path="/completion/:id"
             element={<ProtectedRoutes Component={CompletionFrom} />}
           />
+
+
           <Route
             path="/completion-details/:id"
-            element={<ProtectedRoutes Component={CompletionDetailsPage} />}
+            element={
+              <Suspense fallback={<CompletionFormSkeleton />}>
+                <ProtectedRoutes Component={LazyCompletionDetailsPage} />
+              </Suspense>
+            }
+          />;
+          <Route
+            path="/completion-details/:id"
+            element={<ProtectedRoutes Component={LazyCompletionFrom} />}
           />
           <Route
             path="/completion-all-details/:id"
             element={<ProtectedRoutes Component={CompletionAllDetails} />}
           />
+
+          <Route
+            path="/completion-all-details/:id"
+            element={
+              <Suspense fallback={<CompletionFormSkeleton />}>
+                <ProtectedRoutes Component={LazyCompletionDetailsPage} />
+              </Suspense>
+            }
+          />;
+
           <Route
             path="/update-completion-details/:id"
             element={<ProtectedRoutes Component={UpdateCompletionDetails} />}
@@ -164,12 +189,12 @@ function App() {
             path="/addcourse"
             element={<ProtectedRoutes Component={AddCourse} />}
           />
-           <Route
+          <Route
             path="/update-course/:id"
             element={<ProtectedRoutes Component={UpdateCourse} />}
           />
 
-            <Route
+          <Route
             path="/addsubcourse"
             element={<ProtectedRoutes Component={Addsubcourse} />}
           />
@@ -177,7 +202,7 @@ function App() {
             path="/update-subcourse/:id"
             element={<ProtectedRoutes Component={UpdateSubcourse} />}
           />
-            <Route
+          <Route
             path="/addsubsubcourse"
             element={<ProtectedRoutes Component={AddSubsubcourse} />}
           />
@@ -197,7 +222,7 @@ function App() {
             path="/addcoursefees"
             element={<ProtectedRoutes Component={AddCoursefees} />}
           />
-           <Route
+          <Route
             path="/update-coursefees/:id"
             element={<ProtectedRoutes Component={Updatecoursefees} />}
           />

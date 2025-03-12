@@ -108,30 +108,18 @@ useEffect(() => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  console.log("Deleting record with ID:", id);
-
-                  const response = await instance.delete(`intern-personal-info/delete/${id}`, {
+                  await instance.delete(`intern-personal-info/delete/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
                     },
                   });
-
-                  console.log("Delete response:", response);
-
-                  // Check if deletion was successful
-                  if (response.status === 200 || response.status === 204) {
-                    toast.success("Data Deleted Successfully");
-                    setProducts((prevProducts) => prevProducts.filter((item) => item.id !== id)); // Update UI
-                  } else {
-                    console.error("Unexpected response:", response);
-                    toast.error("Failed to delete data. Please try again.");
-                  }
+                  toast.success("Data Deleted Successfully");
+                  fetchProducts();
                 } catch (error) {
                   console.error("Error deleting data:", error);
-                  toast.error("An error occurred while deleting data.");
-                }
-                finally {
+                  toast.error("Error deleting data");
+                } finally {
                   setLoading(false);
                 }
                 onClose();

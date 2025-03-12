@@ -1,5 +1,4 @@
 
-
 ////sos final
 
 import React, { useState } from "react";
@@ -14,7 +13,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import axios from "axios";
 
 const Login = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -71,7 +70,7 @@ const Login = () => {
           localStorage.setItem("id", id);
           localStorage.setItem("user_email", userEmail);
   
-          toast.success("Login successful");
+          toast.success("Login Successfully!!");
   
           // Check for specific email condition
           if (userEmail === "bde@sumagoinfotech.com") {
