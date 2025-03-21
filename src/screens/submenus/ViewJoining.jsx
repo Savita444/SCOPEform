@@ -11,7 +11,7 @@ import * as XLSX from 'xlsx';
 
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const ViewJoining = () => {
   const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
@@ -20,6 +20,12 @@ const ViewJoining = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const technologyFilter = queryParams.get("technology");
+
+
+
 
   useEffect(() => {
     handleSearch(""); // Reset search when page changes
@@ -38,25 +44,31 @@ const ViewJoining = () => {
   }, [products, filteredData]);
 
   const fetchProducts = async () => {
-    setLoading(true);
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await instance.get("get-intern-joining", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+  setLoading(true);
+  const accessToken = localStorage.getItem("remember_token");
+  try {
+    const response = await instance.get("get-intern-joining", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-      const sortedProducts = response.data.sort((a, b) => b.id - a.id);
-      setProducts(sortedProducts);
-      setData(sortedProducts);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
+    let sortedProducts = response.data.sort((a, b) => b.id - a.id);
+
+    // Apply filtering if technologyFilter is present
+    if (technologyFilter) {
+      sortedProducts = sortedProducts.filter(product => product.technology_name === technologyFilter);
     }
-  };
+
+    setProducts(sortedProducts);
+    setData(sortedProducts);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const handleDelete = async (id) => {

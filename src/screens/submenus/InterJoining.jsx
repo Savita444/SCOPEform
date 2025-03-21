@@ -3243,11 +3243,11 @@ if (!graduation_details.trim()) {
                         value={characteristics_describe}
                         onChange={(e) => {
                           const onlyLetters = e.target.value.replace(/[^a-zA-Z\s,]/g, ""); // Allow only letters & spaces
-                          if (onlyLetters.length <= 50) { // Set max length to 30 characters
+                          if (onlyLetters.length <= 100) { // Set max length to 100 characters
                             setcharacteristics_describe(onlyLetters);
                           }
                         }}
-                        maxLength={50}
+                        maxLength={100}
                       />
                     </Form.Group>
                     {errors.characteristics_describe && (

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {Container, Row, Card, Col, Form, Button, OverlayTrigger, Tooltip,} from "react-bootstrap";
-import { FaEdit, FaTrash, FaRegAddressBook, FaEye } from "react-icons/fa";
+import { Container, Row, Card, Col, Form, Button, OverlayTrigger, Tooltip, } from "react-bootstrap";
+import { FaEdit, FaEye } from "react-icons/fa";
 import { HiUserAdd } from "react-icons/hi";
+import { HiDownload } from "react-icons/hi";
 import instance from "../../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import GenerateOfferLetter from "./GenerateOfferLetter.jsx";
 
 const InternDetailsPage = () => {
   const { id } = useParams();
@@ -40,9 +42,12 @@ const InternDetailsPage = () => {
     fetchInternDetails();
   }, [id]);
 
+
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!internDetails) return <p>No intern details found.</p>;
+
 
 
   // const handleDelete = async (id) => {
@@ -109,60 +114,13 @@ const InternDetailsPage = () => {
     current_address = "",
     contact_details = "",
     whatsappno = "",
-    dob = "",
-    age = "",
-    gender = "",
     blood = "",
-    aadhar = "",
-    linkdin = "",
-    facebook = "",
-    youtube = "",
-    anyother_add = "",
-    school_name = "",
-    tenth_per = "",
-    duretion = "",
-    intern = "",
-    twelve_diploma_per = "",
-    graduation_details = "",
-    graduation_per = "",
-    post_graduation_details = "",
-    post_graduation_per = "",
-    anyother_cirt = "",
-    selected_branches = "",
-    other_branch = "",
-    father_name = "",
-    father_contactdetails = "",
-    father_aadharno = "",
-    fatherOccupation = "",
-    mother_name = "",
-    motherOccupation = "",
-    mother_aadharno = "",
-    mother_contactdetails = "",
-    marriedStatus = "",
-    husbandDetails = "",
-    guardian_name = "",
-    GuardianOccupation = "",
-    Guardian_aadharno = "",
-    Guardian_contactdetails = "",
-    maritalStatus = "",
+    date_of_joining = "",
     technology_name = "",
-    duration = "",
-    selectedModules = "",
-    selectedtraining_mode = "",
-    intern_experience = "",
-    experience_description = "",
-    characteristics_describe = "",
-    applicant_name = "",
-    place = "",
-    refrance = "",
-    scoperefer = "",
-    reference_name = "",
-    reference_name1 = "",
-    contact_number = "",
-    contact_number1 = "",
-    buttom_applicant_name = "",
-    buttom_place = "",
+
   } = internDetails;
+
+
 
   return (
     <>
@@ -180,7 +138,7 @@ const InternDetailsPage = () => {
         <Container>
           <div className="text-center title-container">
             <b className="title-text">
-              INTERNS PROFILE
+              INTERN PROFILE
             </b>
           </div>
         </Container>
@@ -327,7 +285,7 @@ const InternDetailsPage = () => {
                         <div style={{ display: "flex", gap: "10px" }}>
 
 
-                        
+
 
                           <OverlayTrigger
                             placement="top"
@@ -341,7 +299,7 @@ const InternDetailsPage = () => {
                               onClick={() => navigate(`/InterJoining/${id}`, { state: internDetails })}
                             // onClick={() => navigate(`/InterJoining/${id}`)}
                             >
-                              <HiUserAdd  style={{ color: "black" }} />
+                              <HiUserAdd style={{ color: "black" }} />
                             </Button>
                           </OverlayTrigger>
 
@@ -410,7 +368,7 @@ const InternDetailsPage = () => {
                         </a>
                         <div style={{ display: "flex", gap: "10px" }}>
 
-                         
+
 
                           <OverlayTrigger
                             placement="top"
@@ -492,7 +450,7 @@ const InternDetailsPage = () => {
                         </a>
                         <div style={{ display: "flex", gap: "10px" }}>
 
-                          
+
                           <OverlayTrigger
                             placement="top"
                             overlay={
@@ -594,6 +552,43 @@ const InternDetailsPage = () => {
                         </div>
                       </div>
                     </li>
+                    <hr />
+
+                     <li style={{ marginBottom: "15px", fontSize: "18px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <a
+                          href="#"
+                          className="text-decoration-none"
+                          style={{ color: "black", fontSize: "20px" }}
+                        >
+                          5. Generate Offer Letter
+                        </a>
+                        <div style={{ display: "flex", gap: "10px" }}>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip id="generate-tooltip">Generate Offer Letter</Tooltip>}
+                          >
+                            <Button
+                              variant="secondary"
+                              className="ms-1"
+                              onClick={() => GenerateOfferLetter(internDetails)}
+                            >
+                              <HiDownload />
+                            </Button>
+                          </OverlayTrigger>
+                        </div>
+                      </div>
+                    </li> 
+
+
+
+
                   </ul>
                 </Card.Body>
               </Card>
@@ -601,7 +596,7 @@ const InternDetailsPage = () => {
           </Row>
         </Container>
 
-       
+
       </div>
     </>
   );

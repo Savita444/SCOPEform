@@ -151,7 +151,7 @@ useEffect(() => {
     {
       name: "Full Name",
       cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
-      width: "180px",
+      width: "250px",
     },
     {
       name: "Email Id",
@@ -162,19 +162,19 @@ useEffect(() => {
     {
       name: "Contact Details",
       cell: (row) => row.contact_details,
-      width:"150px",
+      width:"130px",
     },
     {
       name: "Whatsapp No.",
       cell: (row) => row.whatsappno,
-      width:"150px",
+      width:"130px",
     },
     {
       name: "Technology",
       cell: (row) => row.technology_name,
       sortable: true,
       sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
-      width:"190px",
+      width:"200px",
 
     },
     {
@@ -182,6 +182,7 @@ useEffect(() => {
       cell: (row) => row.duration,
       sortable: true,
       sortFunction: (a, b) => a.duration.localeCompare(b.duration),
+      width:"100px",
 
     },
     {
