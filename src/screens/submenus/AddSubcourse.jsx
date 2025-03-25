@@ -29,6 +29,7 @@ const Addsubcourse = () => {
   const navigate = useNavigate();
 
 
+
   const location = useLocation();
   const [course_id, setCourseId] = useState(location.state?.course_id || "");
 
@@ -36,25 +37,53 @@ const Addsubcourse = () => {
   }, [coursename]);
 
 
+ 
 
+
+
+
+
+
+
+
+
+  useEffect(() => {
+    fetchSubcourses();
+  }, [currentPage]); // Fetch data when page changes
+
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [Subcourses, filteredData]);
+
+
+
+
+
+
+
+  // Function to convert image to Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  
 
   useEffect(() => {
     fetchCourses(); // Fetch courses when component mounts
     fetchSubcourses();
   }, []);
-
-  
- // Function to convert image to Base64
- const convertToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-};
-
-
   const BASE_URL = "https://api.sumagotraining.in/public/api";
 
   const fetchSubcourses = async () => {
@@ -67,9 +96,9 @@ const Addsubcourse = () => {
           "Content-Type": "application/json",
         },
       });
-  
+
       const subcoursesData = subcourseResponse.data?.data || [];
-  
+
       // Fetch course fees
       const feesResponse = await axios.get(`${BASE_URL}/get_course_fee_details_list`, {
         headers: {
@@ -77,9 +106,9 @@ const Addsubcourse = () => {
           "Content-Type": "application/json",
         },
       });
-  
+
       const feesData = feesResponse.data || [];
-  
+
       // Merge subcourse details with their corresponding fee details
       const mergedData = subcoursesData.map(subcourse => {
         const feeDetail = feesData.find(fee => fee.subcourses_id === subcourse.subcourses_id);
@@ -89,7 +118,7 @@ const Addsubcourse = () => {
           sub_course_duration: feeDetail ? feeDetail.sub_course_duration : "N/A",
         };
       });
-  
+
       setSubcourses(mergedData);
       setData(mergedData); // Update the SearchExportContext data
 
@@ -99,7 +128,7 @@ const Addsubcourse = () => {
       setLoading(false);
     }
   };
-  
+
 
   const fetchCourses = async () => {
     const accessToken = localStorage.getItem("remember_token");
@@ -117,6 +146,8 @@ const Addsubcourse = () => {
       console.error("Error fetching course details:", err);
     }
   };
+
+
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -243,9 +274,9 @@ const Addsubcourse = () => {
       console.error("Error submitting form:", error);
       toast.error("An error occurred. Please try again.");
     }
-};
+  };
 
-  
+
 
 
   const tableColumns = (currentPage, rowsPerPage) => [
@@ -256,12 +287,16 @@ const Addsubcourse = () => {
     {
       name: "Course name",
       cell: (row) => `${row.coursename} `,
+      sortable: true,
+      sortFunction: (a, b) => a.coursename.localeCompare(b.coursename),
     },
     {
       name: "Subcourse name",
       cell: (row) => `${row.subcourses_name} `,
+      sortable: true,
+      sortFunction: (a, b) => a.subcourses_name.localeCompare(b.subcourses_name),
     },
-   
+
     {
       name: "Subcourse image",
       cell: (row) =>
@@ -321,14 +356,19 @@ const Addsubcourse = () => {
 
             <Card.Body>
               <DataTable
+                key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : Subcourses}
+                data={searchQuery ? filteredData : Subcourses} // Use filtered data only when searching
                 pagination
+                paginationServer
+                paginationTotalRows={Subcourses.length}
+                onChangePage={(page) => {
+                  setCurrentPage(page);
+                  handleSearch(""); // Reset search when changing pages
+                }}
                 responsive
                 striped
                 noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
               />
             </Card.Body>
           </Card>
@@ -342,25 +382,25 @@ const Addsubcourse = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-          <Form.Group className="mb-3">
-          <Form.Label>Course Name</Form.Label>
-            <Form.Select
-              value={coursename}
-              onChange={(e) => {
-                const selectedCourse = courses.find((course) => course.name === e.target.value);
-                if (selectedCourse) {
-                  setCoursename(selectedCourse.name); // Set coursename
-                  setCourseId(selectedCourse.id); // Set course_id
-                }
-              }}
-            >
-              <option value="">-- Select Course --</option>
-              {courses.map((course) => (
-                <option key={course.id} value={course.name}>
-                  {course.name}
-                </option>
-              ))}
-            </Form.Select>
+            <Form.Group className="mb-3">
+              <Form.Label>Course Name</Form.Label>
+              <Form.Select
+                value={coursename}
+                onChange={(e) => {
+                  const selectedCourse = courses.find((course) => course.name === e.target.value);
+                  if (selectedCourse) {
+                    setCoursename(selectedCourse.name); // Set coursename
+                    setCourseId(selectedCourse.id); // Set course_id
+                  }
+                }}
+              >
+                <option value="">-- Select Course --</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.name}>
+                    {course.name}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
 
 
@@ -375,26 +415,26 @@ const Addsubcourse = () => {
                 onChange={(e) => setSubcourses_name(e.target.value)}
               />
             </Form.Group>
-             <Form.Group className="mb-3">
-                          <Form.Label>Upload File</Form.Label>
-                          <Form.Control
-                            type="file"
-                            onChange={async (e) => {
-                              const file = e.target.files[0];
-                              if (file && file.type.startsWith("image/")) {
-                                try {
-                                  const base64 = await convertToBase64(file);
-                                  setImage(base64);
-                                } catch (err) {
-                                  console.error("Base64 Conversion Error:", err);
-                                }
-                              } else {
-                                setErrors("Only image files are allowed.");
-                              }
-                            }}
-                          />
-                        </Form.Group>
-            
+            <Form.Group className="mb-3">
+              <Form.Label>Upload File</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file && file.type.startsWith("image/")) {
+                    try {
+                      const base64 = await convertToBase64(file);
+                      setImage(base64);
+                    } catch (err) {
+                      console.error("Base64 Conversion Error:", err);
+                    }
+                  } else {
+                    setErrors("Only image files are allowed.");
+                  }
+                }}
+              />
+            </Form.Group>
+
           </Form>
         </Modal.Body>
         <Modal.Footer>

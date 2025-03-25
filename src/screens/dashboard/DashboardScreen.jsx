@@ -5,7 +5,7 @@ import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, ArcElement, Tooltip, Legend } from "chart.js";
 import { Container, Row, Col, Card, ListGroup, Button } from "react-bootstrap";
 import axios from "axios";
-import { FaUsers, FaBook, FaCheckCircle, FaClipboardList, FaLaptopCode, FaUserCircle } from "react-icons/fa";
+import { FaUsers, FaFileCode, FaCheckCircle, FaClipboardList, FaLaptopCode, FaUserCircle } from "react-icons/fa";
 import "../submenus/completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
@@ -80,7 +80,7 @@ const Dashboard = () => {
       // Convert to array format
       const transformedData = Object.keys(techCountMap).map((tech) => ({
         technology: tech,
-        studentCount: techCountMap[tech],
+        studentCount: techCountMap[tech].toString().padStart(2, '0'),
       }));
 
       setTechData(transformedData);
@@ -145,17 +145,18 @@ const Dashboard = () => {
 
 
   // Calculate Summary
-  const totalInterns = internData.length;
-  const completedInterns = completionData.length;
+  const totalInterns = internData.length.toString().padStart(2, '0');
+  const completedInterns = completionData.length.toString().padStart(2, '0');
+
   const courses = 10; // Placeholder for courses
   const t3Sheet = totalInterns;
 
   // UI Card Data
   const summaryCards = [
-    { label: "Total Interns", value: totalInterns, icon: <FaUsers size={40} className="text-warning" />, link: "/viewjoining" },
-    { label: "Courses", value: courses, icon: <FaBook size={40} className="text-danger" /> },
+    { label: "Total Interns", value: totalInterns, icon: <FaUsers size={40} className="text-danger" />, link: "/viewjoining" },
+    { label: "Total Courses", value: courses, icon: <FaFileCode size={40} className="text-secondary" /> },
     { label: "Completion", value: completedInterns, icon: <FaCheckCircle size={40} className="text-success" />, link: "/viewcompletion" },
-    { label: "T3 Sheet", value: t3Sheet, icon: <FaClipboardList size={40} className="text-primary" />, link: "/ViewT3Sheet" },
+    { label: "T3 - Sheet", value: t3Sheet, icon: <FaClipboardList size={40} className="text-primary" />, link: "/ViewT3Sheet" },
   ];
 
 
@@ -253,15 +254,18 @@ const Dashboard = () => {
             {summaryCards.map((card, index) => (
               <Col key={index} md={3}>
                 <Link to={card.link} style={{ textDecoration: "none", color: "inherit" }}>
-                  <Card className="p-2 text-center shadow-sm clickable-card">
-                    <div className="d-flex justify-content-center">{card.icon}</div>
-                    <h6 className="mt-2">{card.label}</h6>
-                    <h2>{card.value}</h2>
+                  <Card className="p-3 text-center shadow-sm clickable-card mt-0 mb-0">
+                    <div className="d-flex align-items-center justify-content-start gap-4">
+                      {card.icon}
+                      <h5 className="mb-0 text-muted ms-3">{card.label}</h5>
+                    </div>
+                    <h3 className="align-items-center mb-0 ms-3">{card.value}</h3>
                   </Card>
                 </Link>
               </Col>
             ))}
           </Row>
+
 
           <Container className="mt-4">
             <h2 className="text-center mb-4">Technology Wise Student Count</h2>
@@ -273,15 +277,15 @@ const Dashboard = () => {
                 {techData.map((tech, index) => (
                   <Col key={index} md={3}>
                     <Card
-                      className="p-2 mb-4 text-center shadow-sm"
+                      className="p-2 mb-3 text-center shadow-sm"
                       style={{ cursor: "pointer" }}
                       onClick={() => navigate(`/viewjoining?technology=${tech.technology}`)}
                     >
                       <div className="d-flex justify-content-center">
                         <FaLaptopCode size={40} className="text-info" />
                       </div>
-                      <h6 className="mt-2">{tech.technology}</h6>
-                      <h2>{tech.studentCount}</h2>
+                      <h6 className="mt-2 text-muted">{tech.technology}</h6>
+                      <h3>{tech.studentCount}</h3>
                     </Card>
                   </Col>
                 ))}
@@ -317,7 +321,7 @@ const Dashboard = () => {
                   className="d-flex align-items-center justify-content-between"
                 >
                   <div className="d-flex align-items-center">
-                    <FaUserCircle size={40} className="me-3 text-primary" />
+                    <FaUserCircle size={40} className="me-3 text-secondary" />
                     <div>
                       {/* Display First Name & Last Name */}
                       <h6 className="mb-0">
@@ -333,8 +337,8 @@ const Dashboard = () => {
                       <div> Training Mode:&nbsp;
                         <span
                           className={`badge  ${intern.training_mode === "Online"
-                              ? "bg-success"
-                              : "bg-secondary"
+                            ? "bg-success"
+                            : "bg-secondary"
                             }`}
                         >
                           {intern.training_mode || "N/A"}

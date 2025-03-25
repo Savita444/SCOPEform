@@ -23,24 +23,24 @@ const ViewCompletionFrom = () => {
   useEffect(() => {
     fetchProducts();
   }, [currentPage]); // Fetch data when page changes
-  
+
   useEffect(() => {
     handleSearch(""); // Reset search when page changes
   }, [currentPage]);
-  
+
 
   const [forceUpdate, setForceUpdate] = useState(0);
 
-useEffect(() => {
-  setForceUpdate((prev) => prev + 1);
-}, [products, filteredData]);
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [products, filteredData]);
 
   const fetchProducts = async () => {
     setLoading(true);
 
     const accessToken = localStorage.getItem("remember_token");
     try {
-      
+
       const response = await instance.get("get-intern-completion-details", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -116,20 +116,20 @@ useEffect(() => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB'); // Formats as dd/mm/yyyy
   };
-   const exportExcel = () => {
-      // Format date fields before exporting
-      const formattedProducts = products.map((product) => ({
-        ...product,
-        date_of_joining: formatDate(product.date_of_joining),
-      }));
-  
-  
-     
-      const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "View Completion");
-      XLSX.writeFile(workbook, "View-Completion.xlsx");
-    };
+  const exportExcel = () => {
+    // Format date fields before exporting
+    const formattedProducts = products.map((product) => ({
+      ...product,
+      date_of_joining: formatDate(product.date_of_joining),
+    }));
+
+
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "View Completion");
+    XLSX.writeFile(workbook, "View-Completion.xlsx");
+  };
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
@@ -139,12 +139,12 @@ useEffect(() => {
     {
       name: "Full Name",
       cell: (row) => `${row.fname} ${row.mname} ${row.fathername} ${row.lname}`,
-      width:"250px",
+      width: "250px",
     },
     {
       name: "Email Id",
       cell: (row) => row.email,
-      width:"200px",
+      width: "200px",
     },
     // {
     //   name: "Contact Details",
@@ -155,8 +155,8 @@ useEffect(() => {
       cell: (row) => row.technology_name,
       sortable: true,
       sortFunction: (a, b) => a.technology_name.localeCompare(b.technology_name),
-      width:"190px",
-      
+      width: "190px",
+
     },
     {
       name: "Training mode",
@@ -173,7 +173,7 @@ useEffect(() => {
     {
       name: "Actions",
       cell: (row) => (
-        
+
         <div className="d-flex">
           <OverlayTrigger placement="top" overlay={<Tooltip id="view-tooltip">View</Tooltip>}>
             <Button className="ms-1" variant="secondary" onClick={() => navigate(`/completion-details/${row.id}`, { state: row })}>
@@ -186,7 +186,7 @@ useEffect(() => {
               style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
               onClick={() => handleDelete(row.id)}
             >
-              
+
               <FaTrash />
             </Button>
           </OverlayTrigger>
@@ -201,7 +201,7 @@ useEffect(() => {
                         </OverlayTrigger> */}
         </div>
       ),
-      
+
     },
   ];
 
@@ -212,39 +212,39 @@ useEffect(() => {
           <Card>
             <Card.Header>
               <Row>
-              <Col className="d-flex align-items-center"><h5 >Completion Details</h5></Col>
+                <Col className="d-flex align-items-center"><h5 >Completion Details</h5></Col>
                 <Col className="d-flex justify-content-end align-items-center">
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
                 </Col>
               </Row>
               <Row className="mt-3">
-                              <Col className="d-flex justify-content-end">
-                                <Button
-                                  variant="primary"
-                                  onClick={exportExcel}
-                                >
-                                  <FaDownLong /> Export to Excel
-                                </Button>
-                              </Col>
-                            </Row>
+                <Col className="d-flex justify-content-end">
+                  <Button
+                    variant="primary"
+                    onClick={exportExcel}
+                  >
+                    <FaDownLong /> Export to Excel
+                  </Button>
+                </Col>
+              </Row>
             </Card.Header>
 
             <Card.Body>
-            <DataTable
-  key={forceUpdate}
-  columns={tableColumns(currentPage, rowsPerPage)}
-  data={searchQuery ? filteredData : products} // Use filtered data only when searching
-  pagination
-  paginationServer
-  paginationTotalRows={products.length}
-  onChangePage={(page) => {
-    setCurrentPage(page);
-    handleSearch(""); // Reset search when changing pages
-  }}
-  responsive
-  striped
-  noDataComponent="No Data Available"
-/>
+              <DataTable
+                key={forceUpdate}
+                columns={tableColumns(currentPage, rowsPerPage)}
+                data={searchQuery ? filteredData : products} // Use filtered data only when searching
+                pagination
+                paginationServer
+                paginationTotalRows={products.length}
+                onChangePage={(page) => {
+                  setCurrentPage(page);
+                  handleSearch(""); // Reset search when changing pages
+                }}
+                responsive
+                striped
+                noDataComponent="No Data Available"
+              />
 
             </Card.Body>
           </Card>

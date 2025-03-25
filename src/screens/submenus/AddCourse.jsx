@@ -28,6 +28,25 @@ const AddCourse = () => {
 
   useEffect(() => {
     fetchCourses();
+  }, [currentPage]); // Fetch data when page changes
+
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [courses, filteredData]);
+
+
+
+
+
+  useEffect(() => {
+    fetchCourses();
   }, []);
   const BASE_URL = "https://api.sumagotraining.in/public/api";
 
@@ -50,7 +69,7 @@ const AddCourse = () => {
 
       setCourses(sortedData);
       setData(sortedData); // Update the SearchExportContext data
-      
+
 
     } catch (err) {
       console.error("Error fetching course details:", err);
@@ -259,14 +278,19 @@ const AddCourse = () => {
 
             <Card.Body>
               <DataTable
+                key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : courses}
+                data={searchQuery ? filteredData : courses} // Use filtered data only when searching
                 pagination
+                paginationServer
+                paginationTotalRows={courses.length}
+                onChangePage={(page) => {
+                  setCurrentPage(page);
+                  handleSearch(""); // Reset search when changing pages
+                }}
                 responsive
                 striped
                 noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
               />
             </Card.Body>
           </Card>

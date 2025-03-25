@@ -52,13 +52,15 @@ const ViewInternJoining = () => {
   }, [currentPage]); // Fetch data when page changes
   
 
-  const [forceUpdate, setForceUpdate] = useState(0);
+const [forceUpdate, setForceUpdate] = useState(0);
 
 useEffect(() => {
   setForceUpdate((prev) => prev + 1);
 }, [products, filteredData]);
 
-  const fetchProducts = async () => {
+  
+
+const fetchProducts = async () => {
     setLoading(true);
     const accessToken = localStorage.getItem("remember_token");
     try {

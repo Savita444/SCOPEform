@@ -31,6 +31,35 @@ const AddSubsubcourse = () => {
   const [banner, setBanner] = useState(null);
   const [back_image, setBack_image] = useState(null);
 
+
+
+
+
+  useEffect(() => {
+    fetchSubcoursedetails();
+  }, [currentPage]); // Fetch data when page changes
+  
+  useEffect(() => {
+    handleSearch(""); // Reset search when page changes
+  }, [currentPage]);
+  
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+useEffect(() => {
+  setForceUpdate((prev) => prev + 1);
+}, [subcoursedetails, filteredData]);
+
+
+
+
+
+
+
+
+
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -220,6 +249,8 @@ const AddSubsubcourse = () => {
     {
       name: "Course name",
       cell: (row) => `${row.courses_name} `,
+      sortable: true,
+      sortFunction: (a, b) => a.courses_name.localeCompare(b.courses_name),
     },
     {
       name: "Banner image",
@@ -237,10 +268,14 @@ const AddSubsubcourse = () => {
     {
       name: "Subcourse name",
       cell: (row) => `${row.subcourses_name} `,
+      sortable: true,
+      sortFunction: (a, b) => a.subcourses_name.localeCompare(b.subcourses_name),
     },
     {
       name: "Title",
       cell: (row) => `${row.title} `,
+      sortable: true,
+      sortFunction: (a, b) => a.title.localeCompare(b.title),
     },
     {
       name: "Description",
@@ -255,6 +290,8 @@ const AddSubsubcourse = () => {
     {
       name: "Custom Text",
       cell: (row) => `${row.custome_text} `,
+      sortable: true,
+      sortFunction: (a, b) => a.custome_text.localeCompare(b.custome_text),
     },
 
     {
@@ -302,16 +339,21 @@ const AddSubsubcourse = () => {
             </Card.Header>
 
             <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : subcoursedetails}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+            <DataTable
+  key={forceUpdate}
+  columns={tableColumns(currentPage, rowsPerPage)}
+  data={searchQuery ? filteredData : subcoursedetails} // Use filtered data only when searching
+  pagination
+  paginationServer
+  paginationTotalRows={subcoursedetails.length}
+  onChangePage={(page) => {
+    setCurrentPage(page);
+    handleSearch(""); // Reset search when changing pages
+  }}
+  responsive
+  striped
+  noDataComponent="No Data Available"
+/>
             </Card.Body>
           </Card>
         </Col>
