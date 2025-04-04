@@ -109,7 +109,7 @@ function InterJoining() {
   useEffect(() => {
     if (location) {
       console.log("location?.state", location?.state);
-  
+
       setfname(location?.state?.fname || "");
       setmname(location?.state?.mname || "");
       setfathername(location?.state?.fathername || "");
@@ -124,9 +124,9 @@ function InterJoining() {
       setgender(location?.state?.gender || "");
       setblood(location?.state?.blood || "");
       setaadhar(location?.state?.aadhar || "");
-      setfather_name(location?.state?.fathername || ""); 
-      setmother_name(location?.state?.mname || ""); 
-  
+      setfather_name(location?.state?.fathername || "");
+      setmother_name(location?.state?.mname || "");
+
       // Ensure that fullName and bottomapplicantName are set AFTER fname and lname are updated
       setTimeout(() => {
         setapplicant_name(`${location?.state?.fname || ""} ${location?.state?.lname || ""}`.trim());
@@ -134,15 +134,15 @@ function InterJoining() {
       }, 0);
     }
   }, [location]);
-  
+
 
 
 
 
   // Sync buttom_place with place
-useEffect(() => {
-  setbuttom_place(place); 
-}, [place]);
+  useEffect(() => {
+    setbuttom_place(place);
+  }, [place]);
 
 
   // const handlePrint = () => {
@@ -379,20 +379,20 @@ useEffect(() => {
 
     // Graduation Details Validation
     // Graduation Details Validation
-const graduationDetailsPattern = /^[A-Za-z]+$/; // Only letters, no spaces
+    const graduationDetailsPattern = /^[A-Za-z]+$/; // Only letters, no spaces
 
-if (!graduation_details.trim()) {
-  errors.graduation_details = "Graduation details are required";
-  isValid = false;
-} else if (graduation_details.length > 20) {
-  errors.graduation_details =
-    "Graduation details must be less than or equal to 20 characters";
-  isValid = false;
-} else if (!graduationDetailsPattern.test(graduation_details)) {
-  errors.graduation_details =
-    "Graduation details must only contain letters without spaces";
-  isValid = false;
-}
+    if (!graduation_details.trim()) {
+      errors.graduation_details = "Graduation details are required";
+      isValid = false;
+    } else if (graduation_details.length > 20) {
+      errors.graduation_details =
+        "Graduation details must be less than or equal to 20 characters";
+      isValid = false;
+    } else if (!graduationDetailsPattern.test(graduation_details)) {
+      errors.graduation_details =
+        "Graduation details must only contain letters without spaces";
+      isValid = false;
+    }
 
 
     // Graduation Percentage Validation (Numeric and within 0-100)
@@ -705,35 +705,35 @@ if (!graduation_details.trim()) {
     const value = e.target.value;
     let isValid = false;
     let errorMessage = null;
-  
+
     // Validation for LinkedIn
     if (platform === 'linkedin') {
       const regex = /^https:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9\-]+$/;
       isValid = regex.test(value);
       errorMessage = isValid ? null : "Please enter a valid LinkedIn URL starting with https://www.linkedin.com/in/";
     }
-    
+
     // Validation for Facebook
     else if (platform === 'facebook') {
       const regex = /^https:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9\.]+$/;
       isValid = regex.test(value);
       errorMessage = isValid ? null : "Please enter a valid Facebook URL starting with https://www.facebook.com/";
     }
-  
+
     // Validation for YouTube
     else if (platform === 'youtube') {
       const regex = /^https:\/\/(www\.)?youtube\.com\/(channel|user|c)\/[a-zA-Z0-9_-]+$/;
       isValid = regex.test(value);
       errorMessage = isValid ? null : "Please enter a valid YouTube URL starting with https://www.youtube.com/";
     }
-  
+
     // Validation for any other URL
     else if (platform === 'anyother') {
       const regex = /^(https:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,6}(\/[a-zA-Z0-9\-_]+)*\/?$/;
       isValid = regex.test(value);
       errorMessage = isValid ? null : "Please enter a valid URL.";
     }
-  
+
     // Set the state based on platform
     if (platform === 'linkedin') {
       setlinkdin(value);
@@ -744,7 +744,7 @@ if (!graduation_details.trim()) {
     } else if (platform === 'anyother') {
       setanyother_add(value);
     }
-  
+
     // Set the error state
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -771,27 +771,27 @@ if (!graduation_details.trim()) {
 
   const handlePconatactnumberChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-   // Enforce mobile number to start only with 6,7,8,9
-   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-    if (!["6", "7", "8", "9"].includes(firstDigit)) {
-      return; // Stop updating state if invalid number is entered
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
     }
-  }
 
-  setcontact_number(value);
+    setcontact_number(value);
   };
 
   // const handlePconatactnumber2Change = (e) => {
@@ -806,27 +806,27 @@ if (!graduation_details.trim()) {
 
   const handlePconatactnumber2Change = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-   // Enforce mobile number to start only with 6,7,8,9
-   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-    if (!["6", "7", "8", "9"].includes(firstDigit)) {
-      return; // Stop updating state if invalid number is entered
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
     }
-  }
 
-  setcontact_number1(value);
+    setcontact_number1(value);
   };
 
 
@@ -840,24 +840,24 @@ if (!graduation_details.trim()) {
       // Allow only letters and spaces, and limit to 20 characters
       value = value.replace(/[^a-zA-Z\s]/g, "").slice(0, 20);
     }
-    
-    
+
+
     if (field === "contact") {
       value = value.replace(/\D/g, ""); // Remove all non-numeric characters
-  
+
       // Ensure "+91" is always the prefix
       if (value.startsWith("91")) {
         value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
       } else {
         value = "+91" + value.slice(0, 10); // Forcefully append "+91"
       }
-  
+
       // Prevent deletion of "+91"
       if (value.length < 3) {
         value = "+91";
       }
     }
-  
+
 
     if (field === "aadhar") {
       // Check if input is a number and has at most 12 digits
@@ -944,15 +944,15 @@ if (!graduation_details.trim()) {
 
   const formatDate = (dob) => {
     if (!dob) return ""; // Handle empty case
-  
+
     let dateObj = new Date(dob); // Convert string to Date object
     let day = String(dateObj.getDate()).padStart(2, "0"); // Ensure two-digit day
     let month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-based
     let year = dateObj.getFullYear();
-  
+
     return `${day}/${month}/${year}`; // Convert to DD/MM/YYYY
   };
-  
+
   const handleAadharChange = (e) => {
     const value = e.target.value;
 
@@ -989,31 +989,31 @@ if (!graduation_details.trim()) {
     }
   };
 
-  
+
 
   const handle_fatherPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-   // Enforce mobile number to start only with 6,7,8,9
-   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-    if (!["6", "7", "8", "9"].includes(firstDigit)) {
-      return; // Stop updating state if invalid number is entered
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
     }
-  }
 
-  setfather_contactdetails(value);
+    setfather_contactdetails(value);
   };
 
 
@@ -1035,32 +1035,32 @@ if (!graduation_details.trim()) {
     }
   };
 
- 
+
 
 
   const handle_motherPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-   // Enforce mobile number to start only with 6,7,8,9
-   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-    if (!["6", "7", "8", "9"].includes(firstDigit)) {
-      return; // Stop updating state if invalid number is entered
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
     }
-  }
 
-  setmother_contactdetails(value);
+    setmother_contactdetails(value);
   };
 
 
@@ -1123,31 +1123,31 @@ if (!graduation_details.trim()) {
     }
   };
 
- 
+
 
   const handle_GuardianPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Ensure "+91" is always the prefix
     if (value.startsWith("91")) {
       value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
     } else {
       value = "+91" + value.slice(0, 10);
     }
-  
+
     // If user deletes everything, reset to "+91"
     if (value.length < 3) {
       value = "+91";
     }
-   // Enforce mobile number to start only with 6,7,8,9
-   if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-    const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-    if (!["6", "7", "8", "9"].includes(firstDigit)) {
-      return; // Stop updating state if invalid number is entered
+    // Enforce mobile number to start only with 6,7,8,9
+    if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+      const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+      if (!["6", "7", "8", "9"].includes(firstDigit)) {
+        return; // Stop updating state if invalid number is entered
+      }
     }
-  }
 
-  setGuardiancontactdetails(value);
+    setGuardiancontactdetails(value);
   };
 
 
@@ -1890,9 +1890,9 @@ if (!graduation_details.trim()) {
                           className="FormStyeling transparent-input"
                           value={facebook}
                           onChange={(e) => handleLinkChange(e, 'facebook')}
-      placeholder="Facebook URL"
-    />
-    {errors.facebook && <span>{errors.facebook}</span>}
+                          placeholder="Facebook URL"
+                        />
+                        {errors.facebook && <span>{errors.facebook}</span>}
                       </Form.Group>
                       {/* {errors.facebook && <span className="error text-danger">{errors.facebook}</span>} */}
                     </Col>
@@ -1915,7 +1915,7 @@ if (!graduation_details.trim()) {
                           placeholder="YouTube URL"
                         />
                         {errors.youtube && <span>{errors.youtube}</span>}
-                    
+
                       </Form.Group>
                       {/* {errors.youtube && <span className="error text-danger">{errors.youtube}</span>} */}
                     </Col>
@@ -2029,7 +2029,7 @@ if (!graduation_details.trim()) {
                           value={tenth_per}
                           onChange={(e) => {
                             let inputValue = e.target.value;
-                        
+
                             // Allow only numbers with a single optional decimal point
                             if (/^\d*\.?\d*$/.test(inputValue)) {
                               if (inputValue === "" || parseFloat(inputValue) <= 100) {
@@ -2069,7 +2069,7 @@ if (!graduation_details.trim()) {
                           value={twelve_diploma_per}
                           onChange={(e) => {
                             let inputValue = e.target.value;
-                        
+
                             // Allow only numbers with a single optional decimal point
                             if (/^\d*\.?\d*$/.test(inputValue)) {
                               if (inputValue === "" || parseFloat(inputValue) <= 100) {
@@ -2102,18 +2102,18 @@ if (!graduation_details.trim()) {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                       <Form.Control
-  type="text"
-  placeholder="Enter Graduation Details"
-  className="FormStyeling transparent-input"
-  value={graduation_details}
-  onChange={(e) => {
-    let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Remove spaces
-    if (newValue.length <= 20) {
-      setgraduation_details(newValue); // Update state only if within 10 characters
-    }
-  }}
-/>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Graduation Details"
+                          className="FormStyeling transparent-input"
+                          value={graduation_details}
+                          onChange={(e) => {
+                            let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Remove spaces
+                            if (newValue.length <= 20) {
+                              setgraduation_details(newValue); // Update state only if within 10 characters
+                            }
+                          }}
+                        />
 
                       </Form.Group>
                       {errors.graduation_details && (
@@ -2139,7 +2139,7 @@ if (!graduation_details.trim()) {
                           value={graduation_per}
                           onChange={(e) => {
                             let inputValue = e.target.value;
-                        
+
                             // Allow only numbers with a single optional decimal point
                             if (/^\d*\.?\d*$/.test(inputValue)) {
                               if (inputValue === "" || parseFloat(inputValue) <= 100) {
@@ -2174,17 +2174,17 @@ if (!graduation_details.trim()) {
                         controlId="exampleForm.ControlInput1"
                       >
                         <Form.Control
-  type="text"
-  placeholder="Enter Post Graduation Details"
-  className="FormStyeling transparent-input"
-  value={post_graduation_details}
-  onChange={(e) => {
-    let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Allow only letters and '.'
-    if (newValue.length <= 20) {
-      setPostGraduationDetails(newValue); // Update state only if within 20 characters
-    }
-  }}
-/>
+                          type="text"
+                          placeholder="Enter Post Graduation Details"
+                          className="FormStyeling transparent-input"
+                          value={post_graduation_details}
+                          onChange={(e) => {
+                            let newValue = e.target.value.replace(/[^A-Za-z.]/g, ""); // Allow only letters and '.'
+                            if (newValue.length <= 20) {
+                              setPostGraduationDetails(newValue); // Update state only if within 20 characters
+                            }
+                          }}
+                        />
 
                       </Form.Group>
                       {errors.post_graduation_details && (
@@ -2210,7 +2210,7 @@ if (!graduation_details.trim()) {
                           value={post_graduation_per}
                           onChange={(e) => {
                             let inputValue = e.target.value;
-                        
+
                             // Allow only numbers with a single optional decimal point
                             if (/^\d*\.?\d*$/.test(inputValue)) {
                               if (inputValue === "" || parseFloat(inputValue) <= 100) {
@@ -2375,16 +2375,16 @@ if (!graduation_details.trim()) {
                         className="fname"
                         controlId="exampleForm.ControlInput1"
                       >
-                       <Form.Control
-  type="text"
-  className="FormStyeling transparent-input"
-  value={anyother_cirt}
-  onChange={(e) => {
-    if (e.target.value.length <= 50) {
-      setanyother_cirt(e.target.value); // Update state only if within 50 characters
-    }
-  }}
-/>
+                        <Form.Control
+                          type="text"
+                          className="FormStyeling transparent-input"
+                          value={anyother_cirt}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 50) {
+                              setanyother_cirt(e.target.value); // Update state only if within 50 characters
+                            }
+                          }}
+                        />
 
                       </Form.Group>
                       {errors.anyother_cirt && (
@@ -2943,7 +2943,7 @@ if (!graduation_details.trim()) {
                                     </div>
                                 </div>
                             </Card.Header> */}
-            <Card style={{ backgroundColor: "transparent", border: "none" }}  className="section internship-section">
+            <Card style={{ backgroundColor: "transparent", border: "none" }} className="section internship-section">
               <Card.Header
                 className="cardpersonal_details"
                 style={{ backgroundColor: "transparent", border: "none" }}
@@ -3317,7 +3317,7 @@ if (!graduation_details.trim()) {
                           }}
                           maxLength={20}
                         />
-                          </Form.Group>
+                      </Form.Group>
                       <Form.Label className="w-100 text-center">
                         {errors.place ? (
                           <span className="error text-danger">
@@ -3725,7 +3725,7 @@ if (!graduation_details.trim()) {
                           className="FormStyeling transparent-input"
                           value={buttom_place}
                           onChange={(e) => setbuttom_place(e.target.value)} // Updates `buttom_place`
-                          />
+                        />
                       </Form.Group>
                       {errors.buttom_place && (
                         <span className="error text-danger">

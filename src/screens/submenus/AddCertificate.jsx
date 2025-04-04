@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
 
-const AddCourse = () => {
+const AddCertificate = () => {
     const [name, setName] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -71,10 +71,9 @@ const AddCourse = () => {
 
     
 
-
     return (
 
-        <div className="container idcardbackimg">
+        <div className="container backimg">
             <div>
                 <img src={corner} className="corner_img" alt="Responsive Corner" />
             </div>
@@ -87,19 +86,19 @@ const AddCourse = () => {
                 <Row className="justify-content-center">
                     <Col md={10}>
                         <Accordion defaultActiveKey="0">
-                            <Card className="mt-5">
+                            <Card className="mt-5 mb-5">
                                 <Card.Header>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">CERTIFICATE</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/certificatedetails')}>
+                                            Certificate Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -108,8 +107,8 @@ const AddCourse = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
@@ -140,6 +139,11 @@ const AddCourse = () => {
                                                 />
                                             </Form.Group>
 
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Description" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}
@@ -155,4 +159,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddCertificate;

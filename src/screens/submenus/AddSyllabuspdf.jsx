@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import axios from "axios";
 
-const Addsubcourse = () => {
+
+const Addsyllabuspdf = () => {
     const [coursename, setCoursename] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
     const [image, setImage] = useState(null);
@@ -59,17 +60,21 @@ const Addsubcourse = () => {
     const fetchCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_course`, {
+            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
+
+           
+
             setCourses(response.data?.data || []);
         } catch (error) {
-            console.error("Error fetching courses:", error);
+            console.error("Error fetching courses:", error.response || error);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -111,104 +116,6 @@ const Addsubcourse = () => {
         }
     };
 
-    //     return (
-    //         <div className="container backimg">
-    //             <div>
-    //                 <img src={corner} className="corner_img" alt="Responsive Corner" />
-    //             </div>
-    //             <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    //                 <img src={logo1} class="img-fluid logo1" alt="..." />
-    //                 <img src={logo2} className="img-fluid logo2" alt="..." />
-    //             </div>
-    //             <Container>
-    //                 <div className="text-center title-container">
-    //                     <b className="title-text">
-    //                         ADD <span className="highlight">SUBCOURSE</span>
-    //                     </b>
-    //                 </div>
-    //             </Container> {/* Breadcrumb with Back Button */}
-    //             <Container>
-    //                 <div className="d-flex align-items-center">
-
-    //                     <Breadcrumb className="mb-2">
-    //                         <Breadcrumb.Item onClick={() => navigate("/subcoursedetails")}>Back</Breadcrumb.Item>
-    //                         <Breadcrumb.Item active>Add Subcourse</Breadcrumb.Item>
-    //                     </Breadcrumb>
-    //                 </div>
-    //             </Container>
-    //             <div className="container mt-2">
-    //                 <Card className="p-4 ms-4 me-4 shadow-lg">
-    //                     <Card.Body>
-    //                         <Form onSubmit={handleSubmit}>
-    //                             <Form.Group className="mb-3">
-    //                                 <Form.Label>Course Name</Form.Label>
-    //                                 <Form.Select
-    //                                     value={coursename}
-    //                                     onChange={(e) => {
-    //                                         const selectedCourse = courses.find(course => course.name === e.target.value);
-    //                                         if (selectedCourse) {
-    //                                             setCoursename(selectedCourse.name);
-    //                                         }
-    //                                     }}
-    //                                 >
-    //                                     <option value="">-- Select Course --</option>
-    //                                     {courses.map((course) => (
-    //                                         <option key={course.id} value={course.name}>{course.name}</option>
-    //                                     ))}
-    //                                 </Form.Select>
-    //                             </Form.Group>
-
-    //                             <Form.Group className="mb-3">
-    //                                 <Form.Label>Subcourse Name</Form.Label>
-    //                                 <Form.Control
-    //                                     type="text"
-    //                                     placeholder="Enter subcourse name"
-    //                                     value={subcourses_name}
-    //                                     onChange={(e) => setSubcourses_name(e.target.value)}
-    //                                 />
-    //                             </Form.Group>
-
-    //                             <Form.Group className="mb-3">
-    //                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-    //                                 <div
-    //                                     className="border p-4 text-center"
-    //                                     onDrop={handleDrop}
-    //                                     onDragOver={(e) => e.preventDefault()}
-    //                                 >
-    //                                     {preview ? (
-    //                                         <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-    //                                     ) : (
-    //                                         <p>Drag & Drop image here or click to upload</p>
-    //                                     )}
-    //                                 </div>
-    //                                 <Form.Control
-    //                                     type="file"
-    //                                     onChange={async (e) => {
-    //                                         const file = e.target.files[0];
-    //                                         if (file && file.type.startsWith("image/")) {
-    //                                             const base64 = await convertToBase64(file);
-    //                                             setImage(base64);
-    //                                             setPreview(URL.createObjectURL(file));
-    //                                         } else {
-    //                                             toast.error("Only image files are allowed.");
-    //                                         }
-    //                                     }}
-    //                                 />
-    //                             </Form.Group>
-    //                             <div className="d-flex justify-content-center"> <Button variant="primary" type="submit">Submit</Button>
-    //                                 <Button variant="secondary" className="ms-2" onClick={() => navigate('/subcoursedetails')}>Cancel</Button>
-    //                             </div>
-
-    //                         </Form>
-    //                     </Card.Body>
-    //                 </Card>
-    //             </div>
-
-    //         </div>
-    //     );
-    // };
-
-    // export default Addsubcourse;
 
 
 
@@ -233,13 +140,13 @@ const Addsubcourse = () => {
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">SUBCOURSE</span>
+                                                    ADD <span className="highlight">SYLLABUS PDF</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/subcoursedetails')}>
-                                            Subcourse Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/syllabuspdfdetails')}>
+                                            Syllabus pdf Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -248,32 +155,29 @@ const Addsubcourse = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
+                                                <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
-                                                    value={coursename}
+                                                    value={subcourses_name}
                                                     onChange={(e) => {
-                                                        const selectedCourse = courses.find(course => course.name === e.target.value);
+                                                        setSubcourses_name(e.target.value);
+
+                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
-                                                            setCoursename(selectedCourse.name);
+                                                            setCoursename(selectedCourse.coursename);
                                                         }
                                                     }}
                                                 >
-                                                    <option value="">-- Select Course --</option>
+                                                    <option value="">-- Select Subcourse --</option>
                                                     {courses.map((course) => (
-                                                        <option key={course.id} value={course.name}>{course.name}</option>
+                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                            {course.subcourses_name}
+                                                        </option>
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
 
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Enter subcourse name"
-                                                    value={subcourses_name}
-                                                    onChange={(e) => setSubcourses_name(e.target.value)}
-                                                />
-                                            </Form.Group>
+
+
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
@@ -318,4 +222,4 @@ const Addsubcourse = () => {
     );
 };
 
-export default Addsubcourse;
+export default Addsyllabuspdf;

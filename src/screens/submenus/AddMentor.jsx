@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import axios from "axios";
 
 
-const AddCourse = () => {
+const AddMentor = () => {
     const [name, setName] = useState("");
+    const [coursename, setCoursename] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState("");
+    const [courses, setCourses] = useState([]);
+    const [course_id, setCourseId] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const navigate = useNavigate();
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -35,6 +41,39 @@ const AddCourse = () => {
         }
     };
 
+    useEffect(() => {
+        const courseIdFromLocation = location.state?.course_id;
+        if (courseIdFromLocation) {
+            setCourseId(courseIdFromLocation);
+        }
+        fetchCourses();
+    }, []);
+
+    const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+    const fetchCourses = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+
+
+            setCourses(response.data?.data || []);
+        } catch (error) {
+            console.error("Error fetching courses:", error.response || error);
+        }
+    };
+
+
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("remember_token");
@@ -46,7 +85,6 @@ const AddCourse = () => {
 
         const formData = new FormData();
         formData.append("name", name);
-        formData.append("image", image);
 
         try {
             const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
@@ -69,12 +107,12 @@ const AddCourse = () => {
     };
 
 
-    
+
 
 
     return (
 
-        <div className="container idcardbackimg">
+        <div className="container backimg">
             <div>
                 <img src={corner} className="corner_img" alt="Responsive Corner" />
             </div>
@@ -87,19 +125,19 @@ const AddCourse = () => {
                 <Row className="justify-content-center">
                     <Col md={10}>
                         <Accordion defaultActiveKey="0">
-                            <Card className="mt-5">
+                            <Card className="mt-5 mb-5">
                                 <Card.Header>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">MENTOR</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/mentordetails')}>
+                                            Mentor Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -108,10 +146,39 @@ const AddCourse = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Label>Subcourse Name</Form.Label>
+                                                <Form.Select
+                                                    value={subcourses_name}
+                                                    onChange={(e) => {
+                                                        setSubcourses_name(e.target.value);
+
+                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selectedCourse) {
+                                                            setCoursename(selectedCourse.coursename);
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Subcourse --</option>
+                                                    {courses.map((course) => (
+                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                            {course.subcourses_name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
                                             </Form.Group>
 
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Mentor Name</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Designation</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Designation" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Comapny</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Comapny" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
@@ -139,6 +206,14 @@ const AddCourse = () => {
                                                     }}
                                                 />
                                             </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Skill</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Skill" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Experience</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Experience" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
 
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
@@ -155,4 +230,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddMentor;

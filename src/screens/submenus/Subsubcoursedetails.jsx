@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
-const AddSubsubcourse = () => {
+const Subsubcoursedetails = () => {
   const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -38,17 +38,17 @@ const AddSubsubcourse = () => {
   useEffect(() => {
     fetchSubcoursedetails();
   }, [currentPage]); // Fetch data when page changes
-  
+
   useEffect(() => {
     handleSearch(""); // Reset search when page changes
   }, [currentPage]);
-  
+
 
   const [forceUpdate, setForceUpdate] = useState(0);
 
-useEffect(() => {
-  setForceUpdate((prev) => prev + 1);
-}, [subcoursedetails, filteredData]);
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [subcoursedetails, filteredData]);
 
 
 
@@ -194,52 +194,51 @@ useEffect(() => {
 
 
   const handleAddCourse = () => {
-    setShowModal(true);
-  };
+navigate("/addsubsubcourse");  };
 
-  const handleClose = () => {
-    setShowModal(false);
-    setCoursename("");
-    setBack_image(null);
-  };
+  // const handleClose = () => {
+  //   setShowModal(false);
+  //   setCoursename("");
+  //   setBack_image(null);
+  // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    const token = localStorage.getItem("remember_token");
-    const formData = new FormData();
-    formData.append("coursename", coursename);
-    formData.append("subcourses_name", subcourses_name);
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("customtext", custome_text);
-    formData.append("banner", banner);
-    formData.append("back_image", back_image);
+  //   const token = localStorage.getItem("remember_token");
+  //   const formData = new FormData();
+  //   formData.append("coursename", coursename);
+  //   formData.append("subcourses_name", subcourses_name);
+  //   formData.append("title", title);
+  //   formData.append("description", description);
+  //   formData.append("customtext", custome_text);
+  //   formData.append("banner", banner);
+  //   formData.append("back_image", back_image);
 
-    try {
-      const response = await fetch(
-        "https://api.sumagotraining.in/public/api/add_subcourse_details",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+  //   try {
+  //     const response = await fetch(
+  //       "https://api.sumagotraining.in/public/api/add_subcourse_details",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: formData,
+  //       }
+  //     );
 
-      if (response.ok) {
-        toast.success("Subcourse details added successfully!");
-        navigate("/addsubsubcourse");
-      } else {
-        const responseData = await response.json();
-        alert(`Submission failed: ${responseData.message || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("An error occurred. Please try again.");
-    }
-  };
+  //     if (response.ok) {
+  //       toast.success("Subcourse details added successfully!");
+  //       navigate("/addsubsubcourse");
+  //     } else {
+  //       const responseData = await response.json();
+  //       alert(`Submission failed: ${responseData.message || "Unknown error"}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     alert("An error occurred. Please try again.");
+  //   }
+  // };
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
@@ -323,7 +322,7 @@ useEffect(() => {
             <Card.Header>
               <Row>
                 <Col className="d-flex align-items-center">
-                  <h5>Subcourse Details</h5>
+                  <h5>Sub-subcourse <span className="highlight"> List</span></h5>
                 </Col>
                 <Col className="d-flex justify-content-end align-items-center">
                   <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
@@ -339,28 +338,28 @@ useEffect(() => {
             </Card.Header>
 
             <Card.Body>
-            <DataTable
-  key={forceUpdate}
-  columns={tableColumns(currentPage, rowsPerPage)}
-  data={searchQuery ? filteredData : subcoursedetails} // Use filtered data only when searching
-  pagination
-  paginationServer
-  paginationTotalRows={subcoursedetails.length}
-  onChangePage={(page) => {
-    setCurrentPage(page);
-    handleSearch(""); // Reset search when changing pages
-  }}
-  responsive
-  striped
-  noDataComponent="No Data Available"
-/>
+              <DataTable
+                key={forceUpdate}
+                columns={tableColumns(currentPage, rowsPerPage)}
+                data={searchQuery ? filteredData : subcoursedetails} // Use filtered data only when searching
+                pagination
+                // paginationServer
+                // paginationTotalRows={subcoursedetails.length}
+                onChangePage={(page) => {
+                  setCurrentPage(page);
+                  handleSearch(""); // Reset search when changing pages
+                }}
+                responsive
+                striped
+                noDataComponent="No Data Available"
+              />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
       {/* Modal for Adding Course */}
-      <Modal show={showModal} onHide={handleClose}>
+      {/* <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Add Subcourse Details</Modal.Title>
         </Modal.Header>
@@ -373,7 +372,7 @@ useEffect(() => {
                 onChange={(e) => {
                   const selectedCourse = courses.find((course) => course.name === e.target.value);
                   if (selectedCourse) {
-                    setCoursename(selectedCourse.name); // Set coursename
+                    setCoursename(selectedCourse.name); 
                   }
                 }}
               >
@@ -400,7 +399,7 @@ useEffect(() => {
                 <option value="">-- Select Subcourse --</option>
                 {subCourses.map((sub) => (
                   <option key={sub.subcourses_id} value={sub.subcourses_name}>
-                    {sub.subcourses_name} ({sub.coursename}) {/* Display Course Name too */}
+                    {sub.subcourses_name} ({sub.coursename})
                   </option>
                 ))}
               </Form.Select>
@@ -453,9 +452,9 @@ useEffect(() => {
             Save changes
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </Container>
   );
 };
 
-export default AddSubsubcourse;
+export default Subsubcoursedetails;

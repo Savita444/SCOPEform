@@ -8,8 +8,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
 
-const AddCourse = () => {
-    const [name, setName] = useState("");
+const AddTopRank = () => {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
@@ -45,7 +44,6 @@ const AddCourse = () => {
         }
 
         const formData = new FormData();
-        formData.append("name", name);
         formData.append("image", image);
 
         try {
@@ -69,8 +67,7 @@ const AddCourse = () => {
     };
 
 
-    
-
+  
 
     return (
 
@@ -93,13 +90,13 @@ const AddCourse = () => {
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">TOP RANK</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/toprankdetails')}>
+                                            Top Rank Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -107,10 +104,7 @@ const AddCourse = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
-                                            </Form.Group>
+                                            
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
@@ -155,4 +149,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddTopRank;

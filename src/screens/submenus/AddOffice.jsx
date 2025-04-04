@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,14 +6,40 @@ import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import { Textarea } from "react-bootstrap-icons";
 
 
-const AddCourse = () => {
+const AddOffice = () => {
     const [name, setName] = useState("");
+    const [mobile, setMobile]= useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
-
+    
+    const handle_mobileno = (e) => {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      
+        // Ensure "+91" is always the prefix
+        if (value.startsWith("91")) {
+          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
+        } else {
+          value = "+91" + value.slice(0, 10);
+        }
+      
+        // If user deletes everything, reset to "+91"
+        if (value.length < 3) {
+          value = "+91";
+        }
+       // Enforce mobile number to start only with 6,7,8,9
+       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+        if (!["6", "7", "8", "9"].includes(firstDigit)) {
+          return; // Stop updating state if invalid number is entered
+        }
+      }
+    
+      setMobile(value);
+      };
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -69,12 +95,11 @@ const AddCourse = () => {
     };
 
 
-    
 
 
     return (
 
-        <div className="container idcardbackimg">
+        <div className="container backimg">
             <div>
                 <img src={corner} className="corner_img" alt="Responsive Corner" />
             </div>
@@ -87,19 +112,19 @@ const AddCourse = () => {
                 <Row className="justify-content-center">
                     <Col md={10}>
                         <Accordion defaultActiveKey="0">
-                            <Card className="mt-5">
+                            <Card className="mt-5 mb-5">
                                 <Card.Header>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">OFFICE</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/officesdetails')}>
+                                            Offices Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -108,8 +133,30 @@ const AddCourse = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    as={"textarea"}
+                                                    placeholder="Enter description"
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Link</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Link" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Email</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Email" value={name} onChange={(e) => setName(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Mobile no</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Mobile no" value={mobile} onChange={handle_mobileno} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
@@ -155,4 +202,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddOffice;

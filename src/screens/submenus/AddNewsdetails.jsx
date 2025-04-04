@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import axios from "axios";
 
 
-const AddCourse = () => {
+const AddNewsdetails = () => {
     const [name, setName] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [subcourses_name, setSubcourses_name] = useState("");
+
+    const [course_id, setCourseId] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -34,6 +41,44 @@ const AddCourse = () => {
             toast.error("Only image files are allowed.");
         }
     };
+
+
+
+
+
+    useEffect(() => {
+        const courseIdFromLocation = location.state?.course_id;
+        if (courseIdFromLocation) {
+            setCourseId(courseIdFromLocation);
+        }
+        fetchCourses();
+    }, []);
+
+    const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+    const fetchCourses = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+
+
+            setCourses(response.data?.data || []);
+        } catch (error) {
+            console.error("Error fetching courses:", error.response || error);
+        }
+    };
+
+
+
+
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -58,7 +103,7 @@ const AddCourse = () => {
 
             if (response.ok) {
                 toast.success("Course added successfully!");
-                navigate("/coursedetails");
+                navigate("/newsdetails");
             } else {
                 toast.error("Submission failed");
             }
@@ -69,7 +114,6 @@ const AddCourse = () => {
     };
 
 
-    
 
 
     return (
@@ -87,19 +131,19 @@ const AddCourse = () => {
                 <Row className="justify-content-center">
                     <Col md={10}>
                         <Accordion defaultActiveKey="0">
-                            <Card className="mt-5">
+                            <Card className="mt-5 mb-5">
                                 <Card.Header>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">NEWS DETAILS</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/newsdetails')}>
+                                           News Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -107,11 +151,7 @@ const AddCourse = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
-                                            </Form.Group>
-
+                                            
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
@@ -155,4 +195,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddNewsdetails;

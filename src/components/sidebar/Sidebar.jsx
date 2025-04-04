@@ -6,7 +6,12 @@ import { Link } from "react-router-dom";
 import {
   MdOutlineClose,
   MdHome,
-  MdOutlineArticle ,
+  MdOutlineArticle,
+  MdOutlineDashboard,
+  MdContactPage ,
+  MdInfo ,
+  MdEvent ,
+  MdLibraryBooks,
   MdLogout,
   MdPassword,
   MdOutlinePermContactCalendar,
@@ -78,9 +83,9 @@ const SidebarMenu = [
     ],
   },
 
-  
-  
-  
+
+
+
   {
     menu: "Logout",
     url: "/logout",
@@ -97,44 +102,221 @@ const SidebarMenu = [
 ];
 
 
-
+// BDE Sidebar menu structure
 const BDESidebar = [
-  
 
+  {
+    menu: "Dashboard",
+    url: "/trainingdashboard",
+    mainIcon: <MdOutlineDashboard size={26} />,
+    subMenu: [],
+  },
+  {
+    menu: "Home",
+    url: "/dashboard",
+    mainIcon: <MdHome size={24} />,
+    subMenu: [
+      {
+        subMenus: "Banner",
+        url: "/bannerdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Home Model",
+        url: "/upcoming-events",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Alumni",
+        url: "/alumnidetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+      {
+        subMenus: "Hire",
+        url: "/hiredetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Expert Review",
+        url: "/expertreviewdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+
+    ],
+  },
+  {
+    menu: "Contact",
+    // url: "/",
+    mainIcon: <MdContactPage  size={24} />,
+    subMenu: [
+      {
+        subMenus: "Website Enquiry",
+        url: "/enquirydetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Our Offices",
+        url: "/officesdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+     
+    ],
+  },
+  {
+    menu: "About",
+    // url: "/",
+    mainIcon: <MdInfo  size={24} />,
+    subMenu: [
+      {
+        subMenus: "Google Reviews",
+        url: "/googlereviewdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      
+
+
+    ],
+  },
 
   {
     menu: "Our Courses",
     url: "/dashboard",
-    mainIcon: <MdOutlineArticle size={24} />,
+    mainIcon: <MdLibraryBooks size={24} />,
     subMenu: [
       {
-        subMenus: "Add Course",
-        url: "/addcourse",
+        subMenus: "Course List",
+        url: "/coursedetails",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
       {
-        subMenus: "Add Sub Course",
-        url: "/addsubcourse",
+        subMenus: "Sub-course List",
+        url: "/subcoursedetails",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
       {
-        subMenus: "Subcourse Details",
-        url: "/addsubsubcourse",
+        subMenus: "Sub-subcourse List",
+        url: "/subsubcoursedetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+      {
+        subMenus: "Empty Grid",
+        // url: "/syllbuspdfinfodetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Syllabus Pdf Info",
+        url: "/syllbuspdfinfodetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Add Syllabus Pdf",
+        url: "/syllabuspdfdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: " Add Module ",
+        url: "/moduledetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Add Syllabus ",
+        url: "/syllabusdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Mentor",
+        url: "/mentordetails",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
 
       {
         subMenus: "Program Fees Category",
-        url: "/addprogramfeescategory",
+        url: "/programfeescategorydetails",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
       {
-        subMenus: "Course Fees",
-        url: "/addcoursefees",
+        subMenus: "Program Fees List",
+        url: "/coursefeesdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Certificate",
+        url: "/certificatedetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Handson Category",
+        url: "/handsoncategorydetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Handson Project Details",
+        url: "/handsonprojectdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Learner Review",
+        url: "/learnerreviewdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Top Rank",
+        url: "/toprankdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+],
+  },
+  {
+    menu: "Event",
+    // url: "/",
+    mainIcon: <MdEvent  size={24} />,
+    subMenu: [
+      {
+        subMenus: "Fun at Work Category",
+        url: "/funatworkcategorydetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Fun at work Details",
+        url: "/funatworkdatadetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "Recognition Category",
+        url: "/recognitioncategorydetails",
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
 
-      
+      {
+        subMenus: "Recognition Details",
+        url: "/recognitiondetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "MOU Category",
+        url: "/moucategorydetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "MOU Details",
+        url: "/moudetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "News",
+        url: "/newsdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+      {
+        subMenus: "New Letter",
+        url: "/newsletterdetails",
+        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      },
+
+
     ],
   },
   {
@@ -160,8 +342,8 @@ const BDESidebar = [
 
 
 
- 
-  
+
+
 
   // {
   //   menu: "Forgot Password",
@@ -256,9 +438,8 @@ const Sidebar = () => {
                           key={subId}
                           component={<Link to={subItem.url} />}
                           icon={subItem.icon}
-                          className={`menu-link-text bg-white ${
-                            activeSubMenu === subItem.subMenus ? "active" : ""
-                          }`}
+                          className={`menu-link-text bg-white ${activeSubMenu === subItem.subMenus ? "active" : ""
+                            }`}
                           onClick={() => handleSubMenuClick(subItem.subMenus)}
                         >
                           {subItem.subMenus}

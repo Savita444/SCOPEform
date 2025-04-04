@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
 
-const AddCourse = () => {
+const AddGooglereview = () => {
     const [name, setName] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -69,8 +69,6 @@ const AddCourse = () => {
     };
 
 
-    
-
 
     return (
 
@@ -93,13 +91,13 @@ const AddCourse = () => {
                                         <Container>
                                             <div className="text-start title-container">
                                                 <b className="title-text fs-2">
-                                                    ADD <span className="highlight">COURSE</span>
+                                                    ADD <span className="highlight">GOOGLE REVIEW</span>
                                                 </b>
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                                            Course Details
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/googlereviewdetails')}>
+                                            Google review Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -107,10 +105,7 @@ const AddCourse = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
-                                            </Form.Group>
+
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
@@ -155,4 +150,4 @@ const AddCourse = () => {
         </div>
     );
 };
-export default AddCourse;
+export default AddGooglereview;

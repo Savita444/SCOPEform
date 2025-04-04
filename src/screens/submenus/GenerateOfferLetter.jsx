@@ -27,8 +27,8 @@ const formatDate = (dateString) => {
 };
 
 // Example: Converting API date
-const apiDate = "2025-03-01";
-console.log(formatDate(apiDate)); // Output: "1st March 2025"
+// const apiDate = "2025-03-01";
+// console.log(formatDate(apiDate)); // Output: "1st March 2025"
 
 
 

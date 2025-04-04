@@ -9,7 +9,7 @@ import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
 
-const UpdateCourse = () => {
+const UpdateTopRank = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const courseData = location.state || {};
@@ -110,83 +110,7 @@ const UpdateCourse = () => {
 
 
 
-  //   return (
-  //     <div className="container idcardbackimg">
-  //       <div>
-  //         <img src={corner} className="corner_img" alt="Responsive Corner" />
-  //       </div>
-  //       <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-  //         <img src={logo1} class="img-fluid logo1" alt="..." />
-  //         <img src={logo2} className="img-fluid logo2" alt="..." />
-  //       </div>
-  //       <Container>
-  //         <div className="text-center title-container">
-  //           <b className="title-text">
-  //             UPDATE <span className="highlight">COURSE</span>
-  //           </b>
-  //         </div>
-  //       </Container>
-  //       <div className="d-flex align-items-end">
-
-  //         <Breadcrumb className="mb-2">
-  //           <Breadcrumb.Item onClick={() => navigate("/coursedetails")}>Back</Breadcrumb.Item>
-  //           <Breadcrumb.Item active>Update Course</Breadcrumb.Item>
-  //         </Breadcrumb>
-  //       </div>
-  //       <Container fluid className=" d-flex flex-column align-items-center justify-content-center">
-  //         <Card className="p-4 mt-4 w-100 shadow-lg">
-  //           <Form onSubmit={handleUpdate}>
-
-
-  //             <Form.Group className="mb-3">
-  //               <Form.Label>Course Name</Form.Label>
-  //               <Form.Control
-  //                 type="text"
-  //                 placeholder="Enter course name"
-  //                 value={name}
-  //                 onChange={(e) => setName(e.target.value)}
-  //               />
-  //             </Form.Group>
-  //                           <Form.Group className="mb-3">
-  //                                       <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-  //                                       <div
-  //                                           className="border p-4 text-center"
-  //                                           onDrop={handleDrop}
-  //                                           onDragOver={(e) => e.preventDefault()}
-  //                                       >
-  //                                           {preview ? (
-  //                                               <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-  //                                           ) : (
-  //                                               <p>Drag & Drop image here or click to upload</p>
-  //                                           )}
-  //                                       </div>
-  //                                       <Form.Control
-  //                                           type="file"
-  //                                           onChange={async (e) => {
-  //                                               const file = e.target.files[0];
-  //                                               if (file && file.type.startsWith("image/")) {
-  //                                                   const base64 = await convertToBase64(file);
-  //                                                   setImage(base64);
-  //                                                   setPreview(URL.createObjectURL(file));
-  //                                               } else {
-  //                                                   toast.error("Only image files are allowed.");
-  //                                               }
-  //                                           }}
-  //                                       />
-  //                                   </Form.Group>
-  //             <div className="d-flex justify-content-center">
-  //               <Button variant="primary" type="submit">Submit</Button>
-  //               <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button>
-  //             </div>
-
-  //           </Form>
-  //         </Card>
-  //       </Container>
-
-  //     </div>
-  //   );
-  // };
-  // export default UpdateCourse;
+ 
 
 
   return (
@@ -200,8 +124,6 @@ const UpdateCourse = () => {
       </div>
 
 
-
-
       <Container>
         <Row className="justify-content-center">
           <Col md={10}> {/* Setting col-10 width */}
@@ -212,13 +134,13 @@ const UpdateCourse = () => {
                     <Container>
                       <div className="text-start title-container">
                         <b className="title-text fs-2">
-                          UPDATE <span className="highlight">COURSE</span>
+                          UPDATE <span className="highlight">TOP RANK</span>
                         </b>
                       </div>
                     </Container>
                     <Button className="me-3 fs-5 text-nowrap"
-                      style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursedetails')}>
-                      Course Details
+                      style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/toprankdetails')}>
+                      Top Rank Details
                     </Button>
                   </div>
                 </Card.Header>
@@ -227,15 +149,7 @@ const UpdateCourse = () => {
                     <Form onSubmit={handleUpdate}>
 
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>Course Name</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter course name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-                      </Form.Group>
+                      
                       <Form.Group className="mb-3">
                         <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                         <div
@@ -279,4 +193,4 @@ const UpdateCourse = () => {
     </div>
   );
 };
-export default UpdateCourse;
+export default UpdateTopRank;

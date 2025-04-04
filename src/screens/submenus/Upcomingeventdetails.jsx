@@ -1,53 +1,78 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Container, Row, Col, Card, Button, OverlayTrigger, Tooltip, Modal, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useSearchExport } from "../../context/SearchExportContext";
 import SearchInput from "../../components/search/SearchInput";
 import { toast } from "react-toastify";
 import instance from "../../api/AxiosInstance";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEye, FaPrint, FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const ProgramfeesCategory = () => {
+
+
+const Upcomingeventsdetails = () => {
     const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [loading, setLoading] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [title, setTitle] = useState("");
-    const [feescategory, setFeescategory] = useState([]); 
-    const navigate = useNavigate();
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
+    const [image, setImage] = useState(null);
+    const [eventData, setEventData] = useState([]);
+    const navigate = useNavigate();
+    const location = useLocation();
+
 
     useEffect(() => {
-        fetchfeescategory();
+        fetchEventdata();
+    }, [currentPage]);
+
+
+    useEffect(() => {
+        handleSearch("");
+    }, [currentPage]);
+
+
+    const [forceUpdate, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+        setForceUpdate((prev) => prev + 1);
+    }, [eventData, filteredData]);
+
+
+    useEffect(() => {
+        fetchEventdata();
     }, []);
 
-    const fetchfeescategory = async () => {
-        const accessToken = localStorage.getItem("remember_token");
+
+    const fetchEventdata = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/get_feecategory`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            const feescategorydata = Array.isArray(response.data?.data) ? response.data.data : [];
-
-            const sortedData = feescategorydata.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-            setFeescategory(sortedData); 
-            setData(sortedData); // Update the SearchExportContext data
-
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const response = await axios.get(`${BASE_URL}/get_event_upcoming`);
+    
+            console.log("API Response:", response.data); 
+    
+            if (Array.isArray(response.data)) { 
+                setEventData(response.data); 
+            } else {
+                console.error("Unexpected API response structure:", response.data);
+                toast.error("Failed to fetch events data");
+            }
         } catch (err) {
-            console.error("Error fetching course details:", err);
+            console.error("Error fetching events data:", err);
+            toast.error("Error fetching events data. Please check the console.");
+        } finally {
+            setLoading(false);
         }
     };
+    
+
+  
+
+
 
     const handleDelete = async (id) => {
         confirmAlert({
@@ -75,7 +100,7 @@ const ProgramfeesCategory = () => {
                                 setLoading(true);
                                 const accessToken = localStorage.getItem("remember_token");
                                 try {
-                                    await instance.delete(`delete_feecategory/${id}`, {
+                                    await instance.delete(`delete_event_upcoming/${id}`, {
                                         headers: {
                                             Authorization: `Bearer ${accessToken}`,
                                             "Content-Type": "application/json",
@@ -83,9 +108,12 @@ const ProgramfeesCategory = () => {
                                     });
                                     toast.success("Data Deleted Successfully");
 
-                                    setFeescategory((prev) => prev.filter((course) => course.id !== id)); // ✅ Corrected update
+                                    // Update state directly after deletion
+                                    setEventData((prevCourses) => prevCourses.filter(course => course.id !== id));
+
                                 } catch (error) {
                                     console.error("Error deleting data:", error);
+                                    toast.error("Error deleting data");
                                 } finally {
                                     setLoading(false);
                                 }
@@ -103,68 +131,45 @@ const ProgramfeesCategory = () => {
         });
     };
 
-    const handleFeescategory = () => {
-        setTitle(""); 
-        setShowModal(true);
+
+
+
+
+    const handleUpcomingEvent = () => {
+        navigate("/add-upcoming-events");
     };
 
-    const handleClose = () => {
-        setShowModal(false);
-        setTitle(""); 
-    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
 
-        const token = localStorage.getItem("remember_token");
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("title", title); // 
-
-        try {
-            const response = await fetch(`${BASE_URL}/add_feecategory`, {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
-            });
-
-            if (response.ok) {
-                toast.success("Program Fees Category added successfully!");
-                fetchfeescategory(); 
-                handleClose();
-            } else {
-                toast.error("Submission failed");
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
-        }
-    };
 
     const tableColumns = (currentPage, rowsPerPage) => [
         {
-            name: "Sr. No.", selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1
+            name: "Sr. No.",
+            selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
         },
-
+        
         {
-            name: "Program Fees Category Name", selector: (row) => row.title || "N/A"
+            name: "Image",
+            cell: (row) =>
+                row.image ? (
+                    <img
+                        src={row.image}
+                        alt="Course"
+                        style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover" }}
+                    />
+                ) : (
+                    "No Image"
+                ),
+        },{
+            name: "Status",
+            selector: (row) => (row.is_active ? "Active" : "Inactive"),
         },
-
-        {
-            name: "Status", selector: (row) => (row.is_active ? "Active" : "Inactive")
-        },
-
         {
             name: "Actions",
             cell: (row) => (
                 <div className="d-flex">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                        <Button className="ms-1" onClick={() => navigate(`/update-feecategory/${row.id}`, { state: row })}>
+                        <Button className="ms-1" onClick={() => navigate(`/update-upcoming-events/${row.course_id}`, { state: row })}>
                             <FaEdit />
                         </Button>
                     </OverlayTrigger>
@@ -187,50 +192,46 @@ const ProgramfeesCategory = () => {
                     <Card>
                         <Card.Header>
                             <Row>
-                                <Col><h5>Program Fees Category Details</h5></Col>
-                                <Col className="d-flex justify-content-end"><SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} /></Col>
+                                <Col className="d-flex align-items-center">
+                                    <h5>Upcoming Event <span className="highlight"> List</span> </h5>
+                                </Col>
+                                <Col className="d-flex justify-content-end align-items-center">
+                                    <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
+                                </Col>
                             </Row>
                             <Row className="mt-3">
                                 <Col className="d-flex justify-content-end">
-                                    <Button variant="primary" onClick={handleFeescategory}>
-                                        <FaPlus /> Add Program Fees Category
+                                    <Button variant="primary" onClick={handleUpcomingEvent}>
+                                        <FaPlus /> Add Upcoming Events
                                     </Button>
                                 </Col>
                             </Row>
                         </Card.Header>
+
                         <Card.Body>
                             <DataTable
+                                key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={filteredData.length > 0 ? filteredData : feescategory}
+                                data={searchQuery ? filteredData : eventData} // Use filtered data only when searching
                                 pagination
+                                paginationServer
+                                paginationTotalRows={eventData.length}
+                                onChangePage={(page) => {
+                                    setCurrentPage(page);
+                                    handleSearch(""); // Reset search when changing pages
+                                }}
                                 responsive
                                 striped
                                 noDataComponent="No Data Available"
-                                onChangePage={(page) => setCurrentPage(page)}
-                                onChangeRowsPerPage={(rows) => setRowsPerPage(rows)}
                             />
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
 
-            <Modal show={showModal} onHide={handleClose}>
-                <Modal.Header closeButton><Modal.Title>Add Details</Modal.Title></Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Program Fees Category Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter category name" value={title} onChange={(e) => setTitle(e.target.value)} />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>Close</Button>
-                    <Button variant="primary" onClick={handleSubmit}>Save</Button>
-                </Modal.Footer>
-            </Modal>
+
         </Container>
     );
 };
 
-export default ProgramfeesCategory;
+export default Upcomingeventsdetails;
