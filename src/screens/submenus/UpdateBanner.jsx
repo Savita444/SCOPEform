@@ -15,8 +15,8 @@ const UpdateBanner = () => {
     const bannerImagesData = location.state || {};
 
     const [bannerimg_id, setBannerimg_id] = useState("");
-    const [title, setTitle] = useState(bannerImagesData.title ||"");
-    const [description, setDescription] = useState(bannerImagesData.description ||"");
+    const [title, setTitle] = useState(bannerImagesData.title || "");
+    const [description, setDescription] = useState(bannerImagesData.description || "");
     const [images, setImage] = useState(null);
     const [preview, setPreview] = useState(bannerImagesData.images || null);
 

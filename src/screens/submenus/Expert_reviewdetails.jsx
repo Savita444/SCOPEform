@@ -74,11 +74,13 @@ const Expertreviewdetails = () => {
     
             console.log("API Response:", response.data); 
     
-            if (Array.isArray(response.data)) { 
-                setExpertreview(response.data); 
+            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setExpertreview(sortedData); // Set sorted data
+            setData(sortedData); // Update the SearchExportContext data
+
+            if (Array.isArray(response.data)) {
+                setExpertreview(response.data); // Directly set the array
             } else {
-                console.error("Unexpected API response structure:", response.data);
-                toast.error("Failed to fetch expert review data");
             }
         } catch (err) {
             console.error("Error fetching expert review data:", err);
@@ -94,23 +96,7 @@ const Expertreviewdetails = () => {
     }, []);
 
 
-    // const fetchCourses = async () => {
-    //     const accessToken = localStorage.getItem("remember_token");
-    //     try {
-    //         const response = await axios.get(`${BASE_URL}/get_course`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //                 "Content-Type": "application/json",
-    //             },
-    //         });
-
-    //         const coursesData = response.data?.data || [];
-    //         setCourses(coursesData); // Store fetched courses
-    //     } catch (err) {
-    //         console.error("Error fetching course details:", err);
-    //     }
-    // };
-
+  
 
 
     const handleDelete = async (id) => {
@@ -139,7 +125,7 @@ const Expertreviewdetails = () => {
                                 setLoading(true);
                                 const accessToken = localStorage.getItem("remember_token");
                                 try {
-                                    await instance.delete(`delete_subcourse/${id}`, {
+                                    await instance.delete(`delete_expertReview/${id}`, {
                                         headers: {
                                             Authorization: `Bearer ${accessToken}`,
                                             "Content-Type": "application/json",
@@ -229,7 +215,7 @@ const Expertreviewdetails = () => {
             cell: (row) => (
                 <div className="d-flex">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                        <Button className="ms-1" onClick={() => navigate(`/update-expert-review/${row.course_id}`, { state: row })}>
+                        <Button className="ms-1" onClick={() => navigate(`/update-expert-review/${row.id}`, { state: row })}>
                             <FaEdit />
                         </Button>
                     </OverlayTrigger>

@@ -12,19 +12,26 @@ import corner from "../imgs/file (28).png";
 const UpdateAlumni = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const subcourseData = location.state || {};
-    const [course_id, setCourseId] = useState("");
-    const [coursename, setCoursename] = useState(subcourseData.coursename || "");
-    const [subcourses_name, setSubcourses_name] = useState(subcourseData.subcourses_name || "");
+    const AlumniData = location.state || {};
+
+
+    const [sub_course_id, setSubcourses_id] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState(
+        Array.isArray(AlumniData.subcourse_details) ? AlumniData.subcourse_details[0] : ""
+    );
+    const [name, setName] = useState(AlumniData.name || "");
+    const [designation, setDesignation] = useState(AlumniData.designation || "");
+    const [company, setCompany] = useState(AlumniData.company || "");
+    const [company_logo, setCompany_logo] = useState(null);
+    const [company_logoPreview, setCompany_logoPreview] = useState(AlumniData.company_logoPreview || null);
+
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(subcourseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
+    const [profileimgPreview, setProfileimgPreview] = useState(AlumniData.profileimgPreview || null);
+    const [courses, setCourses] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
+
 
 
     // Function to convert image to Base64
@@ -37,31 +44,54 @@ const UpdateAlumni = () => {
         });
     };
 
-
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleCompany_logoUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setCompany_logo(reader.result);
+                setCompany_logoPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
+    const handleCompany_logoDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
+
+
+
+    const handleImageUpload = (file) => {
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setProfileimgPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            toast.error("Only image files are allowed.");
         }
-        fetchCourses();
-    }, []);
+    };
+
+    const handleProfileImageDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
-    const fetchCourses = async () => {
+
+
+    console.log("Location State:", location.state);
+
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
             const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -69,58 +99,74 @@ const UpdateAlumni = () => {
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setSubCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
+
+
 
 
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("subcourses_name", subcourses_name);
-        formData.append("name", coursename);
-        if (image) formData.append("image", image);
+        if (!name || !designation || !company || !company_logo || !image || !sub_course_id || !subcourses_name) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
 
         try {
-            const response = await fetch(
-                `${BASE_URL}/update_subcourse/${subcourseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                sub_course_id: [sub_course_id],
+                subcourse_details: [subcourses_name],
+
+                name,
+                designation,
+                company,
+                company_logo,
+                image,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_alumini`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
+            });
 
-            const textResponse = await response.text(); // Read response as text first
+            if (response.data?.status === "Success") {
+                toast.success("Alumni updated successfully!");
+                navigate("/alumnidetails");
 
-            console.log("Raw API Response:", textResponse);
-
-            try {
-                const jsonResponse = JSON.parse(textResponse); // Try converting to JSON
-                if (response.ok) {
-                    toast.success("Subcourse updated successfully!");
-                    navigate("/subcoursedetails");
-                } else {
-                    toast.error(`Update failed: ${jsonResponse.message || "Unknown error"}`);
-                }
-            } catch (jsonError) {
-                console.error("Error parsing JSON:", jsonError);
-                toast.error("Server returned an invalid response. Check console for details.");
+                // Clear form
+                setSubcourses_id("");
+                setSubcourses_name("");
+                setName("");
+                setDesignation("");
+                setImage(null);
+                setCompany("");
+                setCompany_logo(null);
+                setCompany_logoPreview(null);
+                setProfileimgPreview(null);
+            } else {
+                toast.error("Failed to update alumni.");
             }
-        } catch (error) {
-            console.error("Error updating subcourse:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading alumni:", err);
+            toast.error("Something went wrong.");
         }
     };
-
 
 
 
@@ -163,23 +209,21 @@ const UpdateAlumni = () => {
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
+                                                    {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
-                                            </Form.Group>
 
+                                            </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Alumni Name</Form.Label>
@@ -188,23 +232,24 @@ const UpdateAlumni = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Designation</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter designation" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Company Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter company name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter company name" value={company} onChange={(e) => setCompany(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Profile Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleDrop}
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                    onDrop={handleProfileImageDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                    {profileimgPreview ? (
+                                                        <Image src={profileimgPreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
                                                     ) : (
                                                         <p>Drag & Drop image here or click to upload</p>
                                                     )}
@@ -216,7 +261,7 @@ const UpdateAlumni = () => {
                                                         if (file && file.type.startsWith("image/")) {
                                                             const base64 = await convertToBase64(file);
                                                             setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
+                                                            setProfileimgPreview(URL.createObjectURL(file));
                                                         } else {
                                                             toast.error("Only image files are allowed.");
                                                         }
@@ -228,11 +273,12 @@ const UpdateAlumni = () => {
                                                 <Form.Label>Upload Company Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleDrop}
+                                                    onChange={(e) => handleCompany_logoUpload(e.target.files[0])}
+                                                    onDrop={handleCompany_logoDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                    {company_logoPreview ? (
+                                                        <Image src={company_logoPreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
                                                     ) : (
                                                         <p>Drag & Drop image here or click to upload</p>
                                                     )}
@@ -243,16 +289,18 @@ const UpdateAlumni = () => {
                                                         const file = e.target.files[0];
                                                         if (file && file.type.startsWith("image/")) {
                                                             const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
+                                                            setCompany_logo(base64);
+                                                            setCompany_logoPreview(URL.createObjectURL(file));
                                                         } else {
                                                             toast.error("Only image files are allowed.");
                                                         }
                                                     }}
                                                 />
                                             </Form.Group>
-                                            <div className="d-flex justify-content-center"> <Button variant="primary" className="fs-5" type="submit">Submit</Button>
+                                            <div className="d-flex justify-content-center"> <Button className="fs-5" variant="primary" type="submit">Submit</Button>
+                                                {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/subcoursedetails')}>Cancel</Button> */}
                                             </div>
+
                                         </Form>
                                     </Card.Body>
                                 </Accordion.Collapse>
@@ -264,4 +312,6 @@ const UpdateAlumni = () => {
         </div>
     );
 };
+
+
 export default UpdateAlumni;

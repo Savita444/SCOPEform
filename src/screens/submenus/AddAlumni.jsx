@@ -108,58 +108,58 @@ const AddAlumni = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-      
+
         if (!name || !designation || !company || !company_logo || !image || !sub_course_id || !subcourses_name) {
-          toast.error("Please fill in all required fields.");
-          return;
+            toast.error("Please fill in all required fields.");
+            return;
         }
-      
+
         try {
-          const BASE_URL = "https://api.sumagotraining.in/public/api";
-          const accessToken = localStorage.getItem("remember_token");
-      
-          const payload = {
-            sub_course_id: [sub_course_id],
-            subcourse_details: [subcourses_name],
-            
-            name,
-            designation,
-            company,
-            company_logo,
-            image,
-          };
-          
-      
-          const response = await axios.post(`${BASE_URL}/add_alumini`, payload, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json"
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                sub_course_id: [sub_course_id],
+                subcourse_details: [subcourses_name],
+
+                name,
+                designation,
+                company,
+                company_logo,
+                image,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_alumini`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.data?.status === "Success") {
+                toast.success("Alumni added successfully!");
+                navigate("/alumnidetails");
+
+                // Clear form
+                setSubcourses_id("");
+                setSubcourses_name("");
+                setName("");
+                setDesignation("");
+                setImage(null);
+                setCompany("");
+                setCompany_logo(null);
+                setCompany_logoPreview(null);
+                setProfileimgPreview(null);
+            } else {
+                toast.error("Failed to add alumni.");
             }
-          });
-      
-          if (response.data?.status === "Success") {
-            toast.success("Alumni added successfully!");
-            navigate("/alumnidetails");
-      
-            // Clear form
-            setSubcourses_id("");
-            setSubcourses_name("");
-            setName("");
-            setDesignation("");
-            setImage(null);
-            setCompany("");
-            setCompany_logo(null);
-            setCompany_logoPreview(null);
-            setProfileimgPreview(null);
-          } else {
-            toast.error("Failed to add alumni.");
-          }
         } catch (err) {
-          console.error("Error uploading alumni:", err);
-          toast.error("Something went wrong. Check console for details.");
+            console.error("Error uploading alumni:", err);
+            toast.error("Something went wrong.");
         }
-      };
-      
+    };
+
 
 
 

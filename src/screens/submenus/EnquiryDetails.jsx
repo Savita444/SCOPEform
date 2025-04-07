@@ -182,22 +182,31 @@ const Enquirydetails = () => {
         {
             name: "Full Name",
             selector: (row) => row.fullname || "N/A",
+            width: "200px",
         },
         {
             name: "Email",
             selector: (row) => row.email || "N/A",
+            width: "250px",
+
         },
         {
             name: "Contact",
             selector: (row) => row.contact || "N/A",
+            width: "150px",
+
         },
         {
             name: "Course",
             selector: (row) => row.course || "N/A",
+            width: "250px",
+
         },
         {
             name: "Duration",
             selector: (row) => row.duration || "N/A",
+            width: "100px",
+
         },
         {
             name: "Date",
@@ -215,6 +224,8 @@ const Enquirydetails = () => {
         {
             name: "Status",
             selector: (row) => (row.is_active ? "Active" : "Inactive"),
+            width: "100px",
+
         },
         // {
         //   name: "Actions",

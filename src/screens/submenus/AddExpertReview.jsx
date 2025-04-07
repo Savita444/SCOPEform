@@ -8,17 +8,18 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 
+
 const AddExpertReview = () => {
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
+
+    const [expertReview_id, setExpertReview_id] = useState("");
+    const [name, setName] = useState("");
+    const [review, setReview] = useState("");
+    const [company_position, setCompany_position] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
 
-    const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
-
 
 
 
@@ -33,86 +34,74 @@ const AddExpertReview = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_course`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error);
-        }
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
     };
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("User not authenticated. Please log in again.");
+        if (!expertReview_id || !name || !review || !company_position || !image) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("course_id", course_id);
-        formData.append("name", coursename);
-        formData.append("subcourses_name", subcourses_name);
-        if (image) {
-            formData.append("image", image);
-        }
-
         try {
-            const response = await fetch(
-                `${BASE_URL}/add_subcourse`,
-                {
-                    method: "POST",
-                    headers: { Authorization: `Bearer ${token}` },
-                    body: formData,
-                    mode: "cors",
-                }
-            );
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
 
-            if (response.status === 200) {
-                toast.success("Subcourse added successfully!");
-                navigate("/bannerdetails");
+            const payload = {
+                expertReview_id,
+                name,
+                designation,
+                company,
+                company_logo,
+                image,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_expertReview`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.data?.status === "Success") {
+                toast.success("Expert review added successfully!");
+                navigate("/expertreviewdetails");
+
+                // Clear form
+                setExpertReview_id("");
+                setName("");
+                setReview("");
+                setImage(null);
+                setCompany_position("");
+                setPreview(null);
             } else {
-                toast.error(`Error: ${response.statusText}`);
+                toast.error("Failed to add expert review.");
             }
-        } catch (error) {
-            console.error("Error adding subcourse:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading expert review:", err);
+            toast.error("Something went wrong.");
         }
     };
-
-
-
 
     return (
         <div className="container backimg">
@@ -152,7 +141,7 @@ const AddExpertReview = () => {
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Review</Form.Label>
                                                 <Form.Control type="text" as={"textarea"}
-                                                    placeholder="Enter expert review" value={name} onChange={(e) => setName(e.target.value)} />
+                                                    placeholder="Enter expert review" value={review} onChange={(e) => setReview(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
@@ -162,7 +151,7 @@ const AddExpertReview = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Company Position/Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter company name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter company name" value={company_position} onChange={(e) => setCompany_position(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

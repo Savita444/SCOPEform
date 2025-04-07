@@ -169,7 +169,7 @@ const Upcomingeventsdetails = () => {
             cell: (row) => (
                 <div className="d-flex">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                        <Button className="ms-1" onClick={() => navigate(`/update-upcoming-events/${row.course_id}`, { state: row })}>
+                        <Button className="ms-1" onClick={() => navigate(`/update-upcoming-events/${row.id}`, { state: row })}>
                             <FaEdit />
                         </Button>
                     </OverlayTrigger>

@@ -13,17 +13,13 @@ import { Textarea } from "react-bootstrap-icons";
 const UpdateGooglereview = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const courseData = location.state || {};
+  const googlereviewData = location.state || {};
 
+  const [googlereview_id, setGooglerevie_id] = useState("");
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(courseData.image || null);
-  const [courses, setCourses] = useState([]); // Store courses
+  const [preview, setPreview] = useState(googlereviewData.image || null);
 
-  const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-  useEffect(() => {
-    fetchCourses(); // Fetch courses when component mounts
-  }, []);
 
   // Function to convert image to Base64
   const convertToBase64 = (file) => {
@@ -35,82 +31,70 @@ const UpdateGooglereview = () => {
     });
   };
 
-  const fetchCourses = async () => {
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await axios.get(`${BASE_URL}/get_course`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
 
-      const coursesData = response.data?.data || [];
-      setCourses(coursesData); // Store fetched courses
-    } catch (err) {
-      console.error("Error fetching course details:", err);
-    }
-  };
-
-
-  // Function to handle image drop
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
+  const handleImageUpload = (file) => {
     if (file && file.type.startsWith("image/")) {
-      const base64 = await convertToBase64(file);
-      setImage(base64);
-      setPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     } else {
       toast.error("Only image files are allowed.");
     }
   };
 
-  // Function to handle form submission
+  const handleDrop = (e) => {
+    e.preventDefault();
+    handleImageUpload(e.dataTransfer.files[0]);
+  };
+
+
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (!courseData.id) {
-      toast.error("Invalid course ID.");
+    if (!image) {
+      toast.error("Please fill in all required fields.");
       return;
     }
 
-    const token = localStorage.getItem("remember_token");
-    const formData = new FormData();
-    formData.append("name", name);
-    if (image) formData.append("image", image);
-
     try {
-      const response = await fetch(
-        `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token");
+
+      const payload = {
+        googlereview_id,
+        image
+      };
+
+      const response = await axios.post(`${BASE_URL}/update_googleReview/${googlereviewData.id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
         }
-      );
-      console.log("Updating Course ID:", courseData.id);
+      });
 
-      const textResponse = await response.text();
-      console.log("Raw API Response:", textResponse); // Debugging
+      if (response.data?.status === "Success") {
+        toast.success("Google review updated successfully!");
+        navigate("/googlereviewdetails");
 
-      if (response.ok) {
-        toast.success("Course updated successfully!");
-        navigate("/coursedetails");
+        setGooglerevie_id("");
+
+        setImage(null);
+        setPreview(null);
       } else {
-        toast.error(`Update failed: ${textResponse}`);
+        toast.error("Failed to update google review.");
       }
-    } catch (error) {
-      console.error("Error updating course:", error);
-      toast.error("An error occurred. Please try again.");
+    } catch (err) {
+      console.error("Error uploading google review:", err);
+      toast.error("Something went wrong.");
     }
   };
 
 
 
-  
+
 
 
 
@@ -156,6 +140,7 @@ const UpdateGooglereview = () => {
                         <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                         <div
                           className="border p-4 text-center"
+                          onChange={(e) => handleImageUpload(e.target.files[0])}
                           onDrop={handleDrop}
                           onDragOver={(e) => e.preventDefault()}
                         >

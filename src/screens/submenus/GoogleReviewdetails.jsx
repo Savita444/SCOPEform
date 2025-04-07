@@ -46,28 +46,32 @@ const Googlereviewdetails = () => {
   const fetchreviewdata = async () => {
     setLoading(true);
     try {
-        const BASE_URL = "https://api.sumagotraining.in/public/api";
-        const response = await axios.get(`${BASE_URL}/get_googleReview`);
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const response = await axios.get(`${BASE_URL}/get_googleReview`);
 
-        console.log("API Response:", response.data); // Debugging log
+      console.log("API Response:", response.data); // Debugging log
+      
+      const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setreviewdata(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
 
-        if (Array.isArray(response.data)) { 
-            setreviewdata(response.data); // Directly set the array
-        } else {
-            console.error("Unexpected API response structure:", response.data);
-            toast.error("Failed to fetch google review data");
-        }
+      if (Array.isArray(response.data)) {
+        setreviewdata(response.data); // Directly set the array
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        toast.error("Failed to fetch google review data");
+      }
     } catch (err) {
-        console.error("Error fetching google review data:", err);
-        toast.error("Error fetching google review data. Please check the console.");
+      console.error("Error fetching google review data:", err);
+      toast.error("Error fetching google review data. Please check the console.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     fetchreviewdata();
-}, []);
+  }, []);
 
 
   const handleDelete = async (id) => {
@@ -96,7 +100,7 @@ useEffect(() => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_googleReview/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -126,16 +130,16 @@ useEffect(() => {
     });
   };
 
-  
+
 
 
   const handleAddGooglereview = () => {
-   navigate("/addgooglereview");
+    navigate("/addgooglereview");
   };
 
 
 
-  
+
 
 
   const tableColumns = (currentPage, rowsPerPage) => [
@@ -143,7 +147,7 @@ useEffect(() => {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
     },
-    
+
     {
       name: "Google review Image",
       cell: (row) =>
@@ -212,7 +216,7 @@ useEffect(() => {
                 columns={tableColumns(currentPage, rowsPerPage)}
                 data={searchQuery ? filteredData : reviewdata} // Use filtered data only when searching
                 pagination
-               
+
                 onChangePage={(page) => {
                   setCurrentPage(page);
                   handleSearch(""); // Reset search when changing pages
@@ -226,7 +230,7 @@ useEffect(() => {
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

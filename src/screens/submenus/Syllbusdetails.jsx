@@ -67,7 +67,7 @@ const Syllabusdetails = () => {
       setsyllbusdetailsData(sortedData); // Set sorted data
       setData(sortedData); // Update the SearchExportContext data
       console.log("API Response:", response.data); // Debugging log
-      
+
       if (response.data?.status === "Success") {
         setsyllbusdetailsData(response.data.data);
       } else {
@@ -122,7 +122,7 @@ const Syllabusdetails = () => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setsyllbusdetailsData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);
@@ -157,7 +157,7 @@ const Syllabusdetails = () => {
   const stripHtmlTags = (html) => {
     if (!html) return "";
     return html.replace(/<\/?[^>]+(>|$)/g, ""); // Removes all HTML tags
-};
+  };
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
@@ -167,6 +167,7 @@ const Syllabusdetails = () => {
     {
       name: "Course Name",
       selector: (row) => row.subcourses_name || "N/A",
+      width: "200px",
     },
     {
       name: "Module Name",
@@ -175,12 +176,14 @@ const Syllabusdetails = () => {
     {
       name: "Title ",
       selector: (row) => row.title || "N/A",
+
+      width: "200px",
     },
     {
       name: "Description",
       selector: (row) => stripHtmlTags(row.description) || "N/A",
       width: "300px",
-  },
+    },
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),

@@ -12,19 +12,13 @@ import corner from "../imgs/file (28).png";
 const UpdateHiring = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const subcourseData = location.state || {};
+    const hiredData = location.state || {};
 
-    const [coursename, setCoursename] = useState(subcourseData.coursename || "");
-    const [subcourses_name, setSubcourses_name] = useState(subcourseData.subcourses_name || "");
+    const [hired_id, setHired_id] = useState("");
+    const [title, setTitle] = useState(hiredData.title || "");
+    const [description, setDescription] = useState(hiredData.description || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(subcourseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
+    const [preview, setPreview] = useState(hiredData.image || null);
 
 
     // Function to convert image to Base64
@@ -38,79 +32,72 @@ const UpdateHiring = () => {
     };
 
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_course`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            const coursesData = response.data?.data || [];
-            setCourses(coursesData); // Store fetched courses
-        } catch (err) {
-            console.error("Error fetching course details:", err);
-        }
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
     };
+
+
+
+
 
 
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("subcourses_name", subcourses_name);
-        formData.append("name", coursename);
-        if (image) formData.append("image", image);
+        if (!title || !description || !image) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
 
         try {
-            const response = await fetch(
-                `${BASE_URL}/update_subcourse/${subcourseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                hired_id,
+                title: title,
+                description,
+                image
+            };
+
+            const response = await axios.post(`${BASE_URL}/update_hired/${hiredData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
+            });
 
-            const textResponse = await response.text(); // Read response as text first
+            if (response.data?.status === "Success") {
+                toast.success("Hiring updated successfully!");
+                navigate("/hiredetails");
 
-            console.log("Raw API Response:", textResponse);
-
-            try {
-                const jsonResponse = JSON.parse(textResponse); // Try converting to JSON
-                if (response.ok) {
-                    toast.success("Subcourse updated successfully!");
-                    navigate("/subcoursedetails");
-                } else {
-                    toast.error(`Update failed: ${jsonResponse.message || "Unknown error"}`);
-                }
-            } catch (jsonError) {
-                console.error("Error parsing JSON:", jsonError);
-                toast.error("Server returned an invalid response. Check console for details.");
+                setHired_id("");
+                setTitle("");
+                setDescription("");
+                setImage(null);
+                setPreview(null);
+            } else {
+                toast.error("Failed to update hiring.");
             }
-        } catch (error) {
-            console.error("Error updating subcourse:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading hiring:", err);
+            toast.error("Something went wrong.");
         }
     };
-
 
 
 
@@ -148,9 +135,10 @@ const UpdateHiring = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Title </Form.Label>
-                                                <Form.Control value={coursename} onChange={(e) => setCoursename(e.target.value)}>
-                                                    
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control value={title} onChange={(e) => setTitle(e.target.value)}>
+
+
                                                 </Form.Control>
                                             </Form.Group>
 
@@ -160,8 +148,8 @@ const UpdateHiring = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={subcourses_name}
-                                                    onChange={(e) => setSubcourses_name(e.target.value)}
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
 
@@ -170,6 +158,7 @@ const UpdateHiring = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >

@@ -13,107 +13,115 @@ import { Textarea } from "react-bootstrap-icons";
 const UpdateSyllabuspdf = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const courseData = location.state || {};
+    const syllabuspdfData = location.state || {};
 
+    const [subcourse_id, setSubcourse_id] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState(syllabuspdfData.name || "");
+    const [file, setFile] = useState(null);
+    const [fileName, setFileName] = useState(syllabuspdfData.file || null);
     const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(courseData.image || null);
+
     const [courses, setCourses] = useState([]); // Store courses
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
+    
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
-
-    // Function to convert image to Base64
-    const convertToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
+        if (syllabuspdfData.file) {
+            setFileName(syllabuspdfData.file);
+        }
+    }, [syllabuspdfData]);
+    
+    const handleFileUpload = (file) => {
+        if (file && file.type === "application/pdf") {
             const reader = new FileReader();
+            reader.onloadend = () => {
+                setFile(reader.result);
+                setFileName(file.name); // <-- store the file name
+            };
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
+        } else {
+            toast.error("Only PDF files are allowed.");
+        }
     };
 
 
-    const fetchCourses = async () => {
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleFileUpload(e.dataTransfer.files[0]);
+    };
+
+
+
+
+
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
 
 
-    // Function to handle image drop
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
 
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!subcourses_name || !file) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                subcourse_id: subcourse_id,
+                name: subcourses_name,
+                file: file,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_syllbus_pdf/${syllabuspdfData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("Syllbus Pdf updated successfully!");
+                navigate("/syllabuspdfdetails");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/coursedetails");
+                // Clear form
+                setSubcourse_id("");
+                setSubcourses_name("");
+                setFile("");
+                setDesignation("");
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update syllabus pdf.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error updating syllabus pdf:", err);
+            toast.error("Something went wrong.");
         }
     };
-
-
-
 
 
 
@@ -154,7 +162,6 @@ const UpdateSyllabuspdf = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
@@ -165,6 +172,7 @@ const UpdateSyllabuspdf = () => {
                                                         const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
                                                             setCoursename(selectedCourse.coursename);
+                                                            setSubcourse_id(selectedCourse.subcourses_id);
                                                         }
                                                     }}
                                                 >
@@ -176,36 +184,50 @@ const UpdateSyllabuspdf = () => {
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
+
+
+
+
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                <Form.Label>Upload New File (Drag and Drop or Click)</Form.Label>
                                                 <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
+  className="border p-4 text-center"
+  onDrop={handleDrop}
+  onDragOver={(e) => e.preventDefault()}
+  onClick={() => document.getElementById("pdfInput").click()}
+  style={{ cursor: "pointer" }}
+>
+  {fileName ? (
+    <p className="mt-2">Uploaded File: <strong>{fileName}</strong></p>
+  ) : (
+    <p>Drag & Drop PDF here or click to upload</p>
+  )}
+</div>
+
+<Form.Control
+  id="pdfInput"
+  type="file"
+  accept="application/pdf"
+  style={{ display: "none" }}
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFile(reader.result);
+        setFileName(file.name);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast.error("Only PDF files are allowed.");
+    }
+  }}
+/>
+
+
                                             </Form.Group>
-                                            <div className="d-flex justify-content-center">
-                                                <Button variant="primary" className="fs-5" type="submit">Submit</Button>
-                                                {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}
+                                            <div className="d-flex justify-content-center"> <Button className="fs-5" variant="primary" type="submit">Submit</Button>
+                                                {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/subcoursedetails')}>Cancel</Button> */}
                                             </div>
 
                                         </Form>

@@ -20,6 +20,21 @@ const AddBanner = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+
+
+
+// Function to convert image to Base64
+const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
+
+
+
     const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
             const reader = new FileReader();
@@ -77,7 +92,6 @@ const AddBanner = () => {
             }
         } catch (err) {
             console.error("Error uploading banner:", err);
-            toast.error("Something went wrong. Check console for details.");
         }
     };
 

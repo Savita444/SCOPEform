@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^44.1.0",
-    "@ckeditor/ckeditor5-react": "^8.0.0",
+    "@ckeditor/ckeditor5-build-classic": "^35.4.0",
+    "@ckeditor/ckeditor5-react": "^5.1.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.8",

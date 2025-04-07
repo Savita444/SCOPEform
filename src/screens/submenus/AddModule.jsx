@@ -9,7 +9,9 @@ import corner from "../imgs/file (28).png";
 
 
 const AddModule = () => {
-    const [name, setName] = useState("");
+        const [module_id, setModule_id] = useState("");
+    
+    const [title, setTitle] = useState("");
     const navigate = useNavigate();
 
     
@@ -17,33 +19,40 @@ const AddModule = () => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!title) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                event_id,
+                title: title
+                
+            };
+
+            const response = await axios.post(`${BASE_URL}/add_module`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Module added successfully!");
+                navigate("/moduledetails");
+                setModule_id("");
+                setTitle("");
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add module.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading module:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -86,7 +95,7 @@ const AddModule = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
                                            

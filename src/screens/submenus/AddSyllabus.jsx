@@ -7,78 +7,151 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import axios from "axios";
+import { set } from "date-fns";
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 
 const AddSyllabus = () => {
-    const [name, setName] = useState("");
+    const [syllabus_id, setSyllabus_id] = useState("");
+    const [subcourses_id, setSubcourses_id] = useState("");
     const [coursename, setCoursename] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
     const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
+    const [module_id, setModule_id] = useState("");
+    const [modulename, setModulename] = useState("");
+
+    const [module_name, setModule_name] = useState("");
+    const [modules, setModules] = useState([]);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+
     const navigate = useNavigate();
     const location = useLocation();
 
 
- useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
+
+
+
+    const fetchmodulelistData = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_module`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            // Ensure response.data.data is an array
+            const moduleData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+            setModules(moduleData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
+        }
+    };
+    useEffect(() => {
+        fetchmodulelistData();
+    }, []);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!subcourses_name || !module_name || !title || !description) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                syllabus_id: syllabus_id,
+                course_id: subcourses_id,
+                module_id: module_id,
+                title: title,
+                description: description,
+
+                module_name: module_name,
+                subcourses_name: subcourses_name,
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_syllabus`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Syllbus added successfully!");
+                navigate("/syllabuspdfdetails");
+
+                // Clear form
+                setSyllabus_id("");
+                setSubcourses_id("");
+                setModule_id("");
+                setModule_name("");
+                setTitle("");
+                setDescription("");
+                setSubcourses_name("");
+
+
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add syllabus.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading syllabus:", err);
+            toast.error("Something went wrong.");
         }
     };
+
+
+
+
 
 
 
@@ -128,35 +201,37 @@ const AddSyllabus = () => {
                                                         const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
                                                             setCoursename(selectedCourse.coursename);
+                                                            setSubcourses_id(selectedCourse.subcourses_id);
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                    {courses.map((course, index) => (
+                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
+
                                                 </Form.Select>
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Module Name</Form.Label>
                                                 <Form.Select
-                                                    value={subcourses_name}
+                                                    value={module_id}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selectedId = e.target.value;
+                                                        const selectedModule = modules.find(module => module.id.toString() === selectedId);
+                                                        if (selectedModule) {
+                                                            setModulename(selectedModule.title);
+                                                            setModule_id(selectedModule.id);
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Module --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
+                                                    {modules.map((module, index) => (
+                                                        <option key={`module-${module.id || index}`} value={module.id}>
+                                                            {module.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
@@ -168,13 +243,23 @@ const AddSyllabus = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <CKEditor
+                                                    editor={ClassicEditor}
+                                                    data={description}
+                                                    onChange={(event, editor) => {
+                                                        const data = editor.getData();
+                                                        setDescription(data);
+                                                    }}
+                                                />
                                             </Form.Group>
+
+
+
 
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>

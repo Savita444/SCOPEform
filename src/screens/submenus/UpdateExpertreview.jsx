@@ -7,24 +7,22 @@ import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import { set } from "date-fns";
 
 
 const UpdateExpertreview = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const subcourseData = location.state || {};
+    const expertReviewData = location.state || {};
 
-    const [coursename, setCoursename] = useState(subcourseData.coursename || "");
-    const [subcourses_name, setSubcourses_name] = useState(subcourseData.subcourses_name || "");
+    const [expertReview_id, setExpertReview_id] = useState("");
+    const [name, setName] = useState(expertReviewData.name || "");
+    const [company_position, setCompany_position] = useState(expertReviewData.company_position || "");
+    const [review, setReview] = useState(expertReviewData.review || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(subcourseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
+    const [preview, setPreview] = useState(expertReviewData.image || null);
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
 
 
     // Function to convert image to Base64
@@ -38,76 +36,70 @@ const UpdateExpertreview = () => {
     };
 
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_course`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            const coursesData = response.data?.data || [];
-            setCourses(coursesData); // Store fetched courses
-        } catch (err) {
-            console.error("Error fetching course details:", err);
-        }
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
     };
+
+
 
 
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("subcourses_name", subcourses_name);
-        formData.append("name", coursename);
-        if (image) formData.append("image", image);
+        if (!name || !review || !company_position || !image) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
 
         try {
-            const response = await fetch(
-                `${BASE_URL}/update_subcourse/${subcourseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                expertReview_id,
+                name,
+                review,
+                company_position,
+                image
+            };
+
+            const response = await axios.post(`${BASE_URL}/update_expertReview/${expertReviewData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
+            });
 
-            const textResponse = await response.text(); // Read response as text first
+            if (response.data?.status === "Success") {
+                toast.success("Expert Review updated successfully!");
+                navigate("/expertreviewdetails");
 
-            console.log("Raw API Response:", textResponse);
-
-            try {
-                const jsonResponse = JSON.parse(textResponse); // Try converting to JSON
-                if (response.ok) {
-                    toast.success("Subcourse updated successfully!");
-                    navigate("/subcoursedetails");
-                } else {
-                    toast.error(`Update failed: ${jsonResponse.message || "Unknown error"}`);
-                }
-            } catch (jsonError) {
-                console.error("Error parsing JSON:", jsonError);
-                toast.error("Server returned an invalid response. Check console for details.");
+                setExpertReview_id("");
+                setName("");
+                setReview("");
+                setCompany_position("");
+                setImage(null);
+                setPreview(null);
+            } else {
+                toast.error("Failed to update expert review.");
             }
-        } catch (error) {
-            console.error("Error updating subcourse:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading expert review:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -138,7 +130,7 @@ const UpdateExpertreview = () => {
                                             </div>
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
-                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/bannerdetails')}>
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/expertreviewdetails')}>
                                             Expert review Details
                                         </Button>
                                     </div>
@@ -149,8 +141,8 @@ const UpdateExpertreview = () => {
                                         <Form onSubmit={handleUpdate}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Review</Form.Label>
-                                                <Form.Control value={coursename} as={"textarea"} onChange={(e) => setCoursename(e.target.value)}>
-                                                    
+                                                <Form.Control value={review} as={"textarea"} onChange={(e) => setReview(e.target.value)}>
+
                                                 </Form.Control>
                                             </Form.Group>
 
@@ -159,8 +151,8 @@ const UpdateExpertreview = () => {
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter expert name"
-                                                    value={subcourses_name}
-                                                    onChange={(e) => setSubcourses_name(e.target.value)}
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
                                                 />
                                             </Form.Group>
 
@@ -169,8 +161,8 @@ const UpdateExpertreview = () => {
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter company name"
-                                                    value={subcourses_name}
-                                                    onChange={(e) => setSubcourses_name(e.target.value)}
+                                                    value={company_position}
+                                                    onChange={(e) => setCompany_position(e.target.value)}
                                                 />
                                             </Form.Group>
 

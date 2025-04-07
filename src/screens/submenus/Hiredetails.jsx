@@ -24,7 +24,6 @@ const Hiredetails = () => {
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(null);
     const [hireData, setHireData] = useState([]);
-    const [Subcourses, setSubcourses] = useState([]);
     const navigate = useNavigate();
 
 
@@ -59,45 +58,30 @@ const Hiredetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const response = await axios.get(`${BASE_URL}/get_hired`);
-    
+
             console.log("API Response:", response.data); // Debugging log
-    
-            if (Array.isArray(response.data)) { 
+
+            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setHireData(sortedData); // Set sorted data
+            setData(sortedData); // Update the SearchExportContext data
+
+            if (Array.isArray(response.data)) {
                 setHireData(response.data); // Directly set the array
             } else {
-                console.error("Unexpected API response structure:", response.data);
-                toast.error("Failed to fetch hiring data");
             }
         } catch (err) {
             console.error("Error fetching hiring data:", err);
-            toast.error("Error fetching hiring data. Please check the console.");
+            toast.error("Error fetching hiring data.");
         } finally {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchHireData();
     }, []);
 
-    // const fetchCourses = async () => {
-    //     const accessToken = localStorage.getItem("remember_token");
-    //     try {
-    //         const response = await axios.get(`${BASE_URL}/get_course`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //                 "Content-Type": "application/json",
-    //             },
-    //         });
-
-    //         const coursesData = response.data?.data || [];
-    //         setCourses(coursesData); // Store fetched courses
-    //     } catch (err) {
-    //         console.error("Error fetching course details:", err);
-    //     }
-    // };
-
-
+  
 
     const handleDelete = async (id) => {
         confirmAlert({
@@ -125,7 +109,7 @@ const Hiredetails = () => {
                                 setLoading(true);
                                 const accessToken = localStorage.getItem("remember_token");
                                 try {
-                                    await instance.delete(`delete_subcourse/${id}`, {
+                                    await instance.delete(`delete_hired/${id}`, {
                                         headers: {
                                             Authorization: `Bearer ${accessToken}`,
                                             "Content-Type": "application/json",
@@ -134,7 +118,7 @@ const Hiredetails = () => {
                                     toast.success("Data Deleted Successfully");
 
                                     // Update state directly after deletion
-                                    setSubcourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                                    setHireData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                                 } catch (error) {
                                     console.error("Error deleting data:", error);
@@ -208,7 +192,7 @@ const Hiredetails = () => {
             cell: (row) => (
                 <div className="d-flex">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                        <Button className="ms-1" onClick={() => navigate(`/update-hiring/${row.course_id}`, { state: row })}>
+                        <Button className="ms-1" onClick={() => navigate(`/update-hiring/${row.id}`, { state: row })}>
                             <FaEdit />
                         </Button>
                     </OverlayTrigger>

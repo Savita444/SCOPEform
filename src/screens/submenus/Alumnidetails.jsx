@@ -83,7 +83,7 @@ const Alumnidetails = () => {
             }
         } catch (err) {
             console.error("Error fetching alumni data:", err);
-            toast.error("Error fetching alumni data. Please check the console.");
+            toast.error("Error fetching alumni data.");
         } finally {
             setLoading(false);
         }
@@ -153,15 +153,12 @@ const Alumnidetails = () => {
 
 
 
-
-
     const handleAddalumni = () => {
         navigate("/addalumni");
     };
 
 
 
-    
 
 
     const tableColumns = (currentPage, rowsPerPage) => [
@@ -214,7 +211,7 @@ const Alumnidetails = () => {
             cell: (row) => (
                 <div className="d-flex">
                     <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                        <Button className="ms-1" onClick={() => navigate(`/update-alumni/${row.course_id}`, { state: row })}>
+                        <Button className="ms-1" onClick={() => navigate(`/update-alumni/${row.id}`, { state: row })}>
                             <FaEdit />
                         </Button>
                     </OverlayTrigger>

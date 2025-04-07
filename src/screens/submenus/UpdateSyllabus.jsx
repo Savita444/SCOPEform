@@ -8,87 +8,142 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import { Textarea } from "react-bootstrap-icons";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 
 const UpdateSyllabus = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const courseData = location.state || {};
-    const [name, setName] = useState("");
+    const syllbusData = location.state || {};
+
+    const [syllabus_id, setSyllabus_id] = useState("");
+    const [subcourses_id, setSubcourses_id] = useState("");
     const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState(syllbusData.subcourses_name || "");
     const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
+    const [module_id, setModule_id] = useState("");
+    const [modulename, setModulename] = useState("");
+
+    const [module_name, setModule_name] = useState(syllbusData.module_name || "");
+    const [modules, setModules] = useState([]);
+    const [title, setTitle] = useState(syllbusData.title || "");
+    const [description, setDescription] = useState(syllbusData.description || "");
 
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
 
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
+        if (syllbusData.module_id) setModule_id(syllbusData.module_id);
+        if (syllbusData.module_name) setModule_name(syllbusData.module_name);
+    }, [syllbusData]);
 
 
 
-    const fetchCourses = async () => {
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
 
 
 
-    // Function to handle form submission
+    const fetchmodulelistData = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_module`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            // Ensure response.data.data is an array
+            const moduleData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+            setModules(moduleData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
+        }
+    };
+    useEffect(() => {
+        fetchmodulelistData();
+    }, []);
+
+
+
+
+
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!subcourses_name || !module_name || !title || !description) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                syllabus_id: syllabus_id,
+                course_id: subcourses_id,
+                module_id: module_id,
+                title: title,
+                description: description,
+
+                module_name: module_name,
+                subcourses_name: subcourses_name,
+            };
+
+            const response = await axios.post(`${BASE_URL}/update_syllabus/${syllbusData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("Syllabus updated successfully!");
+                navigate("/syllabusdetails");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/coursedetails");
+                setSyllabus_id("");
+                setSubcourses_id("");
+                setModule_id("");
+                setModule_name("");
+                setTitle("");
+                setDescription("");
+                setSubcourses_name("");
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update syllabus.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading syllabus:", err);
+            toast.error("Something went wrong.");
         }
     };
+
 
 
 
@@ -132,7 +187,6 @@ const UpdateSyllabus = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
@@ -143,55 +197,73 @@ const UpdateSyllabus = () => {
                                                         const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
                                                             setCoursename(selectedCourse.coursename);
+                                                            setSubcourses_id(selectedCourse.subcourses_id);
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                    {courses.map((course, index) => (
+                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
+
                                                 </Form.Select>
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Module Name</Form.Label>
                                                 <Form.Select
-                                                    value={subcourses_name}
+                                                    value={module_id}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selectedId = e.target.value;
+                                                        const selectedModule = modules.find(
+                                                            (module) => module.id.toString() === selectedId
+                                                        );
+                                                        if (selectedModule) {
+                                                            setModule_id(selectedModule.id); // number
+                                                            setModule_name(selectedModule.title); // use `title` as `module_name`
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Module --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
+                                                    {modules.map((module, index) => (
+                                                        <option key={`module-${module.id}`} value={module.id}>
+                                                            {module.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
-                                           
-                                            <Form.Group className="mb-3">
-                                                                                           <Form.Label>Title </Form.Label>
-                                                                                           <Form.Control type="text"  placeholder="Enter title " value={name} onChange={(e) => setName(e.target.value)} />
-                                                                                       </Form.Group>
 
-                                                                                        <Form.Group className="mb-3">
-                                                                                                                                       <Form.Label>Description </Form.Label>
-                                                                                                                                       <Form.Control type="text" as={"textarea"} placeholder="Enter description" value={name} onChange={(e) => setName(e.target.value)} />
-                                                                                                                                   </Form.Group>
-                                           
+
+
+
+
+
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Description</Form.Label>
+                                                <CKEditor
+                                                    editor={ClassicEditor}
+                                                    data={description}
+                                                    onChange={(event, editor) => {
+                                                        const data = editor.getData();
+                                                        setDescription(data);
+                                                    }}
+                                                />
+                                            </Form.Group>
+
+
+
+
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}
                                             </div>
-
                                         </Form>
                                     </Card.Body>
                                 </Accordion.Collapse>

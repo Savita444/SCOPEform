@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
@@ -10,36 +10,46 @@ import { Textarea } from "react-bootstrap-icons";
 
 
 const AddOffice = () => {
-    const [name, setName] = useState("");
-    const [mobile, setMobile]= useState("");
+    const [office_id, setOffice_id] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [link, setLink] = useState("");
+    const [email, setEmail] = useState("");
+    const [mobile_no, setMobile] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
-    
+    const location = useLocation();
+
+
     const handle_mobileno = (e) => {
         let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-      
+
         // Ensure "+91" is always the prefix
         if (value.startsWith("91")) {
-          value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
+            value = "+91" + value.slice(2, 12); // Keep only 10 digits after "+91"
         } else {
-          value = "+91" + value.slice(0, 10);
+            value = "+91" + value.slice(0, 10);
         }
-      
+
         // If user deletes everything, reset to "+91"
         if (value.length < 3) {
-          value = "+91";
+            value = "+91";
         }
-       // Enforce mobile number to start only with 6,7,8,9
-       if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
-        const firstDigit = value.charAt(3); // Get the first digit of the mobile number
-        if (!["6", "7", "8", "9"].includes(firstDigit)) {
-          return; // Stop updating state if invalid number is entered
+        // Enforce mobile number to start only with 6,7,8,9
+        if (value.length >= 4) { // Ensure there are at least 1 digit after "+91"
+            const firstDigit = value.charAt(3); // Get the first digit of the mobile number
+            if (!["6", "7", "8", "9"].includes(firstDigit)) {
+                return; // Stop updating state if invalid number is entered
+            }
         }
-      }
-    
-      setMobile(value);
-      };
+
+        setMobile(value);
+    };
+
+
+
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -49,48 +59,74 @@ const AddOffice = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+
+
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!title || !description || !link || !image || !email || !mobile_no) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                office_id,
+                title,
+                description,
+                link,
+                email,
+                mobile_no,
+                image
+            };
+
+            const response = await axios.post(`${BASE_URL}/add_ourOffice`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Office details added successfully!");
+                navigate("/officesdetails");
+                setOffice_id("");
+                setTitle("");
+                setDescription("");
+                setLink("");
+                setEmail("");
+                setMobile("");
+                setImage(null);
+                setPreview(null);
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add office details.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading office details:", err);
         }
     };
 
@@ -134,7 +170,7 @@ const AddOffice = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
@@ -142,21 +178,21 @@ const AddOffice = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Link</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Link" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Link" value={link} onChange={(e) => setLink(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Email</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Email" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mobile no</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Mobile no" value={mobile} onChange={handle_mobileno} />
+                                                <Form.Control type="text" placeholder="Enter Mobile no" value={mobile_no} onChange={handle_mobileno} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

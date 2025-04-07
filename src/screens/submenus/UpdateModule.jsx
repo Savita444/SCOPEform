@@ -13,88 +13,56 @@ import { Textarea } from "react-bootstrap-icons";
 const UpdateModule = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const courseData = location.state || {};
-    const [name, setName] = useState(courseData.name || "");
-
-    const [courses, setCourses] = useState([]); // Store courses
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
+    const moduleData = location.state || {};
+    const [module_id, setModule_id] = useState("");
+    const [title, setTitle] = useState(moduleData.title || "");
 
 
-
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_course`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            const coursesData = response.data?.data || [];
-            setCourses(coursesData); // Store fetched courses
-        } catch (err) {
-            console.error("Error fetching course details:", err);
-        }
-    };
-
-
-
-
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!title) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                module_id,
+                title: title
+            };
+
+            const response = await axios.post(`${BASE_URL}/update_module/${moduleData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("Module updated successfully!");
+                navigate("/upcoming-events");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/coursedetails");
+                setModule_id("");
+                setTitle("");
+               
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update module.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading module:", err);
+            toast.error("Something went wrong.");
         }
     };
-
-
-
 
 
 
 
     return (
-        <div className="container backimg">
+        <div className="container idcardbackimg">
             <div>
                 <img src={corner} className="corner_img" alt="Responsive Corner" />
             </div>
@@ -134,8 +102,8 @@ const UpdateModule = () => {
                                                 <Form.Label>Title</Form.Label>
                                                 <Form.Control
                                                     type="text"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </Form.Group>
 

@@ -95,7 +95,7 @@ useEffect(() => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_ourOffice/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -104,7 +104,7 @@ useEffect(() => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setOfficeData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);
@@ -149,7 +149,7 @@ useEffect(() => {
     {
         name: "Description",
         selector: (row) => row.description || "N/A",
-        // width:"150px",
+        width:"300px",
 
       },
       // {
@@ -165,7 +165,7 @@ useEffect(() => {
       {
         name: "Mobile",
         selector: (row) => row.mobile_no || "N/A",
-        width:"120px",
+        width:"150px",
 
       },
     {
@@ -180,7 +180,7 @@ useEffect(() => {
         ) : (
           "No Image"
         ),
-        width:"120px",
+        width:"150px",
 
     },
     {
