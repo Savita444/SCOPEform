@@ -9,62 +9,82 @@ import corner from "../imgs/file (28).png";
 
 
 const AddTopRank = () => {
+    const [toprank_id, setToprank_id] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
 
-    const convertToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-    };
+   // Function to convert image to Base64
+   const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
+const handleImageUpload = (file) => {
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImage(reader.result);
+            setPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        toast.error("Only image files are allowed.");
+    }
+};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("remember_token");
+const handleDrop = (e) => {
+    e.preventDefault();
+    handleImageUpload(e.dataTransfer.files[0]);
+};
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
-            return;
-        }
 
-        const formData = new FormData();
-        formData.append("image", image);
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
-            });
+    if (!image) {
+        toast.error("Please fill in all required fields.");
+        return;
+    }
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
-            } else {
-                toast.error("Submission failed");
+    try {
+        const BASE_URL = "https://api.sumagotraining.in/public/api";
+        const accessToken = localStorage.getItem("remember_token");
+
+        const payload = {
+            toprank_id,
+            image,
+        };
+
+
+        const response = await axios.post(`${BASE_URL}/add_topranked`, payload, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        });
+
+        if (response.data?.status === "Success") {
+            toast.success("Top rank added successfully!");
+            navigate("/toprankdetails");
+
+            // Clear form
+            setToprank_id("");
+            setImage(null);
+            setPreview(null);
+        } else {
+            toast.error("Failed to add top rank.");
         }
-    };
+    } catch (err) {
+        console.error("Error uploading top rank:", err);
+        toast.error("Something went wrong.");
+    }
+};
+
 
 
   
@@ -106,7 +126,7 @@ const AddTopRank = () => {
                                         <Form onSubmit={handleSubmit}>
                                             
 
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
@@ -133,6 +153,7 @@ const AddTopRank = () => {
                                                     }}
                                                 />
                                             </Form.Group>
+
 
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>

@@ -12,21 +12,22 @@ import corner from "../imgs/file (28).png";
 const UpdateMentor = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const courseData = location.state || {};
-    const [course_id, setCourseId] = useState("");
-    const [coursename, setCoursename] = useState("");
+    const mentorData = location.state || {};
 
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [name, setName] = useState(courseData.name || "");
+    const [course_id, setCourse_id] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState(
+        Array.isArray(mentorData.subcourse_details) ? mentorData.subcourse_details[0] : ""
+    ); const [name, setName] = useState(mentorData.name || "");
+    const [designation, setDesignation] = useState(mentorData.designation || "");
+    const [company, setCompany] = useState(mentorData.company || "");
+    const [skills, setSkills] = useState(mentorData.skills || "");
+    const [experience, setExperience] = useState(mentorData.experience || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(courseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
+    const [preview, setPreview] = useState(mentorData.image || null);
+    const [courses, setCourses] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
 
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
@@ -38,18 +39,36 @@ const UpdateMentor = () => {
         });
     };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
+    const handleImageUpload = (file) => {
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            toast.error("Only image files are allowed.");
         }
-        fetchCourses();
-    }, []);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
-    const fetchCourses = async () => {
+
+
+
+
+
+
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
             const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -57,71 +76,77 @@ const UpdateMentor = () => {
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setSubCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
 
 
 
 
-    // Function to handle image drop
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
-
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!name || !designation || !company || !skills || !image || !experience || !course_id || !subcourses_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                course_id: [course_id],
+                subcourse_details: [subcourses_name],
+                name,
+                designation,
+                company,
+                skills,
+                experience,
+                image,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_mentor/${mentorData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("Mentor updated successfully!");
+                navigate("/mentordetails");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/coursedetails");
+                // Clear form
+                setCourse_id("");
+                setSubcourses_name("");
+                setName("");
+                setDesignation("");
+                setImage(null);
+                setCompany("");
+                setSkills("");
+                setExperience("");
+                setPreview(null);
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update mentor.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading mentor:", err);
+            toast.error("Something went wrong.");
         }
     };
+
+
+
 
 
 
@@ -167,23 +192,21 @@ const UpdateMentor = () => {
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
+                                                    {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
-                                            </Form.Group>
 
+                                            </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
                                                 <Form.Control
@@ -198,8 +221,8 @@ const UpdateMentor = () => {
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter designation"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={designation}
+                                                    onChange={(e) => setDesignation(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -207,8 +230,8 @@ const UpdateMentor = () => {
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter company"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={company}
+                                                    onChange={(e) => setCompany(e.target.value)}
                                                 />
                                             </Form.Group>
 
@@ -216,6 +239,7 @@ const UpdateMentor = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
@@ -239,13 +263,14 @@ const UpdateMentor = () => {
                                                     }}
                                                 />
                                             </Form.Group>
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Skill</Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter skill"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={skills}
+                                                    onChange={(e) => setSkills(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -253,8 +278,8 @@ const UpdateMentor = () => {
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter experience"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={experience}
+                                                    onChange={(e) => setExperience(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <div className="d-flex justify-content-center">

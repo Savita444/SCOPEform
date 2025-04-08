@@ -67,6 +67,9 @@ const Mentordetails = () => {
       });
 
       console.log("API Response:", response.data); // Debugging log
+      const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setmentorData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
 
       if (response.data?.status === "Success") {
           setmentorData(response.data.data);
@@ -113,7 +116,7 @@ const Mentordetails = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_mentor/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -122,7 +125,7 @@ const Mentordetails = () => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setmentorData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);

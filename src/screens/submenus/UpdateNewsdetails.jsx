@@ -12,123 +12,84 @@ import corner from "../imgs/file (28).png";
 const UpdateNewsdetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const courseData = location.state || {};
+    const newsData = location.state || {};
+    const [news_id, setNews_id] = useState("")
 
-    const [name, setName] = useState(courseData.name || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(courseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [course_id, setCourseId] = useState("");
+    const [preview, setPreview] = useState(newsData.image || null);
+ 
    
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
-
-    // Function to convert image to Base64
-    const convertToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-    };
-
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
+   // Function to convert image to Base64
+   const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
 
 
-    const fetchCourses = async () => {
+ const handleImageUpload = (file) => {
+           if (file && file.type.startsWith("image/")) {
+               const reader = new FileReader();
+               reader.onloadend = () => {
+                   setImage(reader.result);
+                   setPreview(reader.result);
+               };
+               reader.readAsDataURL(file);
+           } else {
+               toast.error("Only image files are allowed.");
+           }
+       };
+   
+       const handleDrop = (e) => {
+           e.preventDefault();
+           handleImageUpload(e.dataTransfer.files[0]);
+       };
+
+
+
+const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!image) {
+        toast.error("Please fill in all required fields.");
+        return;
+    }
+
+    try {
+        const BASE_URL = "https://api.sumagotraining.in/public/api";
         const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
 
+        const payload = {
+            news_id,
+            image: image
+        };
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
-        }
-    };
-
-
-
-    // Function to handle image drop
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
-
-
-
-
-
-
-
-    // Function to handle form submission
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
-            return;
-        }
-
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
-        try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                }
-            );
-            console.log("Updating Course ID:", courseData.id);
-
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
-
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/moudetails");
-            } else {
-                toast.error(`Update failed: ${textResponse}`);
+        const response = await axios.post(`${BASE_URL}/update_news/${newsData.id}`, payload, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        });
+
+        if (response.data?.status === "Success") {
+            toast.success("News updated successfully!");
+            navigate("/newsdetails");
+
+            setNews_id("");
+           
+            setImage(null);
+            setPreview(null);
+        } else {
+            toast.error("Failed to update news.");
         }
-    };
-
-
+    } catch (err) {
+        console.error("Error uploading news:", err);
+        toast.error("Something went wrong.");
+    }
+};
 
 
 
@@ -170,33 +131,34 @@ const UpdateNewsdetails = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
                                            
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
-                                            </Form.Group>
+                                          <Form.Group className="mb-3">
+                                                                                          <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                                                          <div
+                                                                                              className="border p-4 text-center"
+                                                                                              onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                                                              onDrop={handleDrop}
+                                                                                              onDragOver={(e) => e.preventDefault()}
+                                                                                          >
+                                                                                              {preview ? (
+                                                                                                  <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                                                              ) : (
+                                                                                                  <p>Drag & Drop image here or click to upload</p>
+                                                                                              )}
+                                                                                          </div>
+                                                                                          <Form.Control
+                                                                                              type="file"
+                                                                                              onChange={async (e) => {
+                                                                                                  const file = e.target.files[0];
+                                                                                                  if (file && file.type.startsWith("image/")) {
+                                                                                                      const base64 = await convertToBase64(file);
+                                                                                                      setImage(base64);
+                                                                                                      setPreview(URL.createObjectURL(file));
+                                                                                                  } else {
+                                                                                                      toast.error("Only image files are allowed.");
+                                                                                                  }
+                                                                                              }}
+                                                                                          />
+                                                                                      </Form.Group>
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

@@ -12,23 +12,20 @@ import corner from "../imgs/file (28).png";
 const UpdateNewsLetterdetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const courseData = location.state || {};
+    const newsletterData = location.state || {};
 
-    const [name, setName] = useState(courseData.name || "");
-    const [image, setImage] = useState(null);
+    const [newsletter_id, setNewsletter_id] = useState("");
     const [file, setFile] = useState(null);
+    const [image, setImage] = useState(null);
+    const [preview, setPreview] = useState(newsletterData.image || null);
+    const [fileName, setFileName] = useState(newsletterData.file || "");
 
-    const [preview, setPreview] = useState(courseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [course_id, setCourseId] = useState("");
-   
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
 
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
-    }, []);
+        if (newsletterData.file) {
+            setFileName(newsletterData.file);
+        }
+    }, [newsletterData]);
 
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
@@ -40,104 +37,90 @@ const UpdateNewsLetterdetails = () => {
         });
     };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
 
-
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
-        }
-    };
-
-
-
-    // Function to handle image drop
-    const handleDropImage = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-    const handleDropPDF = async (e) => {
+    const handleDrop = (e) => {
         e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("pdf/")) {
-            const base64 = await convertToBase64(file);
-            setFile();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
+
+
+
+    const handleFileUpload = (file) => {
+        if (file && file.type === "application/pdf") {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFile(reader.result);
+                setFileName(file.name); // <-- store the file name
+            };
+            reader.readAsDataURL(file);
         } else {
-            toast.error("Only pdf files are allowed.");
+            toast.error("Only PDF files are allowed.");
         }
+    };
+
+
+    const handleFileDrop = (e) => {
+        e.preventDefault();
+        handleFileUpload(e.dataTransfer.files[0]);
     };
 
 
 
 
-
-
-
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!file || !image) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                id: newsletter_id,
+                image: image,
+                file: file,
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_newsletter/${newsletterData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("News letter updated successfully!");
+                navigate("/newsletterdetails");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/moudetails");
+                // Clear form
+                setNewsletter_id("");
+                setFile(null);
+                setImage(null)
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update newsletter.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error updating newsletter:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -175,41 +158,56 @@ const UpdateNewsLetterdetails = () => {
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
                                             style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/newsletterdetails')}>
-                                           NewsLetter Details
+                                            NewsLetter Details
                                         </Button>
                                     </div>
                                 </Card.Header>
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                        <Form.Group className="mb-3">
-                                                <Form.Label>Upload PDF (Drag and Drop or Click)</Form.Label>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Upload New File (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleDropPDF}
+                                                    onDrop={handleFileDrop}
                                                     onDragOver={(e) => e.preventDefault()}
+                                                    onClick={() => document.getElementById("pdfInput").click()}
+                                                    style={{ cursor: "pointer" }}
                                                 >
-                                                  
-                                                        <p>Drag & Drop pdf here or click to upload</p>
-                                                   
+                                                    {fileName ? (
+                                                        <p className="mt-2">Uploaded File: <strong>{fileName}</strong></p>
+                                                    ) : (
+                                                        <p>Drag & Drop PDF here or click to upload</p>
+                                                    )}
                                                 </div>
+
                                                 <Form.Control
+                                                    id="pdfInput"
                                                     type="file"
-                                                    onChange={async (e) => {
+                                                    accept="application/pdf"
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => {
                                                         const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("pdf/")) {
-                                                            setFile();
+                                                        if (file && file.type === "application/pdf") {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                setFile(reader.result);
+                                                                setFileName(file.name);
+                                                            };
+                                                            reader.readAsDataURL(file);
                                                         } else {
-                                                            toast.error("Only pdf files are allowed.");
+                                                            toast.error("Only PDF files are allowed.");
                                                         }
                                                     }}
                                                 />
-                                                </Form.Group>
+
+
+                                            </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleDropImage}
+                                                    onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
                                                     {preview ? (
@@ -232,6 +230,7 @@ const UpdateNewsLetterdetails = () => {
                                                     }}
                                                 />
                                             </Form.Group>
+
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

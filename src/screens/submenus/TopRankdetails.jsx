@@ -49,7 +49,10 @@ const TopRankdetails = () => {
             const response = await axios.get(`${BASE_URL}/get_topranked`);
     
             console.log("API Response:", response.data); // Debugging log
-    
+            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            settoprankData(sortedData); // Set sorted data
+            setData(sortedData); // Update the SearchExportContext data
+
             if (Array.isArray(response.data)) { 
                 settoprankData(response.data); // Directly set the array
             } else {
@@ -99,7 +102,7 @@ const TopRankdetails = () => {
                                 setLoading(true);
                                 const accessToken = localStorage.getItem("remember_token");
                                 try {
-                                    await instance.delete(`delete_course/${id}`, {
+                                    await instance.delete(`delete_topranked/${id}`, {
                                         headers: {
                                             Authorization: `Bearer ${accessToken}`,
                                             "Content-Type": "application/json",
@@ -108,7 +111,7 @@ const TopRankdetails = () => {
                                     toast.success("Data Deleted Successfully");
 
                                     // Update state directly after deletion
-                                    setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                                    settoprankData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                                 } catch (error) {
                                     console.error("Error deleting data:", error);

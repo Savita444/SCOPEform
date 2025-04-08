@@ -111,7 +111,7 @@ const Funatworkdetails = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_funatworkdetails/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -120,7 +120,7 @@ const Funatworkdetails = () => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setfunatworkData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);

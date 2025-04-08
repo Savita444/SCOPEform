@@ -9,64 +9,86 @@ import corner from "../imgs/file (28).png";
 
 
 const FunatworkCategory = () => {
-    const [name, setName] = useState("");
+    const [funatworkCategory_id, setFunatworkCategory_id] = useState("");
+    const [title, setTitle] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
 
-    const convertToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-    };
+  // Function to convert image to Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
+const handleImageUpload = (file) => {
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImage(reader.result);
+            setPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        toast.error("Only image files are allowed.");
+    }
+};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("remember_token");
+const handleDrop = (e) => {
+    e.preventDefault();
+    handleImageUpload(e.dataTransfer.files[0]);
+};
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
-            return;
-        }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
-            });
+    if ( !title ||  !image) {
+        toast.error("Please fill in all required fields.");
+        return;
+    }
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
-            } else {
-                toast.error("Submission failed");
+    try {
+        const BASE_URL = "https://api.sumagotraining.in/public/api";
+        const accessToken = localStorage.getItem("remember_token");
+
+        const payload = {
+            funatworkCategory_id,
+            title,
+            image,
+        };
+
+
+        const response = await axios.post(`${BASE_URL}/add_funatworkcategory`, payload, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        });
+
+        if (response.data?.status === "Success") {
+            toast.success("Fun at work category added successfully!");
+            navigate("/funatworkcategorydetails");
+
+            // Clear form
+            setFunatworkCategory_id("");
+            setTitle("");
+        
+            setImage(null);
+            
+            setPreview(null);
+        } else {
+            toast.error("Failed to add fun at work category.");
         }
-    };
+    } catch (err) {
+        console.error("Error uploading fun at work category:", err);
+        toast.error("Something went wrong.");
+    }
+};
 
 
    
@@ -108,7 +130,7 @@ const FunatworkCategory = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

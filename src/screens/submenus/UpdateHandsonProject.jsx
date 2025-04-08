@@ -13,25 +13,54 @@ import { Textarea } from "react-bootstrap-icons";
 const UpdateHandsonProject = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const courseData = location.state || {};
-    const [name, setName] = useState("");
+    const handsondetailsData = location.state || {};
+
+    const [handson_category_id, setHandson_category_id] = useState(handsondetailsData.handson_category_id || "");
+const [category_name, setCategory_name] = useState(handsondetailsData.category_name || "");
+
+    const [sub_course_id, setSubcourses_id] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState(
+        Array.isArray(handsondetailsData.subcourse_details) ? handsondetailsData.subcourse_details[0] : ""
+    );
     const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
+
+    const [title, setTitle] = useState(handsondetailsData.title || "");
+    const [desc, setDescription] = useState(handsondetailsData.desc || "");
     const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
+    const [category, setCategory] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
 
+    const fetchhandsoncategoryData = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const response = await axios.get(`${BASE_URL}/get_category`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
 
+            // Ensure response.data.data is an array
+            const categoryData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+            setCategory(categoryData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching categories:", err);
+        }
+    };
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
+        fetchhandsoncategoryData();
     }, []);
 
 
 
-    const fetchCourses = async () => {
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
             const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -39,54 +68,68 @@ const UpdateHandsonProject = () => {
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
 
 
 
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!title || !desc || !handson_category_id || !sub_course_id || !category_name || !subcourses_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                sub_course_id: [sub_course_id],
+                subcourse_details: [subcourses_name],
+                handson_category_id,
+                title,
+                desc,
+                category_name,
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_handson_project_details/${handsondetailsData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
+            if (response.data?.status === "Success") {
+                toast.success("Alumni updated successfully!");
+                navigate("/alumnidetails");
 
-            if (response.ok) {
-                toast.success("Course updated successfully!");
-                navigate("/coursedetails");
+                // Clear form
+                setSubcourses_id("");
+                setSubcourses_name("");
+                setTitle("");
+                setDescription("");
+                setHandson_category_id("");
+                setCategory_name("");
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update hands on project details.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading hands on project details:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -143,47 +186,51 @@ const UpdateHandsonProject = () => {
                                                         const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
                                                             setCoursename(selectedCourse.coursename);
+                                                            setSubcourses_id(selectedCourse.subcourses_id);
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                    {courses.map((course, index) => (
+                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
+
                                                 </Form.Select>
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
+                                                <Form.Label>Hands on Category</Form.Label>
                                                 <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
+    value={handson_category_id}
+    onChange={(e) => {
+        const selectedId = e.target.value;
+        const selectedCategory = category.find(category => category.id.toString() === selectedId);
+        if (selectedCategory) {
+            setCategory_name(selectedCategory.title);
+            setHandson_category_id(selectedCategory.id);
+        }
+    }}
+>
 
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                        }
-                                                    }}
-                                                >
-                                                    <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
+                                                    <option value="">-- Select Hands on Category --</option>
+                                                    {category.map((category, index) => (
+                                                        <option key={`category-${category.id || index}`} value={category.id}>
+                                                            {category.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
+
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter title"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -192,8 +239,8 @@ const UpdateHandsonProject = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={desc}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
 

@@ -10,17 +10,18 @@ import axios from "axios";
 
 
 const AddMOUdetails = () => {
-    const [name, setName] = useState("");
+    const [moucategoryid, setMOUCategory_id] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [category_name, setCategory_name] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [courses, setCourses] = useState([]);
-    const [subcourses_name, setSubcourses_name] = useState("");
-
-    const [course_id, setCourseId] = useState("");
+    const [moucategory, setMOUcategory] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
 
 
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -30,51 +31,51 @@ const AddMOUdetails = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
 
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
+    const fetchmoucategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_moucategory`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            // Ensure response.data.data is an array
+            const moucategorydata = Array.isArray(response.data?.data) ? response.data.data : [];
+            console.log(moucategorydata)
+            setMOUcategory(moucategorydata);
+        } catch (err) {
+            console.error("Error fetching mou category:", err);
         }
     };
+    useEffect(() => {
 
-
+        fetchmoucategoryData();
+    }, []);
 
 
 
@@ -82,37 +83,55 @@ const AddMOUdetails = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!title || !description || !image) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                moucategoryid,
+                title,
+                description,
+                image,
+                category_name,
+            };
+
+
+
+
+
+            const response = await axios.post(`${BASE_URL}/add_moudetails`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
+            if (response.data?.status === "Success") {
+                toast.success("MOU details added successfully!");
                 navigate("/moudetails");
+
+                // Clear form
+                setTitle("");
+                setDescription("");
+                setCategory_name("");
+                setMOUcategory("");
+
+                setImage(null);
+                setPreview(null);
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add MOU details.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading MOU details:", err);
+            toast.error("Something went wrong.");
         }
     };
-
 
 
 
@@ -143,7 +162,7 @@ const AddMOUdetails = () => {
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
                                             style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/moudetails')}>
-                                           MOU Details
+                                            MOU Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -152,22 +171,21 @@ const AddMOUdetails = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Category Name</Form.Label>
+                                                <Form.Label>MOU Category</Form.Label>
                                                 <Form.Select
-                                                    value={subcourses_name}
+                                                    value={moucategoryid}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selected = moucategory.find(cat => cat.id.toString() === e.target.value);
+                                                        if (selected) {
+                                                            setMOUCategory_id(selected.id); // id = funatworkcategoryid
+                                                            setCategory_name(selected.title);     // title = category_name
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Category --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
+                                                    {moucategory.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
@@ -175,19 +193,19 @@ const AddMOUdetails = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={description} onChange={(e) => setDescription(e.target.value)} />
                                             </Form.Group>
 
-
-
                                             <Form.Group className="mb-3">
+
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >

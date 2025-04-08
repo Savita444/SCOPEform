@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
@@ -10,25 +10,52 @@ import axios from "axios";
 
 
 const AddHandsonProject = () => {
-    const [name, setName] = useState("");
+    const [handson_category_id, setHandson_category_id] = useState("");
+    const [category_name, setCategory_name] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
+    const [subcourses_name, setSubcourses_name] = useState("");
+       const [coursename, setCoursename] = useState("");
+   
+    const [title, setTitle] = useState("");
+    const [desc, setDescription] = useState("");
     const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
+    const [category, setCategory] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
+
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState(""); useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
+    const fetchhandsoncategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_category`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            // Ensure response.data.data is an array
+            const categoryData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+            setCategory(categoryData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching categories:", err);
+        }
+    };
+    useEffect(() => {
+        fetchhandsoncategoryData();
+    }, []);
+
+
+
+    const fetchSubCourses = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
             const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -36,43 +63,72 @@ const AddHandsonProject = () => {
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
+
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!handson_category_id || !title || !desc || !category_name  || !sub_course_id || !subcourses_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                sub_course_id: [sub_course_id],
+                subcourse_details: [subcourses_name],
+
+                title,
+                desc,
+                category_name,
+                handson_category_id,
+                
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_handson_project_details`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Hands on project details added successfully!");
+                navigate("/handsonprojectdetails");
+
+                // Clear form
+                setSubcourses_id("");
+                setSubcourses_name("");
+                setTitle("");
+                setDescription("");
+                setCategory_name("");
+                setHandson_category_id("");
+
+
+                
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add hands on project details.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading hands on project details:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -115,28 +171,7 @@ const AddHandsonProject = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Handson Category</Form.Label>
-                                                <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                        }
-                                                    }}
-                                                >
-                                                    <option value="">-- Select Handson Category --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </Form.Group>
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
@@ -146,25 +181,50 @@ const AddHandsonProject = () => {
                                                         const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
                                                         if (selectedCourse) {
                                                             setCoursename(selectedCourse.coursename);
+                                                            setSubcourses_id(selectedCourse.subcourses_id);
                                                         }
                                                     }}
                                                 >
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                    {courses.map((course, index) => (
+                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
                                                             {course.subcourses_name}
+                                                        </option>
+                                                    ))}
+
+                                                </Form.Select>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Hands on Category</Form.Label>
+                                                <Form.Select
+                                                    value={handson_category_id}
+                                                    onChange={(e) => {
+                                                        const selectedId = e.target.value;
+                                                        const selectedCategory = category.find(category => category.id.toString() === selectedId);
+                                                        if (selectedCategory) {
+                                                            setCategory_name(selectedCategory.title);
+                                                            setHandson_category_id(selectedCategory.id);
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Hands on Category --</option>
+                                                    {category.map((category, index) => (
+                                                        <option key={`category-${category.id || index}`} value={category.id}>
+                                                            {category.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
+
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="Enter title"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -173,8 +233,8 @@ const AddHandsonProject = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={desc}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
                                             <div className="d-flex justify-content-center">

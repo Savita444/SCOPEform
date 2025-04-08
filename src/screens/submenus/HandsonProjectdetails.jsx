@@ -117,7 +117,7 @@ const HandsonProjectdetails = () => {
                                 setLoading(true);
                                 const accessToken = localStorage.getItem("remember_token");
                                 try {
-                                    await instance.delete(`delete_course/${id}`, {
+                                    await instance.delete(`delete_handson_project_details/${id}`, {
                                         headers: {
                                             Authorization: `Bearer ${accessToken}`,
                                             "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const HandsonProjectdetails = () => {
                                     toast.success("Data Deleted Successfully");
 
                                     // Update state directly after deletion
-                                    setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                                    sethandsonprojectdetailsData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                                 } catch (error) {
                                     console.error("Error deleting data:", error);

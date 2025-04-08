@@ -138,7 +138,7 @@ const UpdateAlumni = () => {
             };
 
 
-            const response = await axios.post(`${BASE_URL}/update_alumini`, payload, {
+            const response = await axios.post(`${BASE_URL}/update_alumini/${AlumniData.id}`, payload, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"

@@ -12,21 +12,38 @@ import corner from "../imgs/file (28).png";
 const UpdateRecognitiondetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const courseData = location.state || {};
+    const recognitiondetailsData = location.state || {};
 
-    const [name, setName] = useState(courseData.name || "");
+    const [recognitiondetails_id, setRecognitiondetails_id] = useState("");
+    const [title, setTitle] = useState(recognitiondetailsData.title || "");
+    const [description, setDescription] = useState(recognitiondetailsData.description || "");
+    const [category_name, setCategory_name] = useState(recognitiondetailsData.category_name || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(courseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [course_id, setCourseId] = useState("");
-   
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
+    const [preview, setPreview] = useState(recognitiondetailsData.image || null);
+    const [recognitioncategory, setRecognitionCategory] = useState([]);
+    
+    
+    
+    
+    
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
+        fetchrecognitioncategoryData();
     }, []);
+    
+    useEffect(() => {
+        // Once category list and data are both available, match by category_name
+        if (recognitioncategory.length > 0 && category_name) {
+            const matchedCategory = recognitioncategory.find(
+                (cat) => cat.title === category_name
+            );
+            if (matchedCategory) {
+                setRecognitiondetails_id(matchedCategory.id);
+            }
+        }
+    }, [recognitioncategory, category_name]);
+    
+
+
 
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
@@ -38,96 +55,105 @@ const UpdateRecognitiondetails = () => {
         });
     };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
+    const handleImageUpload = (file) => {
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            toast.error("Only image files are allowed.");
         }
-        fetchCourses();
-    }, []);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
-    const fetchCourses = async () => {
+
+
+    const fetchrecognitioncategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_recognitioncategory`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            // Ensure response.data.data is an array
+            const recognitioncategoryData = Array.isArray(response.data?.data) ? response.data.data : [];
+            console.log(recognitioncategoryData)
+            setRecognitionCategory(recognitioncategoryData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching recongnition details:", err);
         }
     };
+    useEffect(() => {
+
+        fetchrecognitioncategoryData();
+    }, []);
 
 
 
-    // Function to handle image drop
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
-
-
-
-
-
-
-
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!title || !description || !image || !category_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                recognitioncategory_id: recognitiondetails_id,
+                title:  title,
+                
+                description,
+                image,
+                category_name,
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_recognitiondetails/${recognitiondetailsData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
-
-            if (response.ok) {
-                toast.success("Course updated successfully!");
+            if (response.data?.status === "Success") {
+                toast.success("Recognition details updated successfully!");
                 navigate("/recognitiondetails");
+
+                // Clear form
+                setRecognitionCategory("");
+                setTitle("");
+                setDescription("");
+                setImage(null);
+                setPreview(null);
+                setCategory_name("");
+
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update recognition details.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading recognition details:", err);
+            toast.error("Something went wrong.");
         }
     };
-
 
 
 
@@ -169,31 +195,39 @@ const UpdateRecognitiondetails = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
-                                                <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                        }
-                                                    }}
-                                                >
-                                                    <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </Form.Group>
+                                              <Form.Group className="mb-3">
+                                                                                        <Form.Label>Fun at Work Category</Form.Label>
+                                                                                        <Form.Select
+                                                                                          value={recognitiondetails_id}
+                                                                                          onChange={(e) => {
+                                                                                            const selected = recognitioncategory.find(cat => cat.id.toString() === e.target.value);
+                                                                                            if (selected) {
+                                                                                              setRecognitiondetails_id(selected.id); // id = funatworkcategoryid
+                                                                                              setCategory_name(selected.title);     // title = category_name
+                                                                                            }
+                                                                                          }}
+                                                                                        >
+                                                                                          <option value="">-- Select Category --</option>
+                                                                                          {recognitioncategory.map(cat => (
+                                                                                            <option key={cat.id} value={cat.id}>
+                                                                                              {cat.title}
+                                                                                            </option>
+                                                                                          ))}
+                                                                                        </Form.Select>
+                                                                                      </Form.Group>
+                                           
+                                                                                       <Form.Group className="mb-3">
+                                                                                           <Form.Label>Title</Form.Label>
+                                                                                           <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                                                       </Form.Group>
+                                                                                       <Form.Group className="mb-3">
+                                                                                           <Form.Label>Description</Form.Label>
+                                                                                           <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                                                                       </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
 
@@ -203,38 +237,39 @@ const UpdateRecognitiondetails = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
-                                            </Form.Group>
+                                                                                            <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                                                            <div
+                                                                                                className="border p-4 text-center"
+                                                                                                onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                                                                onDrop={handleDrop}
+                                                                                                onDragOver={(e) => e.preventDefault()}
+                                                                                            >
+                                                                                                {preview ? (
+                                                                                                    <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                                                                ) : (
+                                                                                                    <p>Drag & Drop image here or click to upload</p>
+                                                                                                )}
+                                                                                            </div>
+                                                                                            <Form.Control
+                                                                                                type="file"
+                                                                                                onChange={async (e) => {
+                                                                                                    const file = e.target.files[0];
+                                                                                                    if (file && file.type.startsWith("image/")) {
+                                                                                                        const base64 = await convertToBase64(file);
+                                                                                                        setImage(base64);
+                                                                                                        setPreview(URL.createObjectURL(file));
+                                                                                                    } else {
+                                                                                                        toast.error("Only image files are allowed.");
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Form.Group>
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

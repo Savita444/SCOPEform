@@ -12,18 +12,12 @@ import corner from "../imgs/file (28).png";
 const UpdateFunatworkCategory = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const courseData = location.state || {};
+  const funatworkcategoryData = location.state || {};
 
-  const [name, setName] = useState(courseData.name || "");
+  const [funatworkCategory_id, setFunatworkCategory_id] = useState("");
+  const [title, setTitle] = useState(funatworkcategoryData.title || "");
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(courseData.image || null);
-  const [courses, setCourses] = useState([]); // Store courses
-
-  const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-  useEffect(() => {
-    fetchCourses(); // Fetch courses when component mounts
-  }, []);
+  const [preview, setPreview] = useState(funatworkcategoryData.image || null);
 
   // Function to convert image to Base64
   const convertToBase64 = (file) => {
@@ -35,82 +29,72 @@ const UpdateFunatworkCategory = () => {
     });
   };
 
-  const fetchCourses = async () => {
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await axios.get(`${BASE_URL}/get_course`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const coursesData = response.data?.data || [];
-      setCourses(coursesData); // Store fetched courses
-    } catch (err) {
-      console.error("Error fetching course details:", err);
-    }
-  };
-
-
-  // Function to handle image drop
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
+  const handleImageUpload = (file) => {
     if (file && file.type.startsWith("image/")) {
-      const base64 = await convertToBase64(file);
-      setImage(base64);
-      setPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     } else {
       toast.error("Only image files are allowed.");
     }
   };
 
-  // Function to handle form submission
+  const handleDrop = (e) => {
+    e.preventDefault();
+    handleImageUpload(e.dataTransfer.files[0]);
+  };
+
+
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (!courseData.id) {
-      toast.error("Invalid course ID.");
+    if (!title || !image) {
+      toast.error("Please fill in all required fields.");
       return;
     }
 
-    const token = localStorage.getItem("remember_token");
-    const formData = new FormData();
-    formData.append("name", name);
-    if (image) formData.append("image", image);
-
     try {
-      const response = await fetch(
-        `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token");
+
+      const payload = {
+        funatworkCategory_id,
+        title: title,
+        image
+      };
+
+      const response = await axios.post(`${BASE_URL}/update_funatworkcategoryData/${funatworkcategoryData.id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
         }
-      );
-      console.log("Updating Course ID:", courseData.id);
+      });
 
-      const textResponse = await response.text();
-      console.log("Raw API Response:", textResponse); // Debugging
+      if (response.data?.status === "Success") {
+        toast.success("Banner updated successfully!");
+        navigate("/funatworkcategorydetails");
 
-      if (response.ok) {
-        toast.success("Course updated successfully!");
-        navigate("/coursedetails");
+        setFunatworkCategory_id("");
+        setTitle("");
+
+        setImage(null);
+        setPreview(null);
       } else {
-        toast.error(`Update failed: ${textResponse}`);
+        toast.error("Failed to update fun at work category.");
       }
-    } catch (error) {
-      console.error("Error updating course:", error);
-      toast.error("An error occurred. Please try again.");
+    } catch (err) {
+      console.error("Error uploading fun at work category:", err);
+      toast.error("Something went wrong.");
     }
   };
 
 
 
-  
+
+
 
 
   return (
@@ -156,12 +140,12 @@ const UpdateFunatworkCategory = () => {
                         <Form.Control
                           type="text"
                           placeholder="Enter title"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                        <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                        <Form.Label>Upload Profile Image (Drag and Drop or Click)</Form.Label>
                         <div
                           className="border p-4 text-center"
                           onDrop={handleDrop}
@@ -187,6 +171,7 @@ const UpdateFunatworkCategory = () => {
                           }}
                         />
                       </Form.Group>
+
                       <div className="d-flex justify-content-center">
                         <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                         {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

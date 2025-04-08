@@ -7,20 +7,25 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import axios from "axios";
+import { set } from "date-fns";
 
 
 const AddFunatworkData = () => {
-    const [name, setName] = useState("");
+    const [funatworkCategory_id, setFunatworkCategory_id] = useState("");
+    const [funatworkdata_id, setFunatworkdata_id] = useState("");
+
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [category_name, setCategory_name] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [courses, setCourses] = useState([]);
-    const [subcourses_name, setSubcourses_name] = useState("");
+    const [funatworkcategory, setFunatworkCategory] = useState([]);
 
-    const [course_id, setCourseId] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
 
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -30,86 +35,104 @@ const AddFunatworkData = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
 
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
+    const fetchfunatworkcategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_funatworkcategory`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            // Ensure response.data.data is an array
+            const funatworkData = Array.isArray(response.data?.data) ? response.data.data : [];
+            console.log(funatworkData)
+            setFunatworkCategory(funatworkData); 
+        } catch (err) {
+            console.error("Error fetching recognititon category:", err);
         }
     };
+    useEffect(() => {
 
-
-
+        fetchfunatworkcategoryData();
+    }, []);
 
 
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!title || !designation || !image) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                funatworkcategoryid: funatworkCategory_id,
+                title,
+                description,
+                image,
+                category_name, 
+              };
+              
+
+            
+
+
+            const response = await axios.post(`${BASE_URL}/add_funatworkdetails`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Fun at work details added successfully!");
+                navigate("/funatworkdatadetails");
+
+                // Clear form
+                setTitle("");
+                setDescription("");
+                setCategory_name("");
+                setFunatworkCategory_id("");
+
+                setImage(null);
+                setPreview(null);
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add fun at work details.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading fun at work details:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -151,35 +174,34 @@ const AddFunatworkData = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Category Name</Form.Label>
-                                                <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                        }
-                                                    }}
-                                                >
-                                                    <option value="">-- Select Category --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </Form.Group>
+                                        <Form.Group className="mb-3">
+  <Form.Label>Fun at Work Category</Form.Label>
+  <Form.Select
+    value={funatworkCategory_id}
+    onChange={(e) => {
+      const selected = funatworkcategory.find(cat => cat.id.toString() === e.target.value);
+      if (selected) {
+        setFunatworkCategory_id(selected.id); // id = funatworkcategoryid
+        setCategory_name(selected.title);     // title = category_name
+      }
+    }}
+  >
+    <option value="">-- Select Category --</option>
+    {funatworkcategory.map(cat => (
+      <option key={cat.id} value={cat.id}>
+        {cat.title}
+      </option>
+    ))}
+  </Form.Select>
+</Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter  Name" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" as={"textarea"} placeholder="Enter description" value={description} onChange={(e) => setDescription(e.target.value)} />
                                             </Form.Group>
 
 
@@ -188,6 +210,7 @@ const AddFunatworkData = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >

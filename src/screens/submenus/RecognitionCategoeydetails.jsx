@@ -14,6 +14,7 @@ import axios from "axios";
 
 
 const RecognitionCategorydetails = () => {
+
   const { searchQuery, handleSearch, filteredData, setData } = useSearchExport();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -123,7 +124,7 @@ const fetchrecognitioncategoryData = async () => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setrecognitioncategoryData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);

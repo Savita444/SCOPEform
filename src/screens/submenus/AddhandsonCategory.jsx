@@ -9,40 +9,57 @@ import corner from "../imgs/file (28).png";
 
 
 const AddHandsonCategory = () => {
-    const [name, setName] = useState("");
+        const [category_id, setCategory_id] = useState("");
+    
+    const [title, setTitle] = useState("");
    
     const navigate = useNavigate();
 
    
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!category_id || !title ) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                id: category_id,
+                title: title,
+               
+
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_handson_category`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Hands on Category added successfully!");
+                navigate("/handsoncategorydetails");
+
+                // Clear form
+              setCategory_id("");
+                setTitle("");
+              
+
+
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add hands on category.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading hands on category:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -85,7 +102,7 @@ const AddHandsonCategory = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
                                            

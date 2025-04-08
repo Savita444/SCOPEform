@@ -1,19 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./completion.css";
+import axios from "axios";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 
 const AddCertificate = () => {
-    const [name, setName] = useState("");
+    const [certificate_id, setCertificate_id] = useState("");
+    const [subcourses_id, setSubcourses_id] = useState("");
+
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const navigate = useNavigate();
+    const [courses, setCourses] = useState([]);
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
+
+
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -23,53 +36,106 @@ const AddCertificate = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
+
+    const fetchSubCourses = async () => {
+        const accessToken = localStorage.getItem("remember_token");
+        try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+
+            setCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
+        }
+    };
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!certificate_id || !title || !description || !image || !subcourses_id) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                id: certificate_id,
+                course_id: subcourses_id,
+                title: title,
+                description: description,
+                image: image
+
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_certificate`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Certificate added successfully!");
+                navigate("/certificatedetails");
+
+                // Clear form
+                setCertificate_id("");
+                setSubcourses_id("");
+                setTitle("");
+                setDescription("");
+                setImage(null);
+                setPreview(null);
+
+
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add certificate.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading certificate:", err);
+            toast.error("Something went wrong.");
         }
     };
 
 
-    
+
+
 
     return (
 
@@ -108,7 +174,7 @@ const AddCertificate = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
@@ -139,10 +205,22 @@ const AddCertificate = () => {
                                                 />
                                             </Form.Group>
 
+
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Description" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <CKEditor
+                                                    editor={ClassicEditor}
+                                                    data={description}
+                                                    onChange={(event, editor) => {
+                                                        const data = editor.getData();
+                                                        setDescription(data);
+                                                    }}
+                                                />
                                             </Form.Group>
+
+
+
 
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>

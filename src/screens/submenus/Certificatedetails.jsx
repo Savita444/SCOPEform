@@ -48,6 +48,9 @@ const Certificatedetails = () => {
         const response = await axios.get(`${BASE_URL}/get_all_certificate`);
 
         console.log("API Response:", response.data); // Debugging log
+        const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setcertificateData(sortedData); // Set sorted data
+        setData(sortedData); // Update the SearchExportContext data
 
         if (Array.isArray(response.data)) { 
             setcertificateData(response.data); // Directly set the array
@@ -99,7 +102,7 @@ useEffect(() => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_certificate/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",
@@ -108,7 +111,7 @@ useEffect(() => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setcertificateData((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);

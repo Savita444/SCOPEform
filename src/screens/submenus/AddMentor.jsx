@@ -10,16 +10,26 @@ import axios from "axios";
 
 
 const AddMentor = () => {
-    const [name, setName] = useState("");
-    const [coursename, setCoursename] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
+
+    const [mentor_id, setMentor_id] = useState("");
+    const [course_id, setCourse_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
-    const [courses, setCourses] = useState([]);
-    const [course_id, setCourseId] = useState("");
-    const navigate = useNavigate();
-    const location = useLocation();
+    const [name, setName] = useState("");
+    const [designation, setDesignation] = useState("");
+    const [company, setCompany] = useState("");
+    const [skills, setSkills] = useState("");
+    const [experience, setExperience] = useState("");   
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [courses, setCourses] = useState([]);
 
+    const [subCourses, setSubCourses] = useState([]);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -29,31 +39,30 @@ const AddMentor = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
+    const handleImageUpload = (file) => {
+          if (file && file.type.startsWith("image/")) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                  setImage(reader.result);
+                  setPreview(reader.result);
+              };
+              reader.readAsDataURL(file);
+          } else {
+              toast.error("Only image files are allowed.");
+          }
+      };
+  
+      const handleDrop = (e) => {
+          e.preventDefault();
+          handleImageUpload(e.dataTransfer.files[0]);
+      };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
 
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
+      const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
             const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -61,48 +70,72 @@ const AddMentor = () => {
                 },
             });
 
+            // Ensure response.data.data is an array
+            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            setSubCourses(subCoursesData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching subcourses:", err);
         }
     };
-
-
-
+    useEffect(() => {
+        fetchSubCourses();
+    }, []);
 
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!name || !designation || !company || !image || !skills || !experience || !course_id || !subcourses_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                id:mentor_id,
+                course_id: [course_id],
+                subcourse_details: [subcourses_name],
+                name,
+                designation,
+                company,
+                skills,
+                image,
+                experience
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/add_mentor`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
-                navigate("/coursedetails");
+            if (response.data?.status === "Success") {
+                toast.success("Mentor added successfully!");
+                navigate("/mentordetails");
+
+                // Clear form
+                setCourse_id("");
+                setSubcourses_name("");
+                setName("");
+                setDesignation("");
+                setImage(null);
+                setCompany("");
+                setSkills("");
+                setExperience("");
+                setPreview(null);
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add mentor.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading mentor:", err);
+            toast.error("Something went wrong.");
         }
     };
 
@@ -145,74 +178,74 @@ const AddMentor = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
-                                                <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                        }
-                                                    }}
-                                                >
-                                                    <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </Form.Group>
-
+                                             <Form.Group className="mb-3">
+                                                                                            <Form.Label>Subcourse Name</Form.Label>
+                                                                                            <Form.Select
+                                                                                                value={subcourses_name}
+                                                                                                onChange={(e) => {
+                                                                                                    const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                                                                    if (selected) {
+                                                                                                        setSubcourses_name(selected.subcourses_name);
+                                                                                                        setSubcourses_id(selected.subcourses_id);
+                                                                                                    }
+                                                                                                }}>
+                                                                                                <option value="">-- Select Subcourse --</option>
+                                                                                                {subCourses.map(course => (
+                                                                                                    <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                                                                        {course.subcourses_name}
+                                                                                                    </option>
+                                                                                                ))}
+                                                                                            </Form.Select>
+                                            
+                                                                                        </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Designation</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Designation" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Comapny</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Comapny" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Comapny" value={company} onChange={(e) => setCompany(e.target.value)} />
                                             </Form.Group>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
-                                            </Form.Group>
+                                           <Form.Group className="mb-3">
+                                                                                          <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                                                          <div
+                                                                                              className="border p-4 text-center"
+                                                                                              onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                                                              onDrop={handleDrop}
+                                                                                              onDragOver={(e) => e.preventDefault()}
+                                                                                          >
+                                                                                              {preview ? (
+                                                                                                  <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                                                              ) : (
+                                                                                                  <p>Drag & Drop image here or click to upload</p>
+                                                                                              )}
+                                                                                          </div>
+                                                                                          <Form.Control
+                                                                                              type="file"
+                                                                                              onChange={async (e) => {
+                                                                                                  const file = e.target.files[0];
+                                                                                                  if (file && file.type.startsWith("image/")) {
+                                                                                                      const base64 = await convertToBase64(file);
+                                                                                                      setImage(base64);
+                                                                                                      setPreview(URL.createObjectURL(file));
+                                                                                                  } else {
+                                                                                                      toast.error("Only image files are allowed.");
+                                                                                                  }
+                                                                                              }}
+                                                                                          />
+                                                                                      </Form.Group>
+                                          
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Skill</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Skill" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Skill" value={skills} onChange={(e) => setSkills(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Experience</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Experience" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Experience" value={experience} onChange={(e) => setExperience(e.target.value)} />
                                             </Form.Group>
 
                                             <div className="d-flex justify-content-center">

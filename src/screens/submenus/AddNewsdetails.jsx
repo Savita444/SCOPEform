@@ -10,17 +10,15 @@ import axios from "axios";
 
 
 const AddNewsdetails = () => {
-    const [name, setName] = useState("");
+    const [news_id, setNews_id] = useState("")
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [courses, setCourses] = useState([]);
-    const [subcourses_name, setSubcourses_name] = useState("");
 
-    const [course_id, setCourseId] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
 
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -30,51 +28,23 @@ const AddNewsdetails = () => {
         });
     };
 
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
+    const handleImageUpload = (file) => {
         if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
         } else {
             toast.error("Only image files are allowed.");
         }
     };
 
-
-
-
-
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
-        }
-        fetchCourses();
-    }, []);
-
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-    const fetchCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
-        }
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
     };
-
-
 
 
 
@@ -82,38 +52,42 @@ const AddNewsdetails = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("remember_token");
 
-        if (!token) {
-            toast.error("Unauthorized: Token missing. Please log in again.");
+        if (!image) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("image", image);
-
         try {
-            const response = await fetch("https://api.sumagotraining.in/public/api/add_course", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-                body: formData,
-                mode: "cors",
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                id: news_id,
+                image
+            };
+
+            const response = await axios.post(`${BASE_URL}/add_news`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
             });
 
-            if (response.ok) {
-                toast.success("Course added successfully!");
+            if (response.data?.status === "Success") {
+                toast.success("News added successfully!");
                 navigate("/newsdetails");
+                setNews_id("");
+
+                setImage(null);
+                setPreview(null);
             } else {
-                toast.error("Submission failed");
+                toast.error("Failed to add news.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading news:", err);
         }
     };
-
-
 
 
     return (
@@ -143,7 +117,7 @@ const AddNewsdetails = () => {
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
                                             style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/newsdetails')}>
-                                           News Details
+                                            News Details
                                         </Button>
                                     </div>
                                 </Card.Header>
@@ -151,11 +125,12 @@ const AddNewsdetails = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
@@ -179,7 +154,6 @@ const AddNewsdetails = () => {
                                                     }}
                                                 />
                                             </Form.Group>
-
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

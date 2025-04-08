@@ -12,21 +12,40 @@ import corner from "../imgs/file (28).png";
 const UpdateFunatworkData = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const courseData = location.state || {};
+    const funatworkdetailsData = location.state || {};
 
-    const [name, setName] = useState(courseData.name || "");
+    const [funatworkCategory_id, setFunatworkCategory_id] = useState("");
+    const [funatworkdata_id, setFunatworkdata_id] = useState("");
+
+    const [title, setTitle] = useState(funatworkdetailsData.title || "");
+    const [description, setDescription] = useState(funatworkdetailsData.description || "");
+    const [category_name, setCategory_name] = useState(funatworkdetailsData.category_name || "");
     const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(courseData.image || null);
-    const [courses, setCourses] = useState([]); // Store courses
-    const [coursename, setCoursename] = useState("");
-    const [subcourses_name, setSubcourses_name] = useState("");
-    const [course_id, setCourseId] = useState("");
-   
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
+    const [preview, setPreview] = useState(funatworkdetailsData.image || null);
+    const [funatworkcategory, setFunatworkCategory] = useState([]);
+
+
+
+
 
     useEffect(() => {
-        fetchCourses(); // Fetch courses when component mounts
+        fetchfunatworkcategoryData();
     }, []);
+    
+    useEffect(() => {
+        // Once category list and data are both available, match by category_name
+        if (funatworkcategory.length > 0 && category_name) {
+            const matchedCategory = funatworkcategory.find(
+                (cat) => cat.title === category_name
+            );
+            if (matchedCategory) {
+                setFunatworkCategory_id(matchedCategory.id);
+            }
+        }
+    }, [funatworkcategory, category_name]);
+    
+
+
 
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
@@ -38,95 +57,108 @@ const UpdateFunatworkData = () => {
         });
     };
 
-    useEffect(() => {
-        const courseIdFromLocation = location.state?.course_id;
-        if (courseIdFromLocation) {
-            setCourseId(courseIdFromLocation);
+    const handleImageUpload = (file) => {
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            toast.error("Only image files are allowed.");
         }
-        fetchCourses();
-    }, []);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
-    const fetchCourses = async () => {
+
+
+    const fetchfunatworkcategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+            const response = await axios.get(`${BASE_URL}/get_funatworkcategory`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
 
-
-
-            setCourses(response.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching courses:", error.response || error);
+            // Ensure response.data.data is an array
+            const funatworkData = Array.isArray(response.data?.data) ? response.data.data : [];
+            console.log(funatworkData)
+            setFunatworkCategory(funatworkData); // Store fetched subcourses
+        } catch (err) {
+            console.error("Error fetching fun at work data:", err);
         }
     };
+    useEffect(() => {
+
+        fetchfunatworkcategoryData();
+    }, []);
 
 
 
-    // Function to handle image drop
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const base64 = await convertToBase64(file);
-            setImage(base64);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    };
-
-
-
-
-
-
-
-    // Function to handle form submission
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!courseData.id) {
-            toast.error("Invalid course ID.");
+        if (!title || !description || !image || !category_name) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        const token = localStorage.getItem("remember_token");
-        const formData = new FormData();
-        formData.append("name", name);
-        if (image) formData.append("image", image);
-
         try {
-            const response = await fetch(
-                `https://api.sumagotraining.in/public/api/update_course/${courseData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token");
+
+            const payload = {
+                funatworkCategory_id,
+                title,
+                description,
+                image,
+                category_name,
+
+            };
+
+
+            const response = await axios.post(`${BASE_URL}/update_funatworkdetails/${funatworkdetailsData.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
                 }
-            );
-            console.log("Updating Course ID:", courseData.id);
+            });
 
-            const textResponse = await response.text();
-            console.log("Raw API Response:", textResponse); // Debugging
-
-            if (response.ok) {
-                toast.success("Course updated successfully!");
+            if (response.data?.status === "Success") {
+                toast.success("Fun at work details updated successfully!");
                 navigate("/funatworkdatadetails");
+
+                // Clear form
+                setFunatworkCategory("");
+                setTitle("");
+                setDescription("");
+                setImage(null);
+                setPreview(null);
+                setCategory_name("");
+
+
             } else {
-                toast.error(`Update failed: ${textResponse}`);
+                toast.error("Failed to update fun at work details.");
             }
-        } catch (error) {
-            console.error("Error updating course:", error);
-            toast.error("An error occurred. Please try again.");
+        } catch (err) {
+            console.error("Error uploading fun at work details:", err);
+            toast.error("Something went wrong.");
         }
     };
+
+
+
+
 
 
 
@@ -170,22 +202,21 @@ const UpdateFunatworkData = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
+                                                <Form.Label>Fun at Work Category</Form.Label>
                                                 <Form.Select
-                                                    value={subcourses_name}
+                                                    value={funatworkCategory_id}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
+                                                        const selected = funatworkcategory.find(cat => cat.id.toString() === e.target.value);
+                                                        if (selected) {
+                                                            setFunatworkCategory_id(selected.id); // id = funatworkcategoryid
+                                                            setCategory_name(selected.title);     // title = category_name
                                                         }
                                                     }}
                                                 >
-                                                    <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
+                                                    <option value="">-- Select Category --</option>
+                                                    {funatworkcategory.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.title}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
@@ -193,7 +224,7 @@ const UpdateFunatworkData = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
 
@@ -203,8 +234,8 @@ const UpdateFunatworkData = () => {
                                                     type="text"
                                                     as={"textarea"}
                                                     placeholder="Enter description"
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Form.Group>
 
@@ -212,6 +243,7 @@ const UpdateFunatworkData = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
