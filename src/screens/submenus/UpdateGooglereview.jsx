@@ -64,7 +64,7 @@ const UpdateGooglereview = () => {
       const accessToken = localStorage.getItem("remember_token");
 
       const payload = {
-        googlereview_id,
+        id:googlereview_id,
         image
       };
 

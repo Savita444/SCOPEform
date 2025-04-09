@@ -15,7 +15,7 @@ const UpdateAlumni = () => {
     const AlumniData = location.state || {};
 
 
-    const [sub_course_id, setSubcourses_id] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState(AlumniData.sub_course_id || "");
     const [subcourses_name, setSubcourses_name] = useState(
         Array.isArray(AlumniData.subcourse_details) ? AlumniData.subcourse_details[0] : ""
     );

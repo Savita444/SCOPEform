@@ -19,7 +19,7 @@ const AddMentor = () => {
     const [designation, setDesignation] = useState("");
     const [company, setCompany] = useState("");
     const [skills, setSkills] = useState("");
-    const [experience, setExperience] = useState("");   
+    const [experience, setExperience] = useState("");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const [courses, setCourses] = useState([]);
@@ -40,25 +40,25 @@ const AddMentor = () => {
     };
 
     const handleImageUpload = (file) => {
-          if (file && file.type.startsWith("image/")) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                  setImage(reader.result);
-                  setPreview(reader.result);
-              };
-              reader.readAsDataURL(file);
-          } else {
-              toast.error("Only image files are allowed.");
-          }
-      };
-  
-      const handleDrop = (e) => {
-          e.preventDefault();
-          handleImageUpload(e.dataTransfer.files[0]);
-      };
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            toast.error("Only image files are allowed.");
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        handleImageUpload(e.dataTransfer.files[0]);
+    };
 
 
-      const fetchSubCourses = async () => {
+    const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
@@ -87,7 +87,7 @@ const AddMentor = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !designation || !company || !image || !skills || !experience || !course_id || !subcourses_name) {
+        if (!name || !designation || !company || !image || !skills || !experience || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -97,7 +97,7 @@ const AddMentor = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                id:mentor_id,
+                
                 course_id: [course_id],
                 subcourse_details: [subcourses_name],
                 name,
@@ -105,7 +105,7 @@ const AddMentor = () => {
                 company,
                 skills,
                 image,
-                experience
+                experience,
             };
 
 
@@ -178,26 +178,28 @@ const AddMentor = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                             <Form.Group className="mb-3">
-                                                                                            <Form.Label>Subcourse Name</Form.Label>
-                                                                                            <Form.Select
-                                                                                                value={subcourses_name}
-                                                                                                onChange={(e) => {
-                                                                                                    const selected = subCourses.find(course => course.subcourses_name === e.target.value);
-                                                                                                    if (selected) {
-                                                                                                        setSubcourses_name(selected.subcourses_name);
-                                                                                                        setSubcourses_id(selected.subcourses_id);
-                                                                                                    }
-                                                                                                }}>
-                                                                                                <option value="">-- Select Subcourse --</option>
-                                                                                                {subCourses.map(course => (
-                                                                                                    <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                                                                        {course.subcourses_name}
-                                                                                                    </option>
-                                                                                                ))}
-                                                                                            </Form.Select>
-                                            
-                                                                                        </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Subcourse Name</Form.Label>
+                                                <Form.Select
+                                                    value={subcourses_name}
+                                                    onChange={(e) => {
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
+                                                            setCourse_id(selected.subcourses_id); // ✅ This line ensures course_id is set
+                                                        }
+                                                    }}
+                                                    >
+                                                    <option value="">-- Select Subcourse --</option>
+                                                    {subCourses.map(course => (
+                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                            {course.subcourses_name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+
+                                            </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -210,35 +212,35 @@ const AddMentor = () => {
                                                 <Form.Label>Comapny</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Comapny" value={company} onChange={(e) => setCompany(e.target.value)} />
                                             </Form.Group>
-                                           <Form.Group className="mb-3">
-                                                                                          <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                                                          <div
-                                                                                              className="border p-4 text-center"
-                                                                                              onChange={(e) => handleImageUpload(e.target.files[0])}
-                                                                                              onDrop={handleDrop}
-                                                                                              onDragOver={(e) => e.preventDefault()}
-                                                                                          >
-                                                                                              {preview ? (
-                                                                                                  <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                                                              ) : (
-                                                                                                  <p>Drag & Drop image here or click to upload</p>
-                                                                                              )}
-                                                                                          </div>
-                                                                                          <Form.Control
-                                                                                              type="file"
-                                                                                              onChange={async (e) => {
-                                                                                                  const file = e.target.files[0];
-                                                                                                  if (file && file.type.startsWith("image/")) {
-                                                                                                      const base64 = await convertToBase64(file);
-                                                                                                      setImage(base64);
-                                                                                                      setPreview(URL.createObjectURL(file));
-                                                                                                  } else {
-                                                                                                      toast.error("Only image files are allowed.");
-                                                                                                  }
-                                                                                              }}
-                                                                                          />
-                                                                                      </Form.Group>
-                                          
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                <div
+                                                    className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                    onDrop={handleDrop}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                >
+                                                    {preview ? (
+                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                    ) : (
+                                                        <p>Drag & Drop image here or click to upload</p>
+                                                    )}
+                                                </div>
+                                                <Form.Control
+                                                    type="file"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file && file.type.startsWith("image/")) {
+                                                            const base64 = await convertToBase64(file);
+                                                            setImage(base64);
+                                                            setPreview(URL.createObjectURL(file));
+                                                        } else {
+                                                            toast.error("Only image files are allowed.");
+                                                        }
+                                                    }}
+                                                />
+                                            </Form.Group>
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Skill</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Skill" value={skills} onChange={(e) => setSkills(e.target.value)} />

@@ -9,17 +9,18 @@ import corner from "../imgs/file (28).png";
 
 
 const AddHandsonCategory = () => {
-        const [category_id, setCategory_id] = useState("");
-    
+
+
+    const [category_id, setCategory_id] = useState("");
     const [title, setTitle] = useState("");
-   
     const navigate = useNavigate();
 
-   
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!category_id || !title ) {
+        if (!title) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -31,7 +32,7 @@ const AddHandsonCategory = () => {
             const payload = {
                 id: category_id,
                 title: title,
-               
+
 
 
             };
@@ -49,9 +50,9 @@ const AddHandsonCategory = () => {
                 navigate("/handsoncategorydetails");
 
                 // Clear form
-              setCategory_id("");
+                setCategory_id("");
                 setTitle("");
-              
+
 
 
             } else {
@@ -64,7 +65,7 @@ const AddHandsonCategory = () => {
     };
 
 
-   
+
     return (
 
         <div className="container idcardbackimg">
@@ -105,7 +106,7 @@ const AddHandsonCategory = () => {
                                                 <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
-                                           
+
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

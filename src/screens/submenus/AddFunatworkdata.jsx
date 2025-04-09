@@ -71,7 +71,7 @@ const AddFunatworkData = () => {
             // Ensure response.data.data is an array
             const funatworkData = Array.isArray(response.data?.data) ? response.data.data : [];
             console.log(funatworkData)
-            setFunatworkCategory(funatworkData); 
+            setFunatworkCategory(funatworkData);
         } catch (err) {
             console.error("Error fetching recognititon category:", err);
         }
@@ -87,7 +87,7 @@ const AddFunatworkData = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!title || !designation || !image) {
+        if (!title || !description || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -97,15 +97,16 @@ const AddFunatworkData = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
+                id: funatworkdata_id,
                 funatworkcategoryid: funatworkCategory_id,
                 title,
                 description,
                 image,
-                category_name, 
-              };
-              
+                category_name,
+            };
 
-            
+
+
 
 
             const response = await axios.post(`${BASE_URL}/add_funatworkdetails`, payload, {
@@ -124,7 +125,7 @@ const AddFunatworkData = () => {
                 setDescription("");
                 setCategory_name("");
                 setFunatworkCategory_id("");
-
+                setFunatworkdata_id
                 setImage(null);
                 setPreview(null);
             } else {
@@ -174,26 +175,26 @@ const AddFunatworkData = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                        <Form.Group className="mb-3">
-  <Form.Label>Fun at Work Category</Form.Label>
-  <Form.Select
-    value={funatworkCategory_id}
-    onChange={(e) => {
-      const selected = funatworkcategory.find(cat => cat.id.toString() === e.target.value);
-      if (selected) {
-        setFunatworkCategory_id(selected.id); // id = funatworkcategoryid
-        setCategory_name(selected.title);     // title = category_name
-      }
-    }}
-  >
-    <option value="">-- Select Category --</option>
-    {funatworkcategory.map(cat => (
-      <option key={cat.id} value={cat.id}>
-        {cat.title}
-      </option>
-    ))}
-  </Form.Select>
-</Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Fun at Work Category</Form.Label>
+                                                <Form.Select
+                                                    value={funatworkCategory_id}
+                                                    onChange={(e) => {
+                                                        const selected = funatworkcategory.find(cat => cat.id.toString() === e.target.value);
+                                                        if (selected) {
+                                                            setFunatworkCategory_id(selected.id); // id = funatworkcategoryid
+                                                            setCategory_name(selected.title);     // title = category_name
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Category --</option>
+                                                    {funatworkcategory.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.title}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>

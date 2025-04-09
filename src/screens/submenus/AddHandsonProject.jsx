@@ -14,8 +14,8 @@ const AddHandsonProject = () => {
     const [category_name, setCategory_name] = useState("");
     const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
-       const [coursename, setCoursename] = useState("");
-   
+    const [coursename, setCoursename] = useState("");
+
     const [title, setTitle] = useState("");
     const [desc, setDescription] = useState("");
     const [courses, setCourses] = useState([]);
@@ -24,6 +24,7 @@ const AddHandsonProject = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+
 
     const fetchhandsoncategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
@@ -81,7 +82,7 @@ const AddHandsonProject = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!handson_category_id || !title || !desc || !category_name  || !sub_course_id || !subcourses_name) {
+        if ( !title || !desc || !category_name || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -91,14 +92,13 @@ const AddHandsonProject = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
+                handson_category_id,
                 sub_course_id: [sub_course_id],
-                subcourse_details: [subcourses_name],
-
                 title,
                 desc,
                 category_name,
-                handson_category_id,
-                
+                subcourse_details: [subcourses_name], 
+
             };
 
 
@@ -122,7 +122,7 @@ const AddHandsonProject = () => {
                 setHandson_category_id("");
 
 
-                
+
             } else {
                 toast.error("Failed to add hands on project details.");
             }
@@ -171,7 +171,7 @@ const AddHandsonProject = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                        <Form.Group className="mb-3">
+                                            <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
@@ -232,6 +232,7 @@ const AddHandsonProject = () => {
                                                 <Form.Control
                                                     type="text"
                                                     as={"textarea"}
+                                                    rows={5}
                                                     placeholder="Enter description"
                                                     value={desc}
                                                     onChange={(e) => setDescription(e.target.value)}

@@ -43,7 +43,6 @@ const Mentordetails = () => {
 
 
 
-  const BASE_URL = "https://api.sumagotraining.in/public/api";
 
   // Fetch Alumni Data
   const fetchMentordata = async () => {

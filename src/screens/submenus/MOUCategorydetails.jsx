@@ -112,7 +112,7 @@ const fetchmoucategoryData = async () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_moucategory/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",

@@ -7,7 +7,7 @@ import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
 import { Textarea } from "react-bootstrap-icons";
-
+import axios from "axios";
 
 const AddOffice = () => {
     const [office_id, setOffice_id] = useState("");
@@ -95,7 +95,7 @@ const AddOffice = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                office_id,
+               id: office_id,
                 title,
                 description,
                 link,
@@ -195,34 +195,34 @@ const AddOffice = () => {
                                                 <Form.Control type="text" placeholder="Enter Mobile no" value={mobile_no} onChange={handle_mobileno} />
                                             </Form.Group>
 
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
-                                            </Form.Group>
-
+                                              <Form.Group className="mb-3">
+                                                                                           <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                                                           <div
+                                                                                               className="border p-4 text-center"
+                                                                                               onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                                                               onDrop={handleDrop}
+                                                                                               onDragOver={(e) => e.preventDefault()}
+                                                                                           >
+                                                                                               {preview ? (
+                                                                                                   <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                                                               ) : (
+                                                                                                   <p>Drag & Drop image here or click to upload</p>
+                                                                                               )}
+                                                                                           </div>
+                                                                                           <Form.Control
+                                                                                               type="file"
+                                                                                               onChange={async (e) => {
+                                                                                                   const file = e.target.files[0];
+                                                                                                   if (file && file.type.startsWith("image/")) {
+                                                                                                       const base64 = await convertToBase64(file);
+                                                                                                       setImage(base64);
+                                                                                                       setPreview(URL.createObjectURL(file));
+                                                                                                   } else {
+                                                                                                       toast.error("Only image files are allowed.");
+                                                                                                   }
+                                                                                               }}
+                                                                                           />
+                                                                                       </Form.Group>
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

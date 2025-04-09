@@ -51,7 +51,7 @@ const Googlereviewdetails = () => {
 
       console.log("API Response:", response.data); // Debugging log
       
-      const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const sortedData = response.data.sort((a, b) => b.id - a.id);
       setreviewdata(sortedData); // Set sorted data
       setData(sortedData); // Update the SearchExportContext data
 
@@ -109,7 +109,7 @@ const Googlereviewdetails = () => {
                   toast.success("Data Deleted Successfully");
 
                   // Update state directly after deletion
-                  setCourses((prevCourses) => prevCourses.filter(course => course.id !== id));
+                  setreviewdata((prevCourses) => prevCourses.filter(course => course.id !== id));
 
                 } catch (error) {
                   console.error("Error deleting data:", error);

@@ -96,7 +96,7 @@ const AddRecognitiondetails = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                recognitiondetails_id,
+                recognitioncategoryid:recognitiondetails_id,
                 title,
                 description,
                 image,

@@ -61,7 +61,7 @@ const Hiredetails = () => {
 
             console.log("API Response:", response.data); // Debugging log
 
-            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const sortedData = response.data.sort((a, b) => b.id - a.id);
             setHireData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
 

@@ -16,8 +16,7 @@ const UpdateHandsonProject = () => {
     const handsondetailsData = location.state || {};
 
     const [handson_category_id, setHandson_category_id] = useState(handsondetailsData.handson_category_id || "");
-const [category_name, setCategory_name] = useState(handsondetailsData.category_name || "");
-
+    const [category_name, setCategory_name] = useState(handsondetailsData.category_name || "");
     const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState(
         Array.isArray(handsondetailsData.subcourse_details) ? handsondetailsData.subcourse_details[0] : ""
@@ -29,6 +28,9 @@ const [category_name, setCategory_name] = useState(handsondetailsData.category_n
     const [courses, setCourses] = useState([]);
     const [category, setCategory] = useState([]);
     const [subCourses, setSubCourses] = useState([]);
+
+
+
 
     const fetchhandsoncategoryData = async () => {
         const accessToken = localStorage.getItem("remember_token");
@@ -85,7 +87,7 @@ const [category_name, setCategory_name] = useState(handsondetailsData.category_n
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!title || !desc || !handson_category_id || !sub_course_id || !category_name || !subcourses_name) {
+        if (!title || !desc ||  !category_name || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -95,13 +97,12 @@ const [category_name, setCategory_name] = useState(handsondetailsData.category_n
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                sub_course_id: [sub_course_id],
-                subcourse_details: [subcourses_name],
                 handson_category_id,
+                sub_course_id: [sub_course_id],
                 title,
                 desc,
                 category_name,
-
+                subcourse_details: [subcourses_name], 
             };
 
 
@@ -113,8 +114,8 @@ const [category_name, setCategory_name] = useState(handsondetailsData.category_n
             });
 
             if (response.data?.status === "Success") {
-                toast.success("Alumni updated successfully!");
-                navigate("/alumnidetails");
+                toast.success("Hands on project details updated successfully!");
+                navigate("/handsonprojectdetails");
 
                 // Clear form
                 setSubcourses_id("");
@@ -203,16 +204,16 @@ const [category_name, setCategory_name] = useState(handsondetailsData.category_n
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Hands on Category</Form.Label>
                                                 <Form.Select
-    value={handson_category_id}
-    onChange={(e) => {
-        const selectedId = e.target.value;
-        const selectedCategory = category.find(category => category.id.toString() === selectedId);
-        if (selectedCategory) {
-            setCategory_name(selectedCategory.title);
-            setHandson_category_id(selectedCategory.id);
-        }
-    }}
->
+                                                    value={handson_category_id}
+                                                    onChange={(e) => {
+                                                        const selectedId = e.target.value;
+                                                        const selectedCategory = category.find(category => category.id.toString() === selectedId);
+                                                        if (selectedCategory) {
+                                                            setCategory_name(selectedCategory.title);
+                                                            setHandson_category_id(selectedCategory.id);
+                                                        }
+                                                    }}
+                                                >
 
                                                     <option value="">-- Select Hands on Category --</option>
                                                     {category.map((category, index) => (

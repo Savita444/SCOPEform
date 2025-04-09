@@ -102,7 +102,7 @@ const Updateoffice = () => {
       const accessToken = localStorage.getItem("remember_token");
 
       const payload = {
-        office_id,
+        id: office_id,
         title,
         description,
         link,
@@ -225,6 +225,7 @@ const Updateoffice = () => {
                         <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                         <div
                           className="border p-4 text-center"
+                          onChange={(e) => handleImageUpload(e.target.files[0])}
                           onDrop={handleDrop}
                           onDragOver={(e) => e.preventDefault()}
                         >
@@ -248,6 +249,7 @@ const Updateoffice = () => {
                           }}
                         />
                       </Form.Group>
+
                       <div className="d-flex justify-content-center">
                         <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                         {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

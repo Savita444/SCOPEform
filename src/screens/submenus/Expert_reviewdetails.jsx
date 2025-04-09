@@ -74,7 +74,7 @@ const Expertreviewdetails = () => {
     
             console.log("API Response:", response.data); 
     
-            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const sortedData = response.data.sort((a, b) => b.id - a.id);
             setExpertreview(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
 

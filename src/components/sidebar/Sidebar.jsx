@@ -201,11 +201,11 @@ const BDESidebar = [
         icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
       },
 
-      {
-        subMenus: "Empty Grid",
-        // url: "/syllbuspdfinfodetails",
-        icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
-      },
+      // {
+      //   subMenus: "Empty Grid",
+      //   // url: "/syllbuspdfinfodetails",
+      //   icon: <AiOutlineProject style={{ color: "red" }} size={24} />,
+      // },
       {
         subMenus: "Syllabus Pdf Info",
         url: "/syllbuspdfinfodetails",

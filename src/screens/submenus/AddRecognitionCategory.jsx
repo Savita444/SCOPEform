@@ -6,6 +6,8 @@ import "./completion.css";
 import logo1 from "../imgs/SCOPE FINAL LOGO Black.png";
 import logo2 from "../imgs/SUMAGO Logo (2) (1).png";
 import corner from "../imgs/file (28).png";
+import axios from "axios";
+
 
 
 const AddRecognitionCategory = () => {
@@ -15,6 +17,7 @@ const AddRecognitionCategory = () => {
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
 
+    
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -59,7 +62,7 @@ const AddRecognitionCategory = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-               recognitionCategory_id,
+               id: recognitionCategory_id,
                 title: title,
                 image:image,
             };

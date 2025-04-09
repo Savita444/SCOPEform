@@ -73,53 +73,51 @@ const AddNewsLetterdetails = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!file || !image) {
-            toast.error("Please fill in all required fields.");
+            toast.error("Please upload both PDF and image.");
             return;
         }
-
+    
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token");
-
-            const payload = {
-                id: newsletter_id,
-                file: file,
-                image: image,
-            };
-
-
-            const response = await axios.post(`${BASE_URL}/add_newsletter`, payload, {
+    
+            const formData = new FormData();
+            formData.append("file", file);  // Must be a File object
+            formData.append("image", image);  // Must be a File object
+    
+            const response = await axios.post(`${BASE_URL}/add_newsletter`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json"
-                }
+                    "Content-Type": "multipart/form-data",
+                },
             });
-
+    
             if (response.data?.status === "Success") {
-                toast.success("Syllbus Pdf added successfully!");
+                toast.success("Newsletter added successfully!");
                 navigate("/newsletterdetails");
-
+    
                 // Clear form
                 setNewsletter_id("");
                 setImage(null);
                 setFile(null);
-
-
+                setPreview(null);
+                setFileName("");
             } else {
-                toast.error("Failed to add news letter.");
+                toast.error("Failed to add newsletter.");
             }
         } catch (err) {
-            console.error("Error uploading news letter:", err);
+            console.error("Error uploading newsletter:", err);
             toast.error("Something went wrong.");
         }
     };
+    
 
 
     return (
 
-        <div className="container idcardbackimg">
+        <div className="container backimg">
             <div>
                 <img src={corner} className="corner_img" alt="Responsive Corner" />
             </div>
@@ -164,21 +162,19 @@ const AddNewsLetterdetails = () => {
 
                                                 </div>
                                                 <Form.Control
-                                                    type="file"
-                                                    accept="application/pdf"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type === "application/pdf") {
-                                                            const reader = new FileReader();
-                                                            reader.onloadend = () => {
-                                                                setFile(reader.result);
-                                                            };
-                                                            reader.readAsDataURL(file);
-                                                        } else {
-                                                            toast.error("Only PDF files are allowed.");
-                                                        }
-                                                    }}
-                                                />
+    type="file"
+    accept="application/pdf"
+    onChange={(e) => {
+        const uploadedFile = e.target.files[0];
+        if (uploadedFile && uploadedFile.type === "application/pdf") {
+            setFile(uploadedFile);
+            setFileName(uploadedFile.name);
+        } else {
+            toast.error("Only PDF files are allowed.");
+        }
+    }}
+/>
+
 
                                             </Form.Group>
 
@@ -196,18 +192,19 @@ const AddNewsLetterdetails = () => {
                                                     )}
                                                 </div>
                                                 <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+        const uploadedImage = e.target.files[0];
+        if (uploadedImage && uploadedImage.type.startsWith("image/")) {
+            setImage(uploadedImage);
+            setPreview(URL.createObjectURL(uploadedImage));
+        } else {
+            toast.error("Only image files are allowed.");
+        }
+    }}
+/>
+
                                             </Form.Group>
 
 

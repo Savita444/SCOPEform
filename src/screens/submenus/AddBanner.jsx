@@ -66,7 +66,7 @@ const convertToBase64 = (file) => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                bannerimg_id,
+             
                 title: title,
                 description,
                 images

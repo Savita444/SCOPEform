@@ -104,7 +104,7 @@ const UpdateMOUdetails = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!title || !description || !image || !category_name) {
+        if (!title || !description || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }

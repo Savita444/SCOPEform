@@ -52,7 +52,7 @@ const AddLearnerReview = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!learnerReview_id || !title || !link || !description || !image) {
+        if (!title || !link || !description || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -62,8 +62,7 @@ const AddLearnerReview = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                learnerReview_id,
-
+                id:learnerReview_id,
                 title,
                 description,
                 link,
@@ -143,16 +142,17 @@ const AddLearnerReview = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                                <Form.Control type="text" as={"textarea"} rows={5} placeholder="Enter Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Link</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Link" value={link} onChange={(e) => setLink(e.target.value)} />
                                             </Form.Group>
-                                            <Form.Group className="mb-3">
+                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >

@@ -116,12 +116,11 @@ const UpdateRecognitiondetails = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                recognitioncategory_id: recognitiondetails_id,
-                title:  title,
-                
+                recognitioncategoryid:recognitiondetails_id,
+                title,
                 description,
                 image,
-                category_name,
+                category_name, 
 
             };
 

@@ -84,7 +84,7 @@ const AddCertificate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!certificate_id || !title || !description || !image || !subcourses_id) {
+        if (!title || !description || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -181,6 +181,7 @@ const AddCertificate = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >

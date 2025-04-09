@@ -49,6 +49,9 @@ const Officesdetails = () => {
         const response = await axios.get(`${BASE_URL}/get_ourOffice`);
 
         console.log("API Response:", response.data); // Debugging log
+        const sortedData = response.data.sort((a, b) => b.id - a.id);
+        setOfficeData(sortedData); // Set sorted data
+        setData(sortedData); // Update the SearchExportContext data
 
         if (Array.isArray(response.data)) { 
             setOfficeData(response.data); // Directly set the array

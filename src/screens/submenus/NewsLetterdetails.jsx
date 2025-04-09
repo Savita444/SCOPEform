@@ -115,7 +115,7 @@ const NewsLetterdetails = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem("remember_token");
                 try {
-                  await instance.delete(`delete_course/${id}`, {
+                  await instance.delete(`delete_newsletter/${id}`, {
                     headers: {
                       Authorization: `Bearer ${accessToken}`,
                       "Content-Type": "application/json",

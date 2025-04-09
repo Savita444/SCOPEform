@@ -73,7 +73,7 @@ const Alumnidetails = () => {
                 }
             });
     
-            const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const sortedData = response.data.data.sort((a, b) => b.id - a.id);
             setAlumniData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
 
@@ -171,6 +171,7 @@ const Alumnidetails = () => {
             cell: (row) => `${row.name} `,
             sortable: true,
             sortFunction: (a, b) => a.name.localeCompare(b.name),
+            width:"200px",
         },
         {
             name: "Designation",

@@ -14,6 +14,8 @@ const UpdateMentor = () => {
     const navigate = useNavigate();
     const mentorData = location.state || {};
 
+
+    const [sub_course_id, setSubcourses_id] = useState("");
     const [course_id, setCourse_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState(
         Array.isArray(mentorData.subcourse_details) ? mentorData.subcourse_details[0] : ""
@@ -94,7 +96,7 @@ const UpdateMentor = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!name || !designation || !company || !skills || !image || !experience || !course_id || !subcourses_name) {
+        if (!name || !designation || !company || !skills || !image || !experience  || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -196,8 +198,10 @@ const UpdateMentor = () => {
                                                         if (selected) {
                                                             setSubcourses_name(selected.subcourses_name);
                                                             setSubcourses_id(selected.subcourses_id);
+                                                            setCourse_id(selected.subcourses_id); // ✅ This line ensures course_id is set
                                                         }
-                                                    }}>
+                                                    }}
+                                                    >
                                                     <option value="">-- Select Subcourse --</option>
                                                     {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>

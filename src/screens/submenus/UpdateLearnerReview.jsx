@@ -64,7 +64,7 @@ const UpdateLearnerReview = () => {
                 const accessToken = localStorage.getItem("remember_token");
     
                 const payload = {
-                    learnertReview_id,
+                    id:learnertReview_id,
                     title: title,
                     description,
                     link,
@@ -151,7 +151,7 @@ const UpdateLearnerReview = () => {
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                                <Form.Control type="text" as={"textarea"} rows={5} placeholder="Enter Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Link</Form.Label>
@@ -163,6 +163,7 @@ const UpdateLearnerReview = () => {
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                                     onDrop={handleDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
