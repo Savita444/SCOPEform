@@ -16,7 +16,6 @@ const UpdateMentor = () => {
 
 
     const [sub_course_id, setSubcourses_id] = useState("");
-    const [course_id, setCourse_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState(
         Array.isArray(mentorData.subcourse_details) ? mentorData.subcourse_details[0] : ""
     ); const [name, setName] = useState(mentorData.name || "");
@@ -63,40 +62,42 @@ const UpdateMentor = () => {
 
 
 
-
-
-
-    const fetchSubCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            // Ensure response.data.data is an array
-            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
-
-            setSubCourses(subCoursesData); // Store fetched subcourses
-        } catch (err) {
-            console.error("Error fetching subcourses:", err);
-        }
-    };
     useEffect(() => {
+        const fetchSubCourses = async () => {
+            const accessToken = localStorage.getItem("remember_token");
+            try {
+                const BASE_URL = "https://api.sumagotraining.in/public/api";
+                const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+                setSubCourses(subCoursesData);
+    
+                //  Set sub_course_id based on subcourses_name
+                const existing = subCoursesData.find(item => item.subcourses_name === subcourses_name);
+                if (existing) {
+                    setSubcourses_id(existing.subcourses_id);
+                }
+    
+            } catch (err) {
+                console.error("Error fetching subcourses:", err);
+            }
+        };
+    
         fetchSubCourses();
-    }, []);
-
+    }, [subcourses_name]);
+    
 
 
 
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!name || !designation || !company || !skills || !image || !experience  || !subcourses_name) {
+        if (!name || !designation || !company || !image || !skills || !experience || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -106,14 +107,15 @@ const UpdateMentor = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                course_id: [course_id],
+                course_id:  [`${sub_course_id}`],
+
                 subcourse_details: [subcourses_name],
                 name,
                 designation,
                 company,
                 skills,
-                experience,
                 image,
+                experience,
             };
 
 
@@ -129,7 +131,7 @@ const UpdateMentor = () => {
                 navigate("/mentordetails");
 
                 // Clear form
-                setCourse_id("");
+                setSubcourses_id("");
                 setSubcourses_name("");
                 setName("");
                 setDesignation("");
@@ -189,7 +191,7 @@ const UpdateMentor = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
 
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
@@ -198,10 +200,8 @@ const UpdateMentor = () => {
                                                         if (selected) {
                                                             setSubcourses_name(selected.subcourses_name);
                                                             setSubcourses_id(selected.subcourses_id);
-                                                            setCourse_id(selected.subcourses_id); // ✅ This line ensures course_id is set
                                                         }
-                                                    }}
-                                                    >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
                                                     {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>
@@ -211,6 +211,7 @@ const UpdateMentor = () => {
                                                 </Form.Select>
 
                                             </Form.Group>
+                                           
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
                                                 <Form.Control

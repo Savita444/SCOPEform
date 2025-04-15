@@ -14,7 +14,7 @@ const UpdateTopRank = () => {
   const navigate = useNavigate();
   const toprankData = location.state || {};
 
-const [toprank_id, setToprank_id] = useState("");
+  const [toprank_id, setToprank_id] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(toprankData.image || null);
 
@@ -51,43 +51,43 @@ const [toprank_id, setToprank_id] = useState("");
     e.preventDefault();
 
     if (!image) {
-        toast.error("Please fill in all required fields.");
-        return;
+      toast.error("Please fill in all required fields.");
+      return;
     }
 
     try {
-        const BASE_URL = "https://api.sumagotraining.in/public/api";
-        const accessToken = localStorage.getItem("remember_token");
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token");
 
-        const payload = {
-           id: toprank_id,
-           image,
-        };
+      const payload = {
 
-        const response = await axios.post(`${BASE_URL}/update_topranked/${toprankData.id}`, payload, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json"
-            }
-        });
+        image,
+      };
 
-        if (response.data?.status === "Success") {
-            toast.success("Top rank updated successfully!");
-            navigate("/toprankdetails");
-
-            setToprank_id("");
-            setTitle("");
-      
-            setImage(null);
-            setPreview(null);
-        } else {
-            toast.error("Failed to update top rank.");
+      const response = await axios.post(`${BASE_URL}/update_topranked/${toprankData.id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
         }
+      });
+
+      if (response.data?.status === "Success") {
+        toast.success("Top rank updated successfully!");
+        navigate("/toprankdetails");
+
+        setToprank_id("");
+        setTitle("");
+
+        setImage(null);
+        setPreview(null);
+      } else {
+        toast.error("Failed to update top rank.");
+      }
     } catch (err) {
-        console.error("Error uploading top rank:", err);
-        toast.error("Something went wrong.");
+      console.error("Error uploading top rank:", err);
+      toast.error("Something went wrong.");
     }
-};
+  };
 
 
 
@@ -131,33 +131,34 @@ const [toprank_id, setToprank_id] = useState("");
 
 
 
-                    <Form.Group className="mb-3">
-                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                <div
-                                                    className="border p-4 text-center"
-                                                    onDrop={handleDrop}
-                                                    onDragOver={(e) => e.preventDefault()}
-                                                >
-                                                    {preview ? (
-                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                    ) : (
-                                                        <p>Drag & Drop image here or click to upload</p>
-                                                    )}
-                                                </div>
-                                                <Form.Control
-                                                    type="file"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
-                                                            setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
-                                                        } else {
-                                                            toast.error("Only image files are allowed.");
-                                                        }
-                                                    }}
-                                                />
-                                            </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                        <div
+                          className="border p-4 text-center"
+                          onChange={(e) => handleImageUpload(e.target.files[0])}
+                          onDrop={handleDrop}
+                          onDragOver={(e) => e.preventDefault()}
+                        >
+                          {preview ? (
+                            <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                          ) : (
+                            <p>Drag & Drop image here or click to upload</p>
+                          )}
+                        </div>
+                        <Form.Control
+                          type="file"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file && file.type.startsWith("image/")) {
+                              const base64 = await convertToBase64(file);
+                              setImage(base64);
+                              setPreview(URL.createObjectURL(file));
+                            } else {
+                              toast.error("Only image files are allowed.");
+                            }
+                          }}
+                        />
+                      </Form.Group>
 
                       <div className="d-flex justify-content-center">
                         <Button variant="primary" className="fs-5" type="submit">Submit</Button>

@@ -57,7 +57,7 @@ const AddExpertReview = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if ( !name || !review || !company_position || !image) {
+        if (!name || !review || !company_position || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -67,11 +67,9 @@ const AddExpertReview = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                id: expertReview_id,
                 name,
                 review,
                 company_position,
-                
                 image,
             };
 
@@ -154,34 +152,34 @@ const AddExpertReview = () => {
                                                 <Form.Control type="text" placeholder="Enter company name" value={company_position} onChange={(e) => setCompany_position(e.target.value)} />
                                             </Form.Group>
 
-                                             <Form.Group className="mb-3">
-                                                                                          <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                                                          <div
-                                                                                              className="border p-4 text-center"
-                                                                                              onChange={(e) => handleImageUpload(e.target.files[0])}
-                                                                                              onDrop={handleDrop}
-                                                                                              onDragOver={(e) => e.preventDefault()}
-                                                                                          >
-                                                                                              {preview ? (
-                                                                                                  <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                                                              ) : (
-                                                                                                  <p>Drag & Drop image here or click to upload</p>
-                                                                                              )}
-                                                                                          </div>
-                                                                                          <Form.Control
-                                                                                              type="file"
-                                                                                              onChange={async (e) => {
-                                                                                                  const file = e.target.files[0];
-                                                                                                  if (file && file.type.startsWith("image/")) {
-                                                                                                      const base64 = await convertToBase64(file);
-                                                                                                      setImage(base64);
-                                                                                                      setPreview(URL.createObjectURL(file));
-                                                                                                  } else {
-                                                                                                      toast.error("Only image files are allowed.");
-                                                                                                  }
-                                                                                              }}
-                                                                                          />
-                                                                                      </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                <div
+                                                    className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                    onDrop={handleDrop}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                >
+                                                    {preview ? (
+                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                    ) : (
+                                                        <p>Drag & Drop image here or click to upload</p>
+                                                    )}
+                                                </div>
+                                                <Form.Control
+                                                    type="file"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file && file.type.startsWith("image/")) {
+                                                            const base64 = await convertToBase64(file);
+                                                            setImage(base64);
+                                                            setPreview(URL.createObjectURL(file));
+                                                        } else {
+                                                            toast.error("Only image files are allowed.");
+                                                        }
+                                                    }}
+                                                />
+                                            </Form.Group>
 
 
                                             <div className="d-flex justify-content-center"> <Button className="fs-5" variant="primary" type="submit">Submit</Button>

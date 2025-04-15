@@ -119,7 +119,7 @@ const AddAlumni = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                sub_course_id: [sub_course_id],
+                sub_course_id: [`${sub_course_id}`],
                 subcourse_details: [subcourses_name],
 
                 name,

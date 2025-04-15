@@ -56,7 +56,7 @@ const AddTopRank = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                id: toprank_id,
+
                 image,
             };
 
@@ -124,6 +124,7 @@ const AddTopRank = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
+
 
 
                                             <Form.Group className="mb-3">

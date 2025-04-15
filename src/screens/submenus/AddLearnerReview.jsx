@@ -62,7 +62,7 @@ const AddLearnerReview = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                id:learnerReview_id,
+               
                 title,
                 description,
                 link,

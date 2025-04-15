@@ -11,10 +11,8 @@ import axios from "axios";
 
 const AddMentor = () => {
     const [sub_course_id, setSubcourses_id] = useState("");
-
-    const [mentor_id, setMentor_id] = useState("");
-    const [course_id, setCourse_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
+    const [mentor_id, setMentor_id] = useState("");
     const [name, setName] = useState("");
     const [designation, setDesignation] = useState("");
     const [company, setCompany] = useState("");
@@ -84,6 +82,7 @@ const AddMentor = () => {
 
 
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -98,7 +97,8 @@ const AddMentor = () => {
 
             const payload = {
                 
-                course_id: [course_id],
+                course_id:  [`${sub_course_id}`],
+                
                 subcourse_details: [subcourses_name],
                 name,
                 designation,
@@ -121,7 +121,7 @@ const AddMentor = () => {
                 navigate("/mentordetails");
 
                 // Clear form
-                setCourse_id("");
+                setSubcourses_id("");
                 setSubcourses_name("");
                 setName("");
                 setDesignation("");
@@ -178,28 +178,26 @@ const AddMentor = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Subcourse Name</Form.Label>
-                                                <Form.Select
-                                                    value={subcourses_name}
-                                                    onChange={(e) => {
-                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selected) {
-                                                            setSubcourses_name(selected.subcourses_name);
-                                                            setSubcourses_id(selected.subcourses_id);
-                                                            setCourse_id(selected.subcourses_id); // ✅ This line ensures course_id is set
-                                                        }
-                                                    }}
-                                                    >
-                                                    <option value="">-- Select Subcourse --</option>
-                                                    {subCourses.map(course => (
-                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
-                                                            {course.subcourses_name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-
-                                            </Form.Group>
+                                             <Form.Group className="mb-3">
+                                                                                            <Form.Label>Subcourse Name</Form.Label>
+                                                                                            <Form.Select
+                                                                                                value={subcourses_name}
+                                                                                                onChange={(e) => {
+                                                                                                    const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                                                                    if (selected) {
+                                                                                                        setSubcourses_name(selected.subcourses_name);
+                                                                                                        setSubcourses_id(selected.subcourses_id);
+                                                                                                    }
+                                                                                                }}>
+                                                                                                <option value="">-- Select Subcourse --</option>
+                                                                                                {subCourses.map(course => (
+                                                                                                    <option key={course.subcourses_id} value={course.subcourses_name}>
+                                                                                                        {course.subcourses_name}
+                                                                                                    </option>
+                                                                                                ))}
+                                                                                            </Form.Select>
+                                            
+                                                                                        </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
                                                 <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} />

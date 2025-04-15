@@ -56,7 +56,7 @@ const AddNewsLetterdetails = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFile(reader.result);
-                setFileName(file.name); // <-- store the file name
+                setFileName(file.name);
             };
             reader.readAsDataURL(file);
         } else {
@@ -73,31 +73,31 @@ const AddNewsLetterdetails = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!file || !image) {
             toast.error("Please upload both PDF and image.");
             return;
         }
-    
+
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token");
-    
+
             const formData = new FormData();
-            formData.append("file", file);  // Must be a File object
-            formData.append("image", image);  // Must be a File object
-    
+            formData.append("file", file);
+            formData.append("image", image);
+
             const response = await axios.post(`${BASE_URL}/add_newsletter`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "multipart/form-data",
                 },
             });
-    
+
             if (response.data?.status === "Success") {
                 toast.success("Newsletter added successfully!");
                 navigate("/newsletterdetails");
-    
+
                 // Clear form
                 setNewsletter_id("");
                 setImage(null);
@@ -112,7 +112,7 @@ const AddNewsLetterdetails = () => {
             toast.error("Something went wrong.");
         }
     };
-    
+
 
 
     return (
@@ -158,25 +158,23 @@ const AddNewsLetterdetails = () => {
                                                     onDrop={handleFileDrop}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >{file && <p className="mt-2">Uploaded File: <strong>{fileName}</strong></p>}
-
-
                                                 </div>
+
                                                 <Form.Control
-    type="file"
-    accept="application/pdf"
-    onChange={(e) => {
-        const uploadedFile = e.target.files[0];
-        if (uploadedFile && uploadedFile.type === "application/pdf") {
-            setFile(uploadedFile);
-            setFileName(uploadedFile.name);
-        } else {
-            toast.error("Only PDF files are allowed.");
-        }
-    }}
-/>
-
-
+                                                    type="file"
+                                                    accept="application/pdf"
+                                                    onChange={(e) => {
+                                                        const uploadedFile = e.target.files[0];
+                                                        if (uploadedFile && uploadedFile.type === "application/pdf") {
+                                                            setFile(uploadedFile);
+                                                            setFileName(uploadedFile.name);
+                                                        } else {
+                                                            toast.error("Only PDF files are allowed.");
+                                                        }
+                                                    }}
+                                                />
                                             </Form.Group>
+
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
@@ -192,18 +190,18 @@ const AddNewsLetterdetails = () => {
                                                     )}
                                                 </div>
                                                 <Form.Control
-    type="file"
-    accept="image/*"
-    onChange={(e) => {
-        const uploadedImage = e.target.files[0];
-        if (uploadedImage && uploadedImage.type.startsWith("image/")) {
-            setImage(uploadedImage);
-            setPreview(URL.createObjectURL(uploadedImage));
-        } else {
-            toast.error("Only image files are allowed.");
-        }
-    }}
-/>
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const uploadedImage = e.target.files[0];
+                                                        if (uploadedImage && uploadedImage.type.startsWith("image/")) {
+                                                            setImage(uploadedImage);
+                                                            setPreview(URL.createObjectURL(uploadedImage));
+                                                        } else {
+                                                            toast.error("Only image files are allowed.");
+                                                        }
+                                                    }}
+                                                />
 
                                             </Form.Group>
 

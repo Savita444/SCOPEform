@@ -18,66 +18,95 @@ import corner from "../imgs/file (28).png";
 // ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ArcElement, Tooltip, Legend);
 
 const TrainingDashboard = () => {
-  const [courseData, setcourseData] = useState([]);
-  const [subcourseData, setsubcourseData] = useState([]);
+  const [dashboardData, setDashboardData] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
-    fetchData();
+    fetchDashboardCounts();
   }, []);
 
-  const fetchData = async () => {
+  const fetchDashboardCounts = async () => {
     try {
       const token = localStorage.getItem("remember_token");
 
-      // Fetch Courses Data
-      const coursesResponse = await axios.get(
-        "https://api.sumagotraining.in/public/api/get_course",
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await axios.get(
+        "https://api.sumagotraining.in/public/api/get_dashboard_count",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
-      // Fetch Completion Students Data
-      const subcourseResponse = await axios.get(
-        "https://api.sumagotraining.in/public/api/get_all_subcourses",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Intern Data:", coursesResponse.data);
-      console.log("Completion Data:", subcourseResponse.data);
-
-      setcourseData(coursesResponse.data);
-      setsubcourseData(subcourseResponse.data);
+      console.log("Dashboard Count Data:", response.data);
+      setDashboardData(response.data || {});
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
   };
 
 
+  
 
-  // Calculate Summary
-  const totalcourse = courseData?.data?.length ? courseData.data.length.toString().padStart(2, '0') : "00";
-  const totalsubcourse = subcourseData?.data?.length ? subcourseData.data.length.toString().padStart(2, '0') : "00";
-
-  const t3Sheet = totalcourse;
-
-  // UI Card Data
   const summaryCards = [
-    { label: "Total Courses", value: totalcourse, icon: <FaUsers size={40} className="text-danger" />, link: "/coursedetails" },
-    { label: "Total SubCourses", value: totalsubcourse, icon: <FaFileCode size={40} className="text-secondary" />, link: "/subcoursedetails" },
-    { label: "Alumni", value: totalsubcourse, icon: <FaUserGraduate  size={40} className="text-warning-subtle" />, link: "/alumnidetails" },
-    { label: "Handson Project", value: t3Sheet, icon: <FaDatabase  size={40} className="text-primary" /> },
-    { label: "MOU", value: t3Sheet, icon: <FaFile  size={40} className="text-danger" /> },
-    { label: "Mentor", value: t3Sheet, icon: <FaUsers size={40} className="text-success" /> },
-    { label: "Expert Review", value: t3Sheet, icon: <FaClipboardList size={40} className="text-primary" /> },
-    { label: "Top Rank", value: t3Sheet, icon: <FaListAlt  size={40} className="text-info" /> },
+    {
+      label: "Total Courses",
+      value: dashboardData.courses?.toString().padStart(2, "0") || "00",
+      icon: <FaUsers size={40} className="text-danger" />,
+      link: "/coursedetails",
+    },
+    {
+      label: "Total SubCourses",
+      value: dashboardData.subcourses?.toString().padStart(2, "0") || "00",
+      icon: <FaFileCode size={40} className="text-secondary" />,
+      link: "/subcoursedetails",
+    },
+    {
+      label: "Alumni",
+      value: dashboardData.alumini?.toString().padStart(2, "0") || "00",
+      icon: <FaUserGraduate size={40} className="text-warning-subtle" />,
+      link: "/alumnidetails",
+    },
+    {
+      label: "Handson Project",
+      value: dashboardData.handsonproject?.toString().padStart(2, "0") || "00",
+      icon: <FaDatabase size={40} className="text-primary" />,
+      link: "/handsonprojectdetails",
 
+    },
+    {
+      label: "MOU",
+      value: dashboardData.mous?.toString().padStart(2, "0") || "00",
+      icon: <FaFile size={40} className="text-danger" />,
+      link: "/moudetails",
 
+    },
+    {
+      label: "Mentor",
+      value: dashboardData.mentor?.toString().padStart(2, "0") || "00",
+      icon: <FaUsers size={40} className="text-success" />,
+      link: "/mentordetails",
+
+    },
+    {
+      label: "Expert Review",
+      value: dashboardData.expertreview?.toString().padStart(2, "0") || "00",
+      icon: <FaClipboardList size={40} className="text-primary" />,
+      link: "/expertreviewdetails",
+
+    },
+    {
+      label: "Top Rank",
+      value: dashboardData.topranked?.toString().padStart(2, "0") || "00",
+      icon: <FaListAlt size={40} className="text-info" />,
+      link: "/toprankdetails",
+
+    },
   ];
-
-
+  
  
   return (
     <>

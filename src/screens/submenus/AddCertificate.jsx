@@ -94,7 +94,7 @@ const AddCertificate = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                id: certificate_id,
+                
                 course_id: subcourses_id,
                 title: title,
                 description: description,
