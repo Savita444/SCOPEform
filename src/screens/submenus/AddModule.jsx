@@ -9,14 +9,14 @@ import corner from "../imgs/file (28).png";
 
 
 const AddModule = () => {
-        const [module_id, setModule_id] = useState("");
-    
+    const [module_id, setModule_id] = useState("");
     const [title, setTitle] = useState("");
+    
     const navigate = useNavigate();
 
-    
 
-    
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -30,9 +30,9 @@ const AddModule = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                event_id,
+               
                 title: title
-                
+
             };
 
             const response = await axios.post(`${BASE_URL}/add_module`, payload, {
@@ -57,7 +57,7 @@ const AddModule = () => {
     };
 
 
-   
+
     return (
 
         <div className="container idcardbackimg">
@@ -98,7 +98,7 @@ const AddModule = () => {
                                                 <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
                                             </Form.Group>
 
-                                           
+
 
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>

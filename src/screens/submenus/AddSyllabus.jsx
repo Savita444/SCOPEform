@@ -15,9 +15,12 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddSyllabus = () => {
     const [syllabus_id, setSyllabus_id] = useState("");
-    const [subcourses_id, setSubcourses_id] = useState("");
-    const [coursename, setCoursename] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
+    
+    const [coursename, setCoursename] = useState("");
+    const [subCourses, setSubCourses] = useState([]);
+
     const [courses, setCourses] = useState([]);
     const [module_id, setModule_id] = useState("");
     const [modulename, setModulename] = useState("");
@@ -31,6 +34,7 @@ const AddSyllabus = () => {
     const location = useLocation();
 
 
+    
     const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
@@ -46,7 +50,7 @@ const AddSyllabus = () => {
             // Ensure response.data.data is an array
             const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-            setCourses(subCoursesData); // Store fetched subcourses
+            setSubCourses(subCoursesData); // Store fetched subcourses
         } catch (err) {
             console.error("Error fetching subcourses:", err);
         }
@@ -54,7 +58,6 @@ const AddSyllabus = () => {
     useEffect(() => {
         fetchSubCourses();
     }, []);
-
 
 
     const fetchmodulelistData = async () => {
@@ -107,13 +110,13 @@ const AddSyllabus = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                syllabus_id: syllabus_id,
-                course_id: subcourses_id,
-                module_id: module_id,
-                title: title,
-                description: description,
+              
+                course_id: sub_course_id,
+                module_id: id,
+                title,
+                description,
 
-                module_name: module_name,
+                module_name: title,
                 subcourses_name: subcourses_name,
 
             };
@@ -191,28 +194,25 @@ const AddSyllabus = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                            setSubcourses_id(selectedCourse.subcourses_id);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course, index) => (
-                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
+                                                    {subCourses.map(course => (
+                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
-
                                                 </Form.Select>
+
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

@@ -18,10 +18,12 @@ const UpdateSyllabus = () => {
     const syllbusData = location.state || {};
 
     const [syllabus_id, setSyllabus_id] = useState("");
-    const [subcourses_id, setSubcourses_id] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
     const [coursename, setCoursename] = useState("");
     const [subcourses_name, setSubcourses_name] = useState(syllbusData.subcourses_name || "");
     const [courses, setCourses] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
+
     const [module_id, setModule_id] = useState("");
     const [modulename, setModulename] = useState("");
 
@@ -39,29 +41,35 @@ const UpdateSyllabus = () => {
 
 
 
-    const fetchSubCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            // Ensure response.data.data is an array
-            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
-
-            setCourses(subCoursesData); // Store fetched subcourses
-        } catch (err) {
-            console.error("Error fetching subcourses:", err);
-        }
-    };
     useEffect(() => {
+        const fetchSubCourses = async () => {
+            const accessToken = localStorage.getItem("remember_token");
+            try {
+                const BASE_URL = "https://api.sumagotraining.in/public/api";
+                const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+                setSubCourses(subCoursesData);
+    
+                //  Set sub_course_id based on subcourses_name
+                const existing = subCoursesData.find(item => item.subcourses_name === subcourses_name);
+                if (existing) {
+                    setSubcourses_id(existing.subcourses_id);
+                }
+    
+            } catch (err) {
+                console.error("Error fetching subcourses:", err);
+            }
+        };
+    
         fetchSubCourses();
-    }, []);
+    }, [subcourses_name]);
+    
 
 
 
@@ -106,13 +114,13 @@ const UpdateSyllabus = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                syllabus_id: syllabus_id,
-                course_id: subcourses_id,
-                module_id: module_id,
-                title: title,
-                description: description,
+                
+                course_id: sub_course_id,
+                module_id: id,
+                title,
+                description,
 
-                module_name: module_name,
+                module_name: title,
                 subcourses_name: subcourses_name,
             };
 
@@ -187,28 +195,25 @@ const UpdateSyllabus = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                            setSubcourses_id(selectedCourse.subcourses_id);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course, index) => (
-                                                        <option key={`subcourse-${course.subcourses_id || index}`} value={course.subcourses_name}>
+                                                    {subCourses.map(course => (
+                                                        <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
-
                                                 </Form.Select>
+
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

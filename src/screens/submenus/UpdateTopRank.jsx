@@ -76,7 +76,6 @@ const UpdateTopRank = () => {
         navigate("/toprankdetails");
 
         setToprank_id("");
-        setTitle("");
 
         setImage(null);
         setPreview(null);

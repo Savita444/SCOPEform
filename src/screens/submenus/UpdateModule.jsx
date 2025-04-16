@@ -31,7 +31,7 @@ const UpdateModule = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                module_id,
+               
                 title: title
             };
 

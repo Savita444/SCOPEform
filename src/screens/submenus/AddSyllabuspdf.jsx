@@ -10,11 +10,13 @@ import axios from "axios";
 
 
 const Addsyllabuspdf = () => {
-    const [subcourse_id, setSubcourse_id] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState("");
     const [courses, setCourses] = useState([]);
+    const [subCourses, setSubCourses] = useState([]);
+
     const [coursename, setCoursename] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
@@ -35,7 +37,7 @@ const Addsyllabuspdf = () => {
             toast.error("Only PDF files are allowed.");
         }
     };
-    
+
 
     const handleDrop = (e) => {
         e.preventDefault();
@@ -49,7 +51,7 @@ const Addsyllabuspdf = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
+            const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
@@ -59,7 +61,7 @@ const Addsyllabuspdf = () => {
             // Ensure response.data.data is an array
             const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
 
-            setCourses(subCoursesData); // Store fetched subcourses
+            setSubCourses(subCoursesData); // Store fetched subcourses
         } catch (err) {
             console.error("Error fetching subcourses:", err);
         }
@@ -67,6 +69,7 @@ const Addsyllabuspdf = () => {
     useEffect(() => {
         fetchSubCourses();
     }, []);
+
 
 
 
@@ -83,7 +86,7 @@ const Addsyllabuspdf = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                subcourse_id: subcourse_id,
+                subcourse_id: sub_course_id,
                 name: subcourses_name,
                 file: file,
             };
@@ -101,7 +104,7 @@ const Addsyllabuspdf = () => {
                 navigate("/syllabuspdfdetails");
 
                 // Clear form
-                setSubcourse_id("");
+                setSubcourses_id("");
                 setSubcourses_name("");
                 setFile("");
                 setDesignation("");
@@ -159,22 +162,20 @@ const Addsyllabuspdf = () => {
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                            setSubcourse_id(selectedCourse.subcourses_id);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
+                                                    {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
+
                                             </Form.Group>
 
 

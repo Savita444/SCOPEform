@@ -15,6 +15,8 @@ const UpdateNewsLetterdetails = () => {
     const newsletterData = location.state || {};
 
     const [newsletter_id, setNewsletter_id] = useState("");
+    const [newsletter_month, setNewsletter_month] = useState(newsletterData.newsletter_month || "");
+    const [newsletter_year, setNewsletter_year] = useState(newsletterData.newsletter_year || "");
     const [file, setFile] = useState(null);
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(newsletterData.image || null);
@@ -84,7 +86,7 @@ const UpdateNewsLetterdetails = () => {
         e.preventDefault();
 
         if (!file || !image) {
-            toast.error("Please fill in all required fields.");
+            toast.error("Please upload both PDF and image.");
             return;
         }
 
@@ -92,34 +94,39 @@ const UpdateNewsLetterdetails = () => {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token");
 
-            const payload = {
-                id: newsletter_id,
-                image: image,
-                file: file,
-            };
+            // Convert PDF to base64
+            const pdfBase64 = await convertToBase64(file); 
 
+            const payload = {
+                newsletter_month,
+                newsletter_year,
+                file: pdfBase64,   
+                image             
+            };
 
             const response = await axios.post(`${BASE_URL}/update_newsletter/${newsletterData.id}`, payload, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
-                }
+                },
             });
 
             if (response.data?.status === "Success") {
-                toast.success("News letter updated successfully!");
+                toast.success("Newsletter updated successfully!");
                 navigate("/newsletterdetails");
 
-                // Clear form
-                setNewsletter_id("");
+                // Reset
+                setNewsletter_month("");
+                setNewsletter_year("");
+                setImage(null);
                 setFile(null);
-                setImage(null)
-
+                setPreview(null);
+                setFileName("");
             } else {
-                toast.error("Failed to update newsletter.");
+                toast.error(response.data?.message || "Failed to update newsletter.");
             }
         } catch (err) {
-            console.error("Error updating newsletter:", err);
+            console.error("Error uploading newsletter:", err);
             toast.error("Something went wrong.");
         }
     };
@@ -166,48 +173,68 @@ const UpdateNewsLetterdetails = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Upload New File (Drag and Drop or Click)</Form.Label>
+                                                <Form.Label>Newsletter Month</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_month} onChange={(e) => setNewsletter_month(e.target.value)} />
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Newsletter Year</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_year} onChange={(e) => setNewsletter_year(e.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Upload File (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleFileDrop}
+                                                    onDrop={async (e) => {
+                                                        e.preventDefault();
+                                                        const pdfFile = e.dataTransfer.files[0];
+                                                        if (pdfFile && pdfFile.type === "application/pdf") {
+                                                            const base64 = await convertToBase64(pdfFile);
+                                                            setFile(pdfFile); // original File object
+                                                            setFileName(pdfFile.name);
+                                                        } else {
+                                                            toast.error("Only PDF files are allowed.");
+                                                        }
+                                                    }}
                                                     onDragOver={(e) => e.preventDefault()}
-                                                    onClick={() => document.getElementById("pdfInput").click()}
-                                                    style={{ cursor: "pointer" }}
                                                 >
-                                                    {fileName ? (
+                                                    {file ? (
                                                         <p className="mt-2">Uploaded File: <strong>{fileName}</strong></p>
                                                     ) : (
                                                         <p>Drag & Drop PDF here or click to upload</p>
                                                     )}
                                                 </div>
-
                                                 <Form.Control
-                                                    id="pdfInput"
                                                     type="file"
                                                     accept="application/pdf"
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type === "application/pdf") {
-                                                            const reader = new FileReader();
-                                                            reader.onloadend = () => {
-                                                                setFile(reader.result);
-                                                                setFileName(file.name);
-                                                            };
-                                                            reader.readAsDataURL(file);
+                                                    onChange={async (e) => {
+                                                        const pdfFile = e.target.files[0];
+                                                        if (pdfFile && pdfFile.type === "application/pdf") {
+                                                            const base64 = await convertToBase64(pdfFile);
+                                                            setFile(pdfFile); // original File
+                                                            setFileName(pdfFile.name);
                                                         } else {
                                                             toast.error("Only PDF files are allowed.");
                                                         }
                                                     }}
                                                 />
-
-
                                             </Form.Group>
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
-                                                    onDrop={handleDrop}
+                                                    onDrop={async (e) => {
+                                                        e.preventDefault();
+                                                        const imgFile = e.dataTransfer.files[0];
+                                                        if (imgFile && imgFile.type.startsWith("image/")) {
+                                                            const base64 = await convertToBase64(imgFile);
+                                                            setImage(base64);
+                                                            setPreview(URL.createObjectURL(imgFile));
+                                                        } else {
+                                                            toast.error("Only image files are allowed.");
+                                                        }
+                                                    }}
                                                     onDragOver={(e) => e.preventDefault()}
                                                 >
                                                     {preview ? (
@@ -218,19 +245,19 @@ const UpdateNewsLetterdetails = () => {
                                                 </div>
                                                 <Form.Control
                                                     type="file"
+                                                    accept="image/*"
                                                     onChange={async (e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file && file.type.startsWith("image/")) {
-                                                            const base64 = await convertToBase64(file);
+                                                        const imgFile = e.target.files[0];
+                                                        if (imgFile && imgFile.type.startsWith("image/")) {
+                                                            const base64 = await convertToBase64(imgFile);
                                                             setImage(base64);
-                                                            setPreview(URL.createObjectURL(file));
+                                                            setPreview(URL.createObjectURL(imgFile));
                                                         } else {
                                                             toast.error("Only image files are allowed.");
                                                         }
                                                     }}
                                                 />
                                             </Form.Group>
-
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

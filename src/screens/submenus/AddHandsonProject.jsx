@@ -93,7 +93,7 @@ const AddHandsonProject = () => {
 
             const payload = {
                 handson_category_id,
-                sub_course_id: [sub_course_id],
+                sub_course_id: [`${sub_course_id}`],
                 title,
                 desc,
                 category_name,

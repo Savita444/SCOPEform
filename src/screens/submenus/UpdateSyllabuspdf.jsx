@@ -15,11 +15,12 @@ const UpdateSyllabuspdf = () => {
     const navigate = useNavigate();
     const syllabuspdfData = location.state || {};
 
-    const [subcourse_id, setSubcourse_id] = useState("");
+    const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState(syllabuspdfData.name || "");
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(syllabuspdfData.file || null);
     const [coursename, setCoursename] = useState("");
+    const [subCourses, setSubCourses] = useState([]);
 
     const [courses, setCourses] = useState([]); // Store courses
     
@@ -52,29 +53,35 @@ const UpdateSyllabuspdf = () => {
 
 
 
-    const fetchSubCourses = async () => {
-        const accessToken = localStorage.getItem("remember_token");
-        try {
-            const BASE_URL = "https://api.sumagotraining.in/public/api";
-
-            const response = await axios.get(`${BASE_URL}/get_subcourse_details_list`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            // Ensure response.data.data is an array
-            const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
-
-            setCourses(subCoursesData); // Store fetched subcourses
-        } catch (err) {
-            console.error("Error fetching subcourses:", err);
-        }
-    };
     useEffect(() => {
+        const fetchSubCourses = async () => {
+            const accessToken = localStorage.getItem("remember_token");
+            try {
+                const BASE_URL = "https://api.sumagotraining.in/public/api";
+                const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
+                setSubCourses(subCoursesData);
+    
+                //  Set sub_course_id based on subcourses_name
+                const existing = subCoursesData.find(item => item.subcourses_name === subcourses_name);
+                if (existing) {
+                    setSubcourses_id(existing.subcourses_id);
+                }
+    
+            } catch (err) {
+                console.error("Error fetching subcourses:", err);
+            }
+        };
+    
         fetchSubCourses();
-    }, []);
+    }, [subcourses_name]);
+    
 
 
 
@@ -91,7 +98,7 @@ const UpdateSyllabuspdf = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                subcourse_id: subcourse_id,
+                subcourse_id: sub_course_id,
                 name: subcourses_name,
                 file: file,
             };
@@ -109,7 +116,7 @@ const UpdateSyllabuspdf = () => {
                 navigate("/syllabuspdfdetails");
 
                 // Clear form
-                setSubcourse_id("");
+                setSubcourses_id("");
                 setSubcourses_name("");
                 setFile("");
                 setDesignation("");
@@ -162,30 +169,26 @@ const UpdateSyllabuspdf = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                            <Form.Group className="mb-3">
+                                        <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
                                                     onChange={(e) => {
-                                                        setSubcourses_name(e.target.value);
-
-                                                        const selectedCourse = courses.find(course => course.subcourses_name === e.target.value);
-                                                        if (selectedCourse) {
-                                                            setCoursename(selectedCourse.coursename);
-                                                            setSubcourse_id(selectedCourse.subcourses_id);
+                                                        const selected = subCourses.find(course => course.subcourses_name === e.target.value);
+                                                        if (selected) {
+                                                            setSubcourses_name(selected.subcourses_name);
+                                                            setSubcourses_id(selected.subcourses_id);
                                                         }
-                                                    }}
-                                                >
+                                                    }}>
                                                     <option value="">-- Select Subcourse --</option>
-                                                    {courses.map((course) => (
+                                                    {subCourses.map(course => (
                                                         <option key={course.subcourses_id} value={course.subcourses_name}>
                                                             {course.subcourses_name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
+
                                             </Form.Group>
-
-
 
 
                                             <Form.Group className="mb-3">
