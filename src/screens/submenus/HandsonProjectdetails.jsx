@@ -43,51 +43,51 @@ const HandsonProjectdetails = () => {
 
     useEffect(() => {
         fetchhandsonprojectdetailsData();
-      }, []);
-    
-      const fetchhandsonprojectdetailsData = async () => {
+    }, []);
+
+    const fetchhandsonprojectdetailsData = async () => {
         setLoading(true);
         try {
-          const BASE_URL = "https://api.sumagotraining.in/public/api";
-          const accessToken = localStorage.getItem("remember_token"); // Retrieve token
-    
-          if (!accessToken) {
-            console.error("No access token found in localStorage.");
-            toast.error("Unauthorized: No token available.");
-            setLoading(false);
-            return;
-          }
-    
-          const response = await axios.get(`${BASE_URL}/get_handson_project_details`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`, // Attach token
-              "Content-Type": "application/json"
-            }
-          });
-    
-          const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-          sethandsonprojectdetailsData(sortedData); // Set sorted data
-          setData(sortedData); // Update the SearchExportContext data
-    
-          if (response.data?.status === "Success") {
-            sethandsonprojectdetailsData(response.data);
-          } else {
-          }
-        } catch (err) {
-          console.error("Error fetching handson project data:", err);
-          toast.error("Error fetching handson project data. Please check the console.");
-        } finally {
-          setLoading(false);
-        }
-      };
-    
-      useEffect(() => {
-        fetchhandsonprojectdetailsData();
-      }, []);
-    
-    
+            const BASE_URL = "https://api.sumagotraining.in/public/api";
+            const accessToken = localStorage.getItem("remember_token"); // Retrieve token
 
-  
+            if (!accessToken) {
+                console.error("No access token found in localStorage.");
+                toast.error("Unauthorized: No token available.");
+                setLoading(false);
+                return;
+            }
+
+            const response = await axios.get(`${BASE_URL}/get_handson_project_details`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Attach token
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            sethandsonprojectdetailsData(sortedData); // Set sorted data
+            setData(sortedData); // Update the SearchExportContext data
+
+            if (response.data?.status === "Success") {
+                sethandsonprojectdetailsData(response.data);
+            } else {
+            }
+        } catch (err) {
+            console.error("Error fetching handson project data:", err);
+            toast.error("Error fetching handson project data. Please check the console.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchhandsonprojectdetailsData();
+    }, []);
+
+
+
+
 
 
 
@@ -162,36 +162,36 @@ const HandsonProjectdetails = () => {
         {
             name: "Sr. No.",
             selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-        width:"100px",
+            width: "100px",
         },
         {
             name: "Course Name",
             selector: (row) => row.subcourse_details || "N/A",
-            width:"200px",
+            width: "200px",
 
         },
         {
             name: "Handson Category",
             selector: (row) => row.category_name || "N/A",
-            width:"200px",
+            width: "200px",
 
         },
         {
             name: "Title",
             selector: (row) => row.title || "N/A",
-            width:"300px",
+            width: "300px",
 
         },
         {
             name: "Description",
             selector: (row) => row.desc || "N/A",
-            width:"350px",
+            width: "350px",
 
         },
         {
             name: "Status",
             selector: (row) => (row.is_active ? "Active" : "Inactive"),
-            width:"100px",
+            width: "100px",
 
         },
         {
@@ -243,16 +243,19 @@ const HandsonProjectdetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : handsonprojectdetailsData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : handsonprojectdetailsData}
                                 pagination
-                              
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

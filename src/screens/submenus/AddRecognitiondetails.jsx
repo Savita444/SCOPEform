@@ -23,7 +23,7 @@ const AddRecognitiondetails = () => {
     const location = useLocation();
 
 
- // Function to convert image to Base64
+    // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -69,7 +69,7 @@ const AddRecognitiondetails = () => {
             // Ensure response.data.data is an array
             const recognitioncategorydata = Array.isArray(response.data?.data) ? response.data.data : [];
             console.log(recognitioncategorydata)
-            setRecognitionCategory(recognitioncategorydata); 
+            setRecognitionCategory(recognitioncategorydata);
         } catch (err) {
             console.error("Error fetching recognition category:", err);
         }
@@ -96,15 +96,15 @@ const AddRecognitiondetails = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                recognitioncategoryid:recognitiondetails_id,
+                recognitioncategoryid: recognitiondetails_id,
                 title,
                 description,
                 image,
-                category_name, 
-              };
-              
+                category_name,
+            };
 
-            
+
+
 
 
             const response = await axios.post(`${BASE_URL}/add_recognitiondetails`, payload, {
@@ -174,29 +174,31 @@ const AddRecognitiondetails = () => {
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
-                                             <Form.Label>Fun at Work Category</Form.Label>
-                                             <Form.Select
-                                               value={recognitiondetails_id}
-                                               onChange={(e) => {
-                                                 const selected = recognitioncategory.find(cat => cat.id.toString() === e.target.value);
-                                                 if (selected) {
-                                                   setRecognitiondetails_id(selected.id); // id = funatworkcategoryid
-                                                   setCategory_name(selected.title);     // title = category_name
-                                                 }
-                                               }}
-                                             >
-                                               <option value="">-- Select Category --</option>
-                                               {recognitioncategory.map(cat => (
-                                                 <option key={cat.id} value={cat.id}>
-                                                   {cat.title}
-                                                 </option>
-                                               ))}
-                                             </Form.Select>
-                                           </Form.Group>
+                                                <Form.Label>Fun at Work Category</Form.Label>
+                                                <Form.Select
+                                                    value={recognitiondetails_id}
+                                                    onChange={(e) => {
+                                                        const selected = recognitioncategory.find(cat => cat.id.toString() === e.target.value);
+                                                        if (selected) {
+                                                            setRecognitiondetails_id(selected.id); // id = funatworkcategoryid
+                                                            setCategory_name(selected.title);     // title = category_name
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Category --</option>
+                                                    {recognitioncategory.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.title}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
+                                                />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
@@ -204,7 +206,7 @@ const AddRecognitiondetails = () => {
                                             </Form.Group>
 
 
-<Form.Group className="mb-3">
+                                            <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
                                                 <div
                                                     className="border p-4 text-center"
@@ -232,7 +234,7 @@ const AddRecognitiondetails = () => {
                                                     }}
                                                 />
                                             </Form.Group>
-                                            
+
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

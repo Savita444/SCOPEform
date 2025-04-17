@@ -23,6 +23,20 @@ const ViewPopupEnquiry = () => {
     fetchProducts();
   }, []);
 
+ useEffect(() => {
+        handleSearch(""); // Reset search when page changes
+    }, [currentPage]);
+
+     useEffect(() => {
+            fetchProducts();
+        }, [currentPage]); // Fetch data when page changes
+    
+ const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    setForceUpdate((prev) => prev + 1);
+  }, [products, filteredData]);
+
   const fetchProducts = async () => {
     setLoading(true);
 
@@ -153,16 +167,23 @@ const ViewPopupEnquiry = () => {
             </Card.Header>
 
             <Card.Body>
-              <DataTable
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : products}
-                pagination
-                responsive
-                striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
-              />
+            <DataTable
+                                key={forceUpdate}
+                                columns={tableColumns(currentPage, rowsPerPage)}
+                                data={searchQuery ? filteredData : products}
+                                pagination
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
+                                }}
+                                responsive
+                                striped
+                                noDataComponent="Loading...."
+                            />
             </Card.Body>
           </Card>
         </Col>

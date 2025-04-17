@@ -46,45 +46,45 @@ const Moduledetails = () => {
   const fetchmodulelistData = async () => {
     setLoading(true);
     try {
-        const BASE_URL = "https://api.sumagotraining.in/public/api";
-        const accessToken = localStorage.getItem("remember_token"); // Retrieve token
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token"); // Retrieve token
 
-        if (!accessToken) {
-            console.error("No access token found in localStorage.");
-            toast.error("Unauthorized: No token available.");
-            setLoading(false);
-            return;
-        }
-
-        const response = await axios.get(`${BASE_URL}/get_module`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`, // Attach token
-                "Content-Type": "application/json"
-            }
-        });
-
-        const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setmodulelistData(sortedData); // Set sorted data
-        setData(sortedData); // Update the SearchExportContext data
-        console.log("API Response:", response.data); // Debugging log
-        
-        if (response.data?.status === "Success") {
-            setmodulelistData(response.data.data);
-        } else {
-            console.error("Unexpected API response structure:", response.data);
-            toast.error("Failed to fetch module data");
-        }
-    } catch (err) {
-        console.error("Error fetching module data:", err);
-        toast.error("Error fetching module data. Please check the console.");
-    } finally {
+      if (!accessToken) {
+        console.error("No access token found in localStorage.");
+        toast.error("Unauthorized: No token available.");
         setLoading(false);
-    }
-};
+        return;
+      }
 
-useEffect(() => {
+      const response = await axios.get(`${BASE_URL}/get_module`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Attach token
+          "Content-Type": "application/json"
+        }
+      });
+
+      const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setmodulelistData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
+      console.log("API Response:", response.data); // Debugging log
+
+      if (response.data?.status === "Success") {
+        setmodulelistData(response.data.data);
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        toast.error("Failed to fetch module data");
+      }
+    } catch (err) {
+      console.error("Error fetching module data:", err);
+      toast.error("Error fetching module data. Please check the console.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchmodulelistData();
-}, []);
+  }, []);
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -142,17 +142,17 @@ useEffect(() => {
     });
   };
 
-  
+
 
 
 
   const handleAddModule = () => {
-   navigate("/addmodule");
+    navigate("/addmodule");
   };
 
 
 
-  
+
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
@@ -163,30 +163,30 @@ useEffect(() => {
       name: "Title",
       selector: (row) => row.title || "N/A",
     },
-    
+
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),
     },
     {
-          name: "Actions",
-          cell: (row) => (
-            <div className="d-flex">
-              <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
-                <Button className="ms-1" onClick={() => navigate(`/update-module/${row.id}`, { state: row })}>
-                  <FaEdit />
-                </Button>
-              </OverlayTrigger>
-              <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
-                <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
-                  onClick={() => handleDelete(row.id)}
-                >
-                  <FaTrash />
-                </Button>
-              </OverlayTrigger>
-            </div>
-          ),
-        },
+      name: "Actions",
+      cell: (row) => (
+        <div className="d-flex">
+          <OverlayTrigger placement="top" overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}>
+            <Button className="ms-1" onClick={() => navigate(`/update-module/${row.id}`, { state: row })}>
+              <FaEdit />
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger placement="top" overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}>
+            <Button className="ms-1" style={{ backgroundColor: "red", color: "white", borderColor: "red" }}
+              onClick={() => handleDelete(row.id)}
+            >
+              <FaTrash />
+            </Button>
+          </OverlayTrigger>
+        </div>
+      ),
+    },
   ];
 
 
@@ -214,22 +214,29 @@ useEffect(() => {
             </Card.Header>
 
             <Card.Body>
-            <DataTable
-                                columns={tableColumns(currentPage, rowsPerPage)}
-                                data={filteredData.length > 0 ? filteredData : modulelistData}
-                                pagination
-                                responsive
-                                striped
-                                noDataComponent="No Data Available"
-                                onChangePage={(page) => setCurrentPage(page)}
-                                onChangeRowsPerPage={(rows) => setRowsPerPage(rows)}
-                            />
+              <DataTable
+                key={forceUpdate}
+                columns={tableColumns(currentPage, rowsPerPage)}
+                data={searchQuery ? filteredData : modulelistData}
+                pagination
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
+                }}
+                responsive
+                striped
+                noDataComponent="Loading...."
+              />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

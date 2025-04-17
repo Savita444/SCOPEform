@@ -16,9 +16,9 @@ const Updatefeecategory = () => {
 
   const [title, setTitle] = useState(courseData.title || "");
 
-  
 
- 
+
+
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -62,118 +62,119 @@ const Updatefeecategory = () => {
 
 
 
-//   return (
-//           <div className="container idcardbackimg">
-//               <div>
-//                   <img src={corner} className="corner_img" alt="Responsive Corner" />
-//               </div>
-//               <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-//                   <img src={logo1} class="img-fluid logo1" alt="..." />
-//                   <img src={logo2} className="img-fluid logo2" alt="..." />
-//               </div>
-//               <Container>
-//                   <div className="text-center title-container">
-//                       <b className="title-text">
-//                           UPDATE <span className="highlight">FEE CATEGORY</span>
-//                       </b>
-//                   </div>
-//               </Container> {/* Breadcrumb with Back Button */}
-//               <Container>
-//                   <div className="d-flex align-items-center">
-  
-//                       <Breadcrumb className="mb-2">
-//                           <Breadcrumb.Item onClick={() => navigate("/programfeescategorydetails")}>Back</Breadcrumb.Item>
-//                           <Breadcrumb.Item active>Update Feecategory</Breadcrumb.Item>
-//                       </Breadcrumb>
-//                   </div>
-//               </Container>
-//               <div className="container mt-2">
-//                   <Card className="p-4 ms-4 me-4 shadow-lg">
-//                       <Card.Body>
-//         <Form onSubmit={handleUpdate}>
-//           <Form.Group className="mb-3">
-//             <Form.Label>Program Fees Category Name</Form.Label>
-//             <Form.Control
-//               type="text"
-//               placeholder="Enter course name"
-//               value={title}
-//               onChange={(e) => setTitle(e.target.value)}
-//             />
-//           </Form.Group>
-          
-//           <div className="d-flex justify-content-center"> <Button variant="primary" type="submit">Submit</Button>
-//                                                             <Button variant="secondary" className="ms-2" onClick={() => navigate('/programfeescategorydetails')}>Cancel</Button>
-//                                                         </div>
-//                         </Form>
-//                         </Card.Body>
-//                         </Card>
-//                     </div>
-        
-//                 </div>
-//             );
-//         };
-        
+  //   return (
+  //           <div className="container idcardbackimg">
+  //               <div>
+  //                   <img src={corner} className="corner_img" alt="Responsive Corner" />
+  //               </div>
+  //               <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+  //                   <img src={logo1} class="img-fluid logo1" alt="..." />
+  //                   <img src={logo2} className="img-fluid logo2" alt="..." />
+  //               </div>
+  //               <Container>
+  //                   <div className="text-center title-container">
+  //                       <b className="title-text">
+  //                           UPDATE <span className="highlight">FEE CATEGORY</span>
+  //                       </b>
+  //                   </div>
+  //               </Container> {/* Breadcrumb with Back Button */}
+  //               <Container>
+  //                   <div className="d-flex align-items-center">
 
-// export default Updatefeecategory;
+  //                       <Breadcrumb className="mb-2">
+  //                           <Breadcrumb.Item onClick={() => navigate("/programfeescategorydetails")}>Back</Breadcrumb.Item>
+  //                           <Breadcrumb.Item active>Update Feecategory</Breadcrumb.Item>
+  //                       </Breadcrumb>
+  //                   </div>
+  //               </Container>
+  //               <div className="container mt-2">
+  //                   <Card className="p-4 ms-4 me-4 shadow-lg">
+  //                       <Card.Body>
+  //         <Form onSubmit={handleUpdate}>
+  //           <Form.Group className="mb-3">
+  //             <Form.Label>Program Fees Category Name</Form.Label>
+  //             <Form.Control
+  //               type="text"
+  //               placeholder="Enter course name"
+  //               value={title}
+  //               onChange={(e) => setTitle(e.target.value)}
+  //             />
+  //           </Form.Group>
 
-return (
-  <div className="container idcardbackimg">
+  //           <div className="d-flex justify-content-center"> <Button variant="primary" type="submit">Submit</Button>
+  //                                                             <Button variant="secondary" className="ms-2" onClick={() => navigate('/programfeescategorydetails')}>Cancel</Button>
+  //                                                         </div>
+  //                         </Form>
+  //                         </Card.Body>
+  //                         </Card>
+  //                     </div>
+
+  //                 </div>
+  //             );
+  //         };
+
+
+  // export default Updatefeecategory;
+
+  return (
+    <div className="container idcardbackimg">
       <div>
-          <img src={corner} className="corner_img" alt="Responsive Corner" />
+        <img src={corner} className="corner_img" alt="Responsive Corner" />
       </div>
       <div className="logo-container" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <img src={logo1} class="img-fluid logo1" alt="..." />
-          <img src={logo2} className="img-fluid logo2" alt="..." />
+        <img src={logo1} class="img-fluid logo1" alt="..." />
+        <img src={logo2} className="img-fluid logo2" alt="..." />
       </div>
       <Container>
-                                         <Row className="justify-content-center">
-                                             <Col md={10}> 
-                                                 <Accordion defaultActiveKey="0">
-                                                     <Card className=" mt-5">
-                                                         <Card.Header>
-                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                 <Container>
-                                                                     <div className="text-start title-container">
-                                                                         <b className="title-text fs-2">
-                                                                             UPDATE PROGRAM<span className="highlight"> FEES CATEGORY</span>
-                                                                         </b>
-                                                                     </div>
-                                                                 </Container>
-                                                                 <Button className="me-3 fs-5 text-nowrap"
-                                                                     style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/programfeescategorydetails')}>
-                                                                     Fees Category Details
-                                                                 </Button>
-                                                             </div>
-                                                         </Card.Header>
-                         
-                                                         <Accordion.Collapse eventKey="0">
-                                                             <Card.Body>
-<Form onSubmit={handleUpdate}>
-  <Form.Group className="mb-3">
-    <Form.Label>Program Fees Category Name</Form.Label>
-    <Form.Control
-      type="text"
-      placeholder="Enter course name"
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-    />
-  </Form.Group>
-  
-  <div className="d-flex justify-content-center"> <Button variant="primary" type="submit">Submit</Button>
-                                                    {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/programfeescategorydetails')}>Cancel</Button> */}
-                                                </div>
-                </Form>
-                    </Card.Body>
-                                                                           </Accordion.Collapse>
-                                                                       </Card>
-                                                                   </Accordion>
-                                                               </Col>
-                                                           </Row>
-                                                       </Container>
-                                                   </div>
-                       );
-                       };
-                       
+        <Row className="justify-content-center">
+          <Col md={10}>
+            <Accordion defaultActiveKey="0">
+              <Card className=" mt-5">
+                <Card.Header>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <Container>
+                      <div className="text-start title-container">
+                        <b className="title-text fs-2">
+                          UPDATE PROGRAM<span className="highlight"> FEES CATEGORY</span>
+                        </b>
+                      </div>
+                    </Container>
+                    <Button className="me-3 fs-5 text-nowrap"
+                      style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/programfeescategorydetails')}>
+                      Fees Category Details
+                    </Button>
+                  </div>
+                </Card.Header>
+
+                <Accordion.Collapse eventKey="0">
+                  <Card.Body>
+                    <Form onSubmit={handleUpdate}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Program Fees Category Name</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter course name"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
+                        />
+                      </Form.Group>
+
+                      <div className="d-flex justify-content-center"> <Button variant="primary" type="submit">Submit</Button>
+                        {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/programfeescategorydetails')}>Cancel</Button> */}
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </Accordion.Collapse>
+              </Card>
+            </Accordion>
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
+
 
 
 export default Updatefeecategory;

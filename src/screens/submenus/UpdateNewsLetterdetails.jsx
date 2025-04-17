@@ -21,6 +21,16 @@ const UpdateNewsLetterdetails = () => {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(newsletterData.image || null);
     const [fileName, setFileName] = useState(newsletterData.file || "");
+    const [errors, setErrors] = useState({
+        newsletter_year: ""
+    });
+
+
+
+    const validateYear = (value) => {
+        const yearRegex = /^\d{4}$/;
+        return yearRegex.test(value) ? "" : "Enter a valid 4-digit year.";
+    };
 
 
     useEffect(() => {
@@ -95,13 +105,13 @@ const UpdateNewsLetterdetails = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             // Convert PDF to base64
-            const pdfBase64 = await convertToBase64(file); 
+            const pdfBase64 = await convertToBase64(file);
 
             const payload = {
                 newsletter_month,
                 newsletter_year,
-                file: pdfBase64,   
-                image             
+                file: pdfBase64,
+                image
             };
 
             const response = await axios.post(`${BASE_URL}/update_newsletter/${newsletterData.id}`, payload, {
@@ -174,13 +184,31 @@ const UpdateNewsLetterdetails = () => {
                                         <Form onSubmit={handleUpdate}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Newsletter Month</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_month} onChange={(e) => setNewsletter_month(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_month} onChange={(e) => setNewsletter_month(e.target.value)} maxLength={50} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Newsletter Year</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_year} onChange={(e) => setNewsletter_year(e.target.value)} />
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Enter year"
+                                                    value={newsletter_year}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.replace(/\D/g, "");
+                                                        setNewsletter_year(val);
+                                                        setErrors((prev) => ({
+                                                            ...prev,
+                                                            newsletter_year: validateYear(val)
+                                                        }));
+                                                    }}
+                                                    isInvalid={!!errors.newsletter_year}
+                                                    maxLength={4}
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.newsletter_year}
+                                                </Form.Control.Feedback>
                                             </Form.Group>
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload File (Drag and Drop or Click)</Form.Label>
                                                 <div

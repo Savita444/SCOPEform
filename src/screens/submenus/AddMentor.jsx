@@ -200,15 +200,15 @@ const AddMentor = () => {
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Mentor Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Mentor Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Designation</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Designation" value={designation} onChange={(e) => setDesignation(e.target.value)} maxLength={100} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Comapny</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Comapny" value={company} onChange={(e) => setCompany(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Comapny" value={company} onChange={(e) => setCompany(e.target.value)} maxLength={100} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
@@ -241,11 +241,11 @@ const AddMentor = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Skill</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Skill" value={skills} onChange={(e) => setSkills(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Skill" value={skills} onChange={(e) => setSkills(e.target.value)} maxLength={100} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Experience</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Experience" value={experience} onChange={(e) => setExperience(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Experience" value={experience} onChange={(e) => setExperience(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <div className="d-flex justify-content-center">

@@ -47,13 +47,13 @@ const TopRankdetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const response = await axios.get(`${BASE_URL}/get_topranked`);
-    
+
             console.log("API Response:", response.data); // Debugging log
             const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             settoprankData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
 
-            if (Array.isArray(response.data)) { 
+            if (Array.isArray(response.data)) {
                 settoprankData(response.data); // Directly set the array
             } else {
                 console.error("Unexpected API response structure:", response.data);
@@ -66,11 +66,11 @@ const TopRankdetails = () => {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchtoprankData();
     }, []);
-   
+
 
 
 
@@ -214,16 +214,19 @@ const TopRankdetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : toprankData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : toprankData}
                                 pagination
-                               
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

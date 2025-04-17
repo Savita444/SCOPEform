@@ -109,7 +109,7 @@ const AddCourse = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Course Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Course Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

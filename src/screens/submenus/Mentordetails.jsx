@@ -46,23 +46,23 @@ const Mentordetails = () => {
 
   // Fetch Alumni Data
   const fetchMentordata = async () => {
-     setLoading(true);
-     try {
+    setLoading(true);
+    try {
       const BASE_URL = "https://api.sumagotraining.in/public/api";
       const accessToken = localStorage.getItem("remember_token"); // Retrieve token
 
       if (!accessToken) {
-          console.error("No access token found in localStorage.");
-          toast.error("Unauthorized: No token available.");
-          setLoading(false);
-          return;
+        console.error("No access token found in localStorage.");
+        toast.error("Unauthorized: No token available.");
+        setLoading(false);
+        return;
       }
 
       const response = await axios.get(`${BASE_URL}/get_all_mentors`, {
-          headers: {
-              Authorization: `Bearer ${accessToken}`, // Attach token
-              "Content-Type": "application/json"
-          }
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Attach token
+          "Content-Type": "application/json"
+        }
       });
 
       console.log("API Response:", response.data); // Debugging log
@@ -71,22 +71,22 @@ const Mentordetails = () => {
       setData(sortedData); // Update the SearchExportContext data
 
       if (response.data?.status === "Success") {
-          setmentorData(response.data.data);
+        setmentorData(response.data.data);
       } else {
-          console.error("Unexpected API response structure:", response.data);
-          toast.error("Failed to fetch mentors data");
+        console.error("Unexpected API response structure:", response.data);
+        toast.error("Failed to fetch mentors data");
       }
-  } catch (err) {
+    } catch (err) {
       console.error("Error fetching mentors data:", err);
       toast.error("Error fetching mentors data. Please check the console.");
-  } finally {
+    } finally {
       setLoading(false);
-  }
-};
+    }
+  };
 
   useEffect(() => {
-         fetchMentordata();
-     }, []);
+    fetchMentordata();
+  }, []);
 
 
   const handleDelete = async (id) => {
@@ -145,23 +145,23 @@ const Mentordetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddMentor = () => {
-   navigate("/addmentor");
+    navigate("/addmentor");
   };
 
 
-  
+
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
     },
-    
+
     {
       name: "Image",
       cell: (row) =>
@@ -179,23 +179,23 @@ const Mentordetails = () => {
     //     name: "Course Name",
     //     selector: (row) => row.subcourse_details || "N/A",
     //   },
-      {
-        name: "Name",
-        selector: (row) => row.name || "N/A",
-      },
-      {
-        name: "Designation",
-        selector: (row) => row.designation || "N/A",
-      },
-      {
-        name: "Company",
-        selector: (row) => row.company || "N/A",
-      },
-      {
-        name: "Experience",
-        selector: (row) => row.experience || "N/A",
-      },
-    
+    {
+      name: "Name",
+      selector: (row) => row.name || "N/A",
+    },
+    {
+      name: "Designation",
+      selector: (row) => row.designation || "N/A",
+    },
+    {
+      name: "Company",
+      selector: (row) => row.company || "N/A",
+    },
+    {
+      name: "Experience",
+      selector: (row) => row.experience || "N/A",
+    },
+
     {
       name: "Actions",
       cell: (row) => (
@@ -245,23 +245,26 @@ const Mentordetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : mentorData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : mentorData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

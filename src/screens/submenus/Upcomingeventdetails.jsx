@@ -26,6 +26,9 @@ const Upcomingeventsdetails = () => {
     const location = useLocation();
 
 
+
+
+
     useEffect(() => {
         fetchEventdata();
     }, [currentPage]);
@@ -52,11 +55,11 @@ const Upcomingeventsdetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const response = await axios.get(`${BASE_URL}/get_event_upcoming`);
-    
-            console.log("API Response:", response.data); 
-    
-            if (Array.isArray(response.data)) { 
-                setEventData(response.data); 
+
+            console.log("API Response:", response.data);
+
+            if (Array.isArray(response.data)) {
+                setEventData(response.data);
             } else {
                 console.error("Unexpected API response structure:", response.data);
                 toast.error("Failed to fetch events data");
@@ -68,9 +71,9 @@ const Upcomingeventsdetails = () => {
             setLoading(false);
         }
     };
-    
 
-  
+
+
 
 
 
@@ -147,7 +150,7 @@ const Upcomingeventsdetails = () => {
             name: "Sr. No.",
             selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
         },
-        
+
         {
             name: "Image",
             cell: (row) =>
@@ -160,7 +163,7 @@ const Upcomingeventsdetails = () => {
                 ) : (
                     "No Image"
                 ),
-        },{
+        }, {
             name: "Status",
             selector: (row) => (row.is_active ? "Active" : "Inactive"),
         },
@@ -212,17 +215,19 @@ const Upcomingeventsdetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : eventData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : eventData}
                                 pagination
-                                paginationServer
-                                paginationTotalRows={eventData.length}
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

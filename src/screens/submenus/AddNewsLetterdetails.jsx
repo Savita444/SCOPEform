@@ -17,10 +17,17 @@ const AddNewsLetterdetails = () => {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const [fileName, setFileName] = useState("");
+    const [errors, setErrors] = useState({
+        newsletter_year: ""
+    });
 
     const navigate = useNavigate();
     const location = useLocation();
 
+    const validateYear = (value) => {
+        const yearRegex = /^\d{4}$/;
+        return yearRegex.test(value) ? "" : "Enter a valid 4-digit year.";
+    };
 
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
@@ -165,13 +172,31 @@ const AddNewsLetterdetails = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Newsletter Month</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_month} onChange={(e) => setNewsletter_month(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_month} onChange={(e) => setNewsletter_month(e.target.value)} maxLength={50} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Newsletter Year</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={newsletter_year} onChange={(e) => setNewsletter_year(e.target.value)} />
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Enter year"
+                                                    value={newsletter_year}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.replace(/\D/g, "");
+                                                        setNewsletter_year(val);
+                                                        setErrors((prev) => ({
+                                                            ...prev,
+                                                            newsletter_year: validateYear(val)
+                                                        }));
+                                                    }}
+                                                    isInvalid={!!errors.newsletter_year}
+                                                    maxLength={4}
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.newsletter_year}
+                                                </Form.Control.Feedback>
                                             </Form.Group>
+
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Upload File (Drag and Drop or Click)</Form.Label>
                                                 <div

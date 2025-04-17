@@ -198,7 +198,9 @@ const AddFunatworkData = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter  Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter  Name" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
+                                                />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>

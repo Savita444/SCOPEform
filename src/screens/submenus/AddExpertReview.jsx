@@ -139,17 +139,17 @@ const AddExpertReview = () => {
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Review</Form.Label>
                                                 <Form.Control type="text" as={"textarea"}
-                                                    placeholder="Enter expert review" value={review} onChange={(e) => setReview(e.target.value)} />
+                                                    placeholder="Enter expert review" value={review} onChange={(e) => setReview(e.target.value)}  />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Expert Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Company Position/Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter company name" value={company_position} onChange={(e) => setCompany_position(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter company name" value={company_position} onChange={(e) => setCompany_position(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

@@ -44,33 +44,33 @@ const Certificatedetails = () => {
   const fetchcertificateData = async () => {
     setLoading(true);
     try {
-        const BASE_URL = "https://api.sumagotraining.in/public/api";
-        const response = await axios.get(`${BASE_URL}/get_all_certificate`);
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const response = await axios.get(`${BASE_URL}/get_all_certificate`);
 
-        console.log("API Response:", response.data); // Debugging log
-        const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setcertificateData(sortedData); // Set sorted data
-        setData(sortedData); // Update the SearchExportContext data
+      console.log("API Response:", response.data); // Debugging log
+      const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setcertificateData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
 
-        if (Array.isArray(response.data)) { 
-            setcertificateData(response.data); // Directly set the array
-        } else {
-            console.error("Unexpected API response structure:", response.data);
-            toast.error("Failed to fetch certificate data");
-        }
+      if (Array.isArray(response.data)) {
+        setcertificateData(response.data); // Directly set the array
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        toast.error("Failed to fetch certificate data");
+      }
     } catch (err) {
-        console.error("Error fetching certificate data:", err);
-        toast.error("Error fetching certificate data. Please check the console.");
+      console.error("Error fetching certificate data:", err);
+      toast.error("Error fetching certificate data. Please check the console.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     fetchcertificateData();
-}, []);
+  }, []);
 
- 
+
 
 
 
@@ -132,31 +132,31 @@ useEffect(() => {
     });
   };
 
- 
+
 
   const stripHtmlTags = (html) => {
     if (!html) return "";
     return html.replace(/<\/?[^>]+(>|$)/g, ""); // Removes all HTML tags
-};
+  };
 
 
   const handleAddCertificate = () => {
-   navigate("/addcertificate");
+    navigate("/addcertificate");
   };
 
 
 
-  
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      width:"100px",
+      width: "100px",
     },
     {
       name: "Title",
       selector: (row) => row.title || "N/A",
-      width:"200px",
+      width: "200px",
 
     },
     {
@@ -171,19 +171,19 @@ useEffect(() => {
         ) : (
           "No Image"
         ),
-        width:"200px",
+      width: "200px",
 
     },
     {
       name: "Description",
       selector: (row) => stripHtmlTags(row.description) || "N/A",
       width: "450px",
-  },
-  
+    },
+
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),
-      width:"100px",
+      width: "100px",
 
     },
 
@@ -208,7 +208,7 @@ useEffect(() => {
       // width:"100px",
 
     },
-    
+
   ];
 
 
@@ -239,23 +239,26 @@ useEffect(() => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : certificateData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : certificateData}
                 pagination
-              
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

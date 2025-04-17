@@ -147,6 +147,7 @@ const UpdateLearnerReview = () => {
                                                     placeholder="Enter Title"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">

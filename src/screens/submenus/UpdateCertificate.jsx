@@ -102,7 +102,7 @@ const UpdateCetificate = () => {
       const accessToken = localStorage.getItem("remember_token");
 
       const payload = {
-       
+
         course_id: subcourses_id,
         title: title,
         description: description,
@@ -186,6 +186,7 @@ const UpdateCetificate = () => {
                           placeholder="Enter title"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">

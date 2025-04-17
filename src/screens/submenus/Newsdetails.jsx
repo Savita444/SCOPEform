@@ -47,7 +47,7 @@ const Newsdetails = () => {
   useEffect(() => {
     fetchnewsData();
   }, []);
-  
+
 
   const fetchnewsData = async () => {
     setLoading(true);
@@ -144,12 +144,12 @@ const Newsdetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddNewsdetails = () => {
-   navigate("/addnewsdetails");
+    navigate("/addnewsdetails");
   };
 
 
@@ -159,7 +159,7 @@ const Newsdetails = () => {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
     },
-    
+
     {
       name: "Image",
       cell: (row) =>
@@ -226,23 +226,26 @@ const Newsdetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : newsData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : newsData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

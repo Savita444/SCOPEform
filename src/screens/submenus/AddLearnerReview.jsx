@@ -136,7 +136,9 @@ const AddLearnerReview = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                maxLength={100}
+                                                 />
                                             </Form.Group>
 
 

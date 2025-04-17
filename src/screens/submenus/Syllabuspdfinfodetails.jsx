@@ -217,14 +217,21 @@ const Syllabuspdfinfodetails = () => {
 
             <Card.Body>
               <DataTable
+                key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={filteredData.length > 0 ? filteredData : syllabuspdfinfoData}
+                data={searchQuery ? filteredData : syllabuspdfinfoData}
                 pagination
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
+                }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
-                onChangePage={(page) => setCurrentPage(page)}
-                onChangeRowsPerPage={(rows) => setRowsPerPage(rows)}
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>

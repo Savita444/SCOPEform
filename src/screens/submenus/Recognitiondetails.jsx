@@ -140,12 +140,12 @@ const Recognitiondetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddRecognitiondetails = () => {
-   navigate("/addrecognitiondetails");
+    navigate("/addrecognitiondetails");
   };
 
 
@@ -160,17 +160,17 @@ const Recognitiondetails = () => {
       selector: (row) => row.category_name || "N/A",
     },
     {
-        name: "Title",
-        selector: (row) => row.title || "N/A",
-        width:"300px",
+      name: "Title",
+      selector: (row) => row.title || "N/A",
+      width: "300px",
 
-      },
-      {
-        name: "Description",
-        selector: (row) => row.description || "N/A",
-        width:"300px",
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description || "N/A",
+      width: "300px",
 
-      },
+    },
     {
       name: "Image",
       cell: (row) =>
@@ -237,23 +237,26 @@ const Recognitiondetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : recognitiondetailsData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : recognitiondetailsData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

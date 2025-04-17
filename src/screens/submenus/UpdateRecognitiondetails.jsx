@@ -21,15 +21,15 @@ const UpdateRecognitiondetails = () => {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(recognitiondetailsData.image || null);
     const [recognitioncategory, setRecognitionCategory] = useState([]);
-    
-    
-    
-    
-    
+
+
+
+
+
     useEffect(() => {
         fetchrecognitioncategoryData();
     }, []);
-    
+
     useEffect(() => {
         // Once category list and data are both available, match by category_name
         if (recognitioncategory.length > 0 && category_name) {
@@ -41,7 +41,7 @@ const UpdateRecognitiondetails = () => {
             }
         }
     }, [recognitioncategory, category_name]);
-    
+
 
 
 
@@ -116,11 +116,11 @@ const UpdateRecognitiondetails = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                recognitioncategoryid:recognitiondetails_id,
+                recognitioncategoryid: recognitiondetails_id,
                 title,
                 description,
                 image,
-                category_name, 
+                category_name,
 
             };
 
@@ -187,42 +187,44 @@ const UpdateRecognitiondetails = () => {
                                         </Container>
                                         <Button className="me-3 fs-5 text-nowrap"
                                             style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/recognitiondetails')}>
-                                           Recognition Details
+                                            Recognition Details
                                         </Button>
                                     </div>
                                 </Card.Header>
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                              <Form.Group className="mb-3">
-                                                                                        <Form.Label>Fun at Work Category</Form.Label>
-                                                                                        <Form.Select
-                                                                                          value={recognitiondetails_id}
-                                                                                          onChange={(e) => {
-                                                                                            const selected = recognitioncategory.find(cat => cat.id.toString() === e.target.value);
-                                                                                            if (selected) {
-                                                                                              setRecognitiondetails_id(selected.id); // id = funatworkcategoryid
-                                                                                              setCategory_name(selected.title);     // title = category_name
-                                                                                            }
-                                                                                          }}
-                                                                                        >
-                                                                                          <option value="">-- Select Category --</option>
-                                                                                          {recognitioncategory.map(cat => (
-                                                                                            <option key={cat.id} value={cat.id}>
-                                                                                              {cat.title}
-                                                                                            </option>
-                                                                                          ))}
-                                                                                        </Form.Select>
-                                                                                      </Form.Group>
-                                           
-                                                                                       <Form.Group className="mb-3">
-                                                                                           <Form.Label>Title</Form.Label>
-                                                                                           <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)} />
-                                                                                       </Form.Group>
-                                                                                       <Form.Group className="mb-3">
-                                                                                           <Form.Label>Description</Form.Label>
-                                                                                           <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={description} onChange={(e) => setDescription(e.target.value)} />
-                                                                                       </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Fun at Work Category</Form.Label>
+                                                <Form.Select
+                                                    value={recognitiondetails_id}
+                                                    onChange={(e) => {
+                                                        const selected = recognitioncategory.find(cat => cat.id.toString() === e.target.value);
+                                                        if (selected) {
+                                                            setRecognitiondetails_id(selected.id); // id = funatworkcategoryid
+                                                            setCategory_name(selected.title);     // title = category_name
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Category --</option>
+                                                    {recognitioncategory.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.title}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                            </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
@@ -242,33 +244,33 @@ const UpdateRecognitiondetails = () => {
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
-                                                                                            <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                                                            <div
-                                                                                                className="border p-4 text-center"
-                                                                                                onChange={(e) => handleImageUpload(e.target.files[0])}
-                                                                                                onDrop={handleDrop}
-                                                                                                onDragOver={(e) => e.preventDefault()}
-                                                                                            >
-                                                                                                {preview ? (
-                                                                                                    <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                                                                ) : (
-                                                                                                    <p>Drag & Drop image here or click to upload</p>
-                                                                                                )}
-                                                                                            </div>
-                                                                                            <Form.Control
-                                                                                                type="file"
-                                                                                                onChange={async (e) => {
-                                                                                                    const file = e.target.files[0];
-                                                                                                    if (file && file.type.startsWith("image/")) {
-                                                                                                        const base64 = await convertToBase64(file);
-                                                                                                        setImage(base64);
-                                                                                                        setPreview(URL.createObjectURL(file));
-                                                                                                    } else {
-                                                                                                        toast.error("Only image files are allowed.");
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        </Form.Group>
+                                                <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                                                <div
+                                                    className="border p-4 text-center"
+                                                    onChange={(e) => handleImageUpload(e.target.files[0])}
+                                                    onDrop={handleDrop}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                >
+                                                    {preview ? (
+                                                        <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                                                    ) : (
+                                                        <p>Drag & Drop image here or click to upload</p>
+                                                    )}
+                                                </div>
+                                                <Form.Control
+                                                    type="file"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file && file.type.startsWith("image/")) {
+                                                            const base64 = await convertToBase64(file);
+                                                            setImage(base64);
+                                                            setPreview(URL.createObjectURL(file));
+                                                        } else {
+                                                            toast.error("Only image files are allowed.");
+                                                        }
+                                                    }}
+                                                />
+                                            </Form.Group>
                                             <div className="d-flex justify-content-center">
                                                 <Button variant="primary" className="fs-5" type="submit">Submit</Button>
                                                 {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursedetails')}>Cancel</Button> */}

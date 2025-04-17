@@ -131,7 +131,9 @@ const handleSubmit = async (e) => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                maxLength={100}
+                                                 />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

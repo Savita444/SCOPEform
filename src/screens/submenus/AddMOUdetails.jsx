@@ -193,11 +193,13 @@ const AddMOUdetails = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Course Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter " value={title} onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
+                                                />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Description</Form.Label>
-                                                <Form.Control type="text" as={"textarea"} placeholder="Enter Course Name" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                                <Form.Control type="text" as={"textarea"} placeholder="Enter " value={description} onChange={(e) => setDescription(e.target.value)} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

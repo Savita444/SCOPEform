@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Container, Card, Image, Accordion } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -94,7 +94,7 @@ const AddCertificate = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                
+
                 course_id: subcourses_id,
                 title: title,
                 description: description,
@@ -174,7 +174,9 @@ const AddCertificate = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                maxLength={100}
+                                                 />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

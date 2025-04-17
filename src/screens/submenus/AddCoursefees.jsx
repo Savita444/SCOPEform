@@ -44,7 +44,7 @@ const Addcoursefees = () => {
 
     const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-   
+
     useEffect(() => {
         const courseIdFromLocation = location.state?.course_id;
         if (courseIdFromLocation) {
@@ -54,7 +54,7 @@ const Addcoursefees = () => {
         fetchSubcourses();
         fetchFeeCategories();
     }, []);
-    
+
     const fetchCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
@@ -70,7 +70,7 @@ const Addcoursefees = () => {
             console.error("Error fetching courses:", error);
         }
     };
-    
+
     const fetchSubcourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
@@ -86,7 +86,7 @@ const Addcoursefees = () => {
             console.error("Error fetching subcourses:", err);
         }
     };
-    
+
     const fetchFeeCategories = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
@@ -102,7 +102,7 @@ const Addcoursefees = () => {
             console.error("Error fetching program fee categories:", err);
         }
     };
-    
+
 
 
     const handleSubmit = async (e) => {
@@ -160,209 +160,221 @@ const Addcoursefees = () => {
                 <img src={logo2} className="img-fluid logo2" alt="..." />
             </div>
             <Container>
-                                    <Row className="justify-content-center">
-                                        <Col md={10}> 
-                                            <Accordion defaultActiveKey="0">
-                                                <Card className="mb-5">
-                                                    <Card.Header>
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <Container>
-                                                                <div className="text-start title-container">
-                                                                    <b className="title-text fs-2">
-                                                                        ADD COURSE<span className="highlight"> FEES</span>
-                                                                    </b>
-                                                                </div>
-                                                            </Container>
-                                                            <Button className="me-3 fs-5 text-nowrap"
-                                                                style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursefeesdetails')}>
-                                                                Course Fees Details
-                                                            </Button>
-                                                        </div>
-                                                    </Card.Header>
-                    
-                                                    <Accordion.Collapse eventKey="0">
-                                                        <Card.Body>
-                        <Form onSubmit={handleSubmit}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Program Fee Category</Form.Label>
-                                <Form.Select
-                                    value={selectedFeeCategory}
-                                    onChange={(e) => setSelectedFeeCategory(e.target.value)}
-                                >
-                                    <option value="">-- Select pro max category --</option>
-                                    {[...new Set(feeCategories.map((category) => category.title))].map((uniqueTitle, index) => (
-                                        <option key={index} value={uniqueTitle}>
-                                            {uniqueTitle}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Course Name</Form.Label>
-                                <Form.Select
-                                    value={coursename}
-                                    onChange={(e) => {
-                                        const selectedCourse = courses.find((course) => course.name === e.target.value);
-                                        if (selectedCourse) {
-                                            setCoursename(selectedCourse.name); // Set coursename
-                                            setCourseId(selectedCourse.id); // Set course_id
-                                        }
-                                    }}
-                                >
-                                    <option value="">-- Select Course --</option>
-                                    {courses.map((course) => (
-                                        <option key={course.id} value={course.name}>
-                                            {course.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
+                <Row className="justify-content-center">
+                    <Col md={10}>
+                        <Accordion defaultActiveKey="0">
+                            <Card className="mb-5">
+                                <Card.Header>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <Container>
+                                            <div className="text-start title-container">
+                                                <b className="title-text fs-2">
+                                                    ADD COURSE<span className="highlight"> FEES</span>
+                                                </b>
+                                            </div>
+                                        </Container>
+                                        <Button className="me-3 fs-5 text-nowrap"
+                                            style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/coursefeesdetails')}>
+                                            Course Fees Details
+                                        </Button>
+                                    </div>
+                                </Card.Header>
+
+                                <Accordion.Collapse eventKey="0">
+                                    <Card.Body>
+                                        <Form onSubmit={handleSubmit}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Program Fee Category</Form.Label>
+                                                <Form.Select
+                                                    value={selectedFeeCategory}
+                                                    onChange={(e) => setSelectedFeeCategory(e.target.value)}
+                                                >
+                                                    <option value="">-- Select pro max category --</option>
+                                                    {[...new Set(feeCategories.map((category) => category.title))].map((uniqueTitle, index) => (
+                                                        <option key={index} value={uniqueTitle}>
+                                                            {uniqueTitle}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Course Name</Form.Label>
+                                                <Form.Select
+                                                    value={coursename}
+                                                    onChange={(e) => {
+                                                        const selectedCourse = courses.find((course) => course.name === e.target.value);
+                                                        if (selectedCourse) {
+                                                            setCoursename(selectedCourse.name); // Set coursename
+                                                            setCourseId(selectedCourse.id); // Set course_id
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="">-- Select Course --</option>
+                                                    {courses.map((course) => (
+                                                        <option key={course.id} value={course.name}>
+                                                            {course.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
 
 
 
 
-                            <Form.Group className="mb-3">
-                                <Form.Label>Subcourse Name</Form.Label>
-                                <Form.Select
-                                    value={subcourses_name}
-                                    onChange={(e) => setSubcourses_name(e.target.value)}
-                                >
-                                    <option value="">-- Select Subcourse --</option>
-                                    {Subcourses.filter((subcourse) => subcourse.coursename === coursename).map(
-                                        (subcourse) => (
-                                            <option key={subcourse.id} value={subcourse.subcourses_name}>
-                                                {subcourse.subcourses_name}
-                                            </option>
-                                        )
-                                    )}
-                                </Form.Select>
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Subcourse Name</Form.Label>
+                                                <Form.Select
+                                                    value={subcourses_name}
+                                                    onChange={(e) => setSubcourses_name(e.target.value)}
+                                                >
+                                                    <option value="">-- Select Subcourse --</option>
+                                                    {Subcourses.filter((subcourse) => subcourse.coursename === coursename).map(
+                                                        (subcourse) => (
+                                                            <option key={subcourse.id} value={subcourse.subcourses_name}>
+                                                                {subcourse.subcourses_name}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </Form.Select>
+                                            </Form.Group>
 
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Appointment Letter"
-                                    value={job_assistance}
-                                    onChange={(e) => setjob_assistance(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Appointment Letter"
+                                                    value={job_assistance}
+                                                    onChange={(e) => setjob_assistance(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Mock Interview"
-                                    value={live_class_subscription}
-                                    onChange={(e) => setlive_class_subscription(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Mock Interview"
+                                                    value={live_class_subscription}
+                                                    onChange={(e) => setlive_class_subscription(e.target.value)}
+                                                    maxLength={100}
+                                               />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Live Project"
-                                    value={lms_subscription}
-                                    onChange={(e) => setlms_subscription(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Live Project"
+                                                    value={lms_subscription}
+                                                    onChange={(e) => setlms_subscription(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Completion Certificate"
-                                    value={domain_training}
-                                    onChange={(e) => setdomain_training(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Completion Certificate"
+                                                    value={domain_training}
+                                                    onChange={(e) => setdomain_training(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Experience Letter"
-                                    value={project_certification_from_companies}
-                                    onChange={(e) => setproject_certification_from_companies(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Experience Letter"
+                                                    value={project_certification_from_companies}
+                                                    onChange={(e) => setproject_certification_from_companies(e.target.value)}
+                                                    maxLength={100}
+                                               />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Job Assistance"
-                                    value={capstone_projects}
-                                    onChange={(e) => setcapstone_projects(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Job Assistance"
+                                                    value={capstone_projects}
+                                                    onChange={(e) => setcapstone_projects(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Resume Building"
-                                    value={adv_ai_dsa}
-                                    onChange={(e) => setadv_ai_dsa(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Resume Building"
+                                                    value={adv_ai_dsa}
+                                                    onChange={(e) => setadv_ai_dsa(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Job Guarantee"
-                                    value={industry_projects}
-                                    onChange={(e) => setindustry_projects(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Job Guarantee"
+                                                    value={industry_projects}
+                                                    onChange={(e) => setindustry_projects(e.target.value)}
+                                                    maxLength={100}
+                                               />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Job Refferal"
-                                    value={job_referrals}
-                                    onChange={(e) => setjob_referrals(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Job Refferal"
+                                                    value={job_referrals}
+                                                    onChange={(e) => setjob_referrals(e.target.value)}
+                                                    maxLength={100}
+                                               />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Training Support (1 Year)"
-                                    value={microsoft_certification}
-                                    onChange={(e) => setmicrosoft_certification(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Training Support (1 Year)"
+                                                    value={microsoft_certification}
+                                                    onChange={(e) => setmicrosoft_certification(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Sub course Fee"
-                                    value={sub_course_fee}
-                                    onChange={(e) => setsub_course_fee(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Sub course Fee"
+                                                    value={sub_course_fee}
+                                                    onChange={(e) => setsub_course_fee(e.target.value)}
+                                                    maxLength={100}
+                                                />
+                                            </Form.Group>
 
-                            <Form.Group className="mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Sub course Duration"
-                                    value={sub_course_duration}
-                                    onChange={(e) => setsub_course_duration(e.target.value)}
-                                />
-                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Sub course Duration"
+                                                    value={sub_course_duration}
+                                                    onChange={(e) => setsub_course_duration(e.target.value)}
+                                                    maxLength={100}
+                                               />
+                                            </Form.Group>
 
 
-                            <div className="d-flex justify-content-center"> <Button variant="primary" className="fs-5" type="submit">Submit</Button>
+                                            <div className="d-flex justify-content-center"> <Button variant="primary" className="fs-5" type="submit">Submit</Button>
 
 
-                                {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursefeesdetails')}>Cancel</Button> */}
-                                </div>
-                        </Form>
-                   
-                                                                           </Card.Body>
-                                                                       </Accordion.Collapse>
-                                                                   </Card>
-                                                               </Accordion>
-                                                           </Col>
-                                                       </Row>
-                                                   </Container>
-                                               </div>
+                                                {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/coursefeesdetails')}>Cancel</Button> */}
+                                            </div>
+                                        </Form>
+
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                        </Accordion>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 };
 

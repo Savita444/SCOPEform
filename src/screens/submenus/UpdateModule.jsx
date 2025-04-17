@@ -31,7 +31,7 @@ const UpdateModule = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-               
+
                 title: title
             };
 
@@ -48,7 +48,7 @@ const UpdateModule = () => {
 
                 setModule_id("");
                 setTitle("");
-               
+
             } else {
                 toast.error("Failed to update module.");
             }
@@ -104,6 +104,7 @@ const UpdateModule = () => {
                                                     type="text"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
 

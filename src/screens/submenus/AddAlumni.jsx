@@ -221,17 +221,17 @@ const AddAlumni = () => {
                                             </Form.Group>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Alumni Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter alumni name" value={name} onChange={(e) => setName(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter alumni name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Designation</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter designation" value={designation} onChange={(e) => setDesignation(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Company Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter company name" value={company} onChange={(e) => setCompany(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter company name" value={company} onChange={(e) => setCompany(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

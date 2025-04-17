@@ -24,7 +24,6 @@ const UpdateExpertreview = () => {
 
 
 
-
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -57,13 +56,18 @@ const UpdateExpertreview = () => {
 
 
 
+
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!name || !review || !company_position || !image) {
+        if (!name || !review || !company_position) {
             toast.error("Please fill in all required fields.");
             return;
         }
+
+        // If no new image uploaded, use the previous image from expertReviewData
+        const finalImage = image || expertReviewData.image;
+
 
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
@@ -74,7 +78,7 @@ const UpdateExpertreview = () => {
                 name,
                 review,
                 company_position,
-                image
+                image: finalImage,
             };
 
             const response = await axios.post(`${BASE_URL}/update_expertReview/${expertReviewData.id}`, payload, {

@@ -45,32 +45,32 @@ const Officesdetails = () => {
   const fetchOfficeData = async () => {
     setLoading(true);
     try {
-        const BASE_URL = "https://api.sumagotraining.in/public/api";
-        const response = await axios.get(`${BASE_URL}/get_ourOffice`);
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const response = await axios.get(`${BASE_URL}/get_ourOffice`);
 
-        console.log("API Response:", response.data); // Debugging log
-        const sortedData = response.data.sort((a, b) => b.id - a.id);
-        setOfficeData(sortedData); // Set sorted data
-        setData(sortedData); // Update the SearchExportContext data
+      console.log("API Response:", response.data); // Debugging log
+      const sortedData = response.data.sort((a, b) => b.id - a.id);
+      setOfficeData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
 
-        if (Array.isArray(response.data)) { 
-            setOfficeData(response.data); // Directly set the array
-        } else {
-            console.error("Unexpected API response structure:", response.data);
-            toast.error("Failed to fetch office data");
-        }
+      if (Array.isArray(response.data)) {
+        setOfficeData(response.data); // Directly set the array
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        toast.error("Failed to fetch office data");
+      }
     } catch (err) {
-        console.error("Error fetching office data:", err);
-        toast.error("Error fetching office data. Please check the console.");
+      console.error("Error fetching office data:", err);
+      toast.error("Error fetching office data. Please check the console.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     fetchOfficeData();
-}, []);
-  
+  }, []);
+
 
   const handleDelete = async (id) => {
     confirmAlert({
@@ -128,49 +128,49 @@ useEffect(() => {
     });
   };
 
- 
+
 
 
   const handleAddOffice = () => {
-   navigate("/addoffice");
+    navigate("/addoffice");
   };
 
 
-  
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      width:"80px",
+      width: "80px",
 
     },
     {
       name: "Title",
       selector: (row) => row.title || "N/A",
-      width:"200px",
+      width: "200px",
     },
     {
-        name: "Description",
-        selector: (row) => row.description || "N/A",
-        width:"300px",
+      name: "Description",
+      selector: (row) => row.description || "N/A",
+      width: "300px",
 
-      },
-      // {
-      //   name: "Link",
-      //   selector: (row) => row.link || "N/A",
-      // },
-      {
-        name: "Email",
-        selector: (row) => row.email || "N/A",
-        width:"200px",
+    },
+    // {
+    //   name: "Link",
+    //   selector: (row) => row.link || "N/A",
+    // },
+    {
+      name: "Email",
+      selector: (row) => row.email || "N/A",
+      width: "200px",
 
-      },
-      {
-        name: "Mobile",
-        selector: (row) => row.mobile_no || "N/A",
-        width:"150px",
+    },
+    {
+      name: "Mobile",
+      selector: (row) => row.mobile_no || "N/A",
+      width: "150px",
 
-      },
+    },
     {
       name: "Image",
       cell: (row) =>
@@ -183,13 +183,13 @@ useEffect(() => {
         ) : (
           "No Image"
         ),
-        width:"150px",
+      width: "150px",
 
     },
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),
-      width:"100px",
+      width: "100px",
 
     },
     {
@@ -241,23 +241,26 @@ useEffect(() => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : officeData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : officeData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

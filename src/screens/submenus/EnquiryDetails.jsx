@@ -26,6 +26,10 @@ const Enquirydetails = () => {
     const [errors, setErrors] = useState("");
     const navigate = useNavigate();
 
+
+
+
+
     useEffect(() => {
         fetchenquiryData();
     }, [currentPage]); // Fetch data when page changes
@@ -49,14 +53,14 @@ const Enquirydetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token"); // Retrieve token
-    
+
             if (!accessToken) {
                 console.error("No access token found in localStorage.");
                 toast.error("Unauthorized: No token available.");
                 setLoading(false);
                 return;
             }
-    
+
             const response = await axios.get(`${BASE_URL}/get_counselling`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`, // Attach token
@@ -67,7 +71,7 @@ const Enquirydetails = () => {
             setenquiryData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
             console.log("API Response:", response.data); // Debugging log
-    
+
             if (response.data?.status === "Success") {
                 setenquiryData(response.data.data);
             } else {
@@ -81,13 +85,13 @@ const Enquirydetails = () => {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchenquiryData();
     }, []);
-    
-    
-    
+
+
+
 
 
 
@@ -95,26 +99,26 @@ const Enquirydetails = () => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB'); // Formats as dd/mm/yyyy
     };
-    
+
     const exportExcel = () => {
         // Sort data by created_at in descending order (latest first)
         const sortedData = [...enquiryData].sort(
             (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
-    
+
         // Format date fields before exporting
         const formattedProducts = sortedData.map((enquiry) => ({
             ...enquiry,
             created_at: formatDate(enquiry.created_at),
             updated_at: formatDate(enquiry.updated_at),
         }));
-    
+
         const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Enquiry Data");
         XLSX.writeFile(workbook, "enquiry_details.xlsx");
     };
-    
+
 
 
     const handleDelete = async (id) => {
@@ -219,8 +223,8 @@ const Enquirydetails = () => {
             },
             sortable: true, // Enables sorting
             width: "200px",
-          },
-        
+        },
+
         {
             name: "Status",
             selector: (row) => (row.is_active ? "Active" : "Inactive"),
@@ -276,17 +280,22 @@ const Enquirydetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : enquiryData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : enquiryData}
                                 pagination
-                               
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
+
+
                         </Card.Body>
                     </Card>
                 </Col>

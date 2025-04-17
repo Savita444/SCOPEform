@@ -80,7 +80,6 @@ const Subcoursedetails = () => {
 
 
   useEffect(() => {
-    fetchCourses(); // Fetch courses when component mounts
     fetchSubcourses();
   }, []);
   const BASE_URL = "https://api.sumagotraining.in/public/api";
@@ -109,6 +108,7 @@ const Subcoursedetails = () => {
       const feesData = feesResponse.data || [];
 
       // Merge subcourse details with their corresponding fee details
+      // Merge subcourse details with their corresponding fee details
       const mergedData = subcoursesData.map(subcourse => {
         const feeDetail = feesData.find(fee => fee.subcourses_id === subcourse.subcourses_id);
         return {
@@ -118,8 +118,12 @@ const Subcoursedetails = () => {
         };
       });
 
-      setSubcourses(mergedData);
-      setData(mergedData); // Update the SearchExportContext data
+      // Sort by subcourses_id in descending order
+      const sortedData = mergedData.sort((a, b) => b.subcourses_id - a.subcourses_id);
+
+      setSubcourses(sortedData);
+      setData(sortedData); // Update the SearchExportContext data
+
 
     } catch (err) {
       console.error("Error fetching Subcourse details:", err);
@@ -129,22 +133,22 @@ const Subcoursedetails = () => {
   };
 
 
-  const fetchCourses = async () => {
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await axios.get(`${BASE_URL}/get_course`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+  // const fetchCourses = async () => {
+  //   const accessToken = localStorage.getItem("remember_token");
+  //   try {
+  //     const response = await axios.get(`${BASE_URL}/get_course`, {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      const coursesData = response.data?.data || [];
-      setCourses(coursesData); // Store fetched courses
-    } catch (err) {
-      console.error("Error fetching course details:", err);
-    }
-  };
+  //     const coursesData = response.data?.data || [];
+  //     setCourses(coursesData); // Store fetched courses
+  //   } catch (err) {
+  //     console.error("Error fetching course details:", err);
+  //   }
+  // };
 
 
 
@@ -359,17 +363,19 @@ const Subcoursedetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : Subcourses} // Use filtered data only when searching
+                data={searchQuery ? filteredData : Subcourses}
                 pagination
-                // paginationServer
-                // paginationTotalRows={Subcourses.length}
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>

@@ -42,16 +42,29 @@ const Coursefeesdetails = () => {
     const [courses, setCourses] = useState([]);
     const [Subcourses, setSubcourses] = useState([]);
     const [coursefees, setCoursefees] = useState([]);
-
     const navigate = useNavigate();
-
-
     const location = useLocation();
     const [course_id, setCourseId] = useState(location.state?.course_id || "");
 
     useEffect(() => {
         console.log("Selected Course Name:", coursename);
     }, [coursename]);
+
+    useEffect(() => {
+        fetchcoursefees();
+    }, [currentPage]); // Fetch data when page changes
+
+    useEffect(() => {
+        handleSearch(""); // Reset search when page changes
+    }, [currentPage]);
+
+
+    const [forceUpdate, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+        setForceUpdate((prev) => prev + 1);
+    }, [coursefees, filteredData]);
+
 
 
     useEffect(() => {
@@ -105,21 +118,21 @@ const Coursefeesdetails = () => {
     const fetchCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
-          const response = await axios.get(`${BASE_URL}/get_course`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          });
-    
-          const coursesData = response.data?.data || [];
-          setCourses(coursesData); // Store fetched courses
+            const response = await axios.get(`${BASE_URL}/get_course`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const coursesData = response.data?.data || [];
+            setCourses(coursesData); // Store fetched courses
 
         } catch (err) {
-          console.error("Error fetching course details:", err);
+            console.error("Error fetching course details:", err);
         }
-      };
-    
+    };
+
 
     const fetchSubcourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
@@ -200,7 +213,8 @@ const Coursefeesdetails = () => {
 
 
     const handleAddcoursefees = () => {
-navigate("/addcoursefees");    };
+        navigate("/addcoursefees");
+    };
 
     const handleClose = () => {
         setShowModal(false);
@@ -384,16 +398,22 @@ navigate("/addcoursefees");    };
 
                         <Card.Body>
                             <DataTable
+                                key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={filteredData.length > 0 ? filteredData : coursefees} // Ensure coursefees is populated
+                                data={searchQuery ? filteredData : coursefees}
                                 pagination
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
+                                }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
-                                onChangePage={(page) => setCurrentPage(page)}
-                                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
+                                noDataComponent="Loading...."
                             />
-
 
                         </Card.Body>
                     </Card>
@@ -401,7 +421,7 @@ navigate("/addcoursefees");    };
             </Row>
 
             {/* Modal for Adding Course */}
-            <Modal show={showModal} onHide={handleClose}>
+            {/* <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add Course Fees Details</Modal.Title>
                 </Modal.Header>
@@ -585,7 +605,7 @@ navigate("/addcoursefees");    };
                         Save changes
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal> */}
         </Container>
     );
 };

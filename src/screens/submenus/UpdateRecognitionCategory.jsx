@@ -14,7 +14,7 @@ const UpdateRecognitionCategory = () => {
   const navigate = useNavigate();
   const recognitioncategoryData = location.state || {};
 
-    const [recognitionCategory_id, setRecognitionCategory_id] = useState("");
+  const [recognitionCategory_id, setRecognitionCategory_id] = useState("");
   const [title, setTitle] = useState(recognitioncategoryData.title || "");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(recognitioncategoryData.image || null);
@@ -65,7 +65,7 @@ const UpdateRecognitionCategory = () => {
       const payload = {
         id: recognitionCategory_id,
         title: title,
-        image:image,
+        image: image,
       };
 
       const response = await axios.post(`${BASE_URL}/update_recognitioncategory/${recognitioncategoryData.id}`, payload, {
@@ -139,6 +139,7 @@ const UpdateRecognitionCategory = () => {
                           placeholder="Enter title"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">

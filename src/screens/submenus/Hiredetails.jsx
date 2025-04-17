@@ -31,6 +31,10 @@ const Hiredetails = () => {
     const location = useLocation();
     //   const [course_id, setCourseId] = useState(location.state?.course_id || "");
 
+
+
+
+
     useEffect(() => {
     }, [title]);
 
@@ -81,7 +85,7 @@ const Hiredetails = () => {
         fetchHireData();
     }, []);
 
-  
+
 
     const handleDelete = async (id) => {
         confirmAlert({
@@ -235,16 +239,19 @@ const Hiredetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : hireData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : hireData}
                                 pagination
-
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

@@ -28,6 +28,7 @@ const Alumnidetails = () => {
 
 
 
+
     const location = useLocation();
     //   const [course_id, setCourseId] = useState(location.state?.course_id || "");
 
@@ -65,14 +66,14 @@ const Alumnidetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token");
-    
+
             const response = await axios.get(`${BASE_URL}/get_alumini`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
                 }
             });
-    
+
             const sortedData = response.data.data.sort((a, b) => b.id - a.id);
             setAlumniData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
@@ -89,10 +90,10 @@ const Alumnidetails = () => {
         }
     };
 
-    
 
 
-   
+
+
     const handleDelete = async (id) => {
         confirmAlert({
             title: "Confirm to delete",
@@ -171,7 +172,7 @@ const Alumnidetails = () => {
             cell: (row) => `${row.name} `,
             sortable: true,
             sortFunction: (a, b) => a.name.localeCompare(b.name),
-            width:"200px",
+            width: "200px",
         },
         {
             name: "Designation",
@@ -185,7 +186,7 @@ const Alumnidetails = () => {
             sortable: true,
             sortFunction: (a, b) => a.company.localeCompare(b.company),
         },
-       
+
 
         {
             name: "Logo",
@@ -200,7 +201,7 @@ const Alumnidetails = () => {
                     "No Image"
                 ),
         },
-        
+
         {
             name: "Course Name",
             cell: (row) => `${row.subcourse_details} `,
@@ -252,27 +253,30 @@ const Alumnidetails = () => {
                         </Card.Header>
 
                         <Card.Body>
+
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : alumniData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : alumniData}
                                 pagination
-                                // paginationServer
-                                // paginationTotalRows={Subcourses.length}
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
 
-          
+
         </Container>
     );
 };

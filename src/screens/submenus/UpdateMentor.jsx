@@ -219,6 +219,7 @@ const UpdateMentor = () => {
                                                     placeholder="Enter mentor name"
                                                     value={name}
                                                     onChange={(e) => setName(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -228,6 +229,7 @@ const UpdateMentor = () => {
                                                     placeholder="Enter designation"
                                                     value={designation}
                                                     onChange={(e) => setDesignation(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -237,6 +239,7 @@ const UpdateMentor = () => {
                                                     placeholder="Enter company"
                                                     value={company}
                                                     onChange={(e) => setCompany(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
 
@@ -276,6 +279,7 @@ const UpdateMentor = () => {
                                                     placeholder="Enter skill"
                                                     value={skills}
                                                     onChange={(e) => setSkills(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
@@ -285,6 +289,7 @@ const UpdateMentor = () => {
                                                     placeholder="Enter experience"
                                                     value={experience}
                                                     onChange={(e) => setExperience(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <div className="d-flex justify-content-center">

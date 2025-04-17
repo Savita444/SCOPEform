@@ -87,7 +87,7 @@ const UpdateHandsonProject = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!title || !desc ||  !category_name || !subcourses_name) {
+        if (!title || !desc || !category_name || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -102,7 +102,7 @@ const UpdateHandsonProject = () => {
                 title,
                 desc,
                 category_name,
-                subcourse_details: [subcourses_name], 
+                subcourse_details: [subcourses_name],
             };
 
 
@@ -232,6 +232,7 @@ const UpdateHandsonProject = () => {
                                                     placeholder="Enter title"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">

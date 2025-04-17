@@ -64,49 +64,15 @@ const Subsubcoursedetails = () => {
 
   useEffect(() => {
     fetchSubcoursedetails();
-    fetchCourses();
-    fetchSubCourses();
+
   }, []);
 
 
   const BASE_URL = "https://api.sumagotraining.in/public/api";
 
-  const fetchCourses = async () => {
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await axios.get(`${BASE_URL}/get_course`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
 
-      const coursesData = response.data?.data || [];
-      setCourses(coursesData); // Store fetched courses
 
-    } catch (err) {
-      console.error("Error fetching course details:", err);
-    }
-  };
 
-  const fetchSubCourses = async () => {
-    const accessToken = localStorage.getItem("remember_token");
-    try {
-      const response = await axios.get(`${BASE_URL}/get_all_subcourses`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      // Ensure response.data.data is an array
-      const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
-
-      setSubCourses(subCoursesData); // Store fetched subcourses
-    } catch (err) {
-      console.error("Error fetching subcourses:", err);
-    }
-  };
 
 
 
@@ -194,7 +160,8 @@ const Subsubcoursedetails = () => {
 
 
   const handleAddCourse = () => {
-navigate("/addsubsubcourse");  };
+    navigate("/addsubsubcourse");
+  };
 
   // const handleClose = () => {
   //   setShowModal(false);
@@ -341,17 +308,19 @@ navigate("/addsubsubcourse");  };
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : subcoursedetails} // Use filtered data only when searching
+                data={searchQuery ? filteredData : subcoursedetails}
                 pagination
-                // paginationServer
-                // paginationTotalRows={subcoursedetails.length}
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>

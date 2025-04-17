@@ -141,12 +141,12 @@ const Funatworkdetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddFunatworkdata = () => {
-   navigate("/addfunatworkdata");
+    navigate("/addfunatworkdata");
   };
 
 
@@ -161,13 +161,13 @@ const Funatworkdetails = () => {
       selector: (row) => row.category_name || "N/A",
     },
     {
-        name: "Title",
-        selector: (row) => row.title || "N/A",
-      },
-      {
-        name: "Description",
-        selector: (row) => row.description || "N/A",
-      },
+      name: "Title",
+      selector: (row) => row.title || "N/A",
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description || "N/A",
+    },
     {
       name: "Image",
       cell: (row) =>
@@ -234,23 +234,26 @@ const Funatworkdetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : funatworkData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : funatworkData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

@@ -52,24 +52,24 @@ const UpdateSyllabus = () => {
                         "Content-Type": "application/json",
                     },
                 });
-    
+
                 const subCoursesData = Array.isArray(response.data?.data) ? response.data.data : [];
                 setSubCourses(subCoursesData);
-    
+
                 //  Set sub_course_id based on subcourses_name
                 const existing = subCoursesData.find(item => item.subcourses_name === subcourses_name);
                 if (existing) {
                     setSubcourses_id(existing.subcourses_id);
                 }
-    
+
             } catch (err) {
                 console.error("Error fetching subcourses:", err);
             }
         };
-    
+
         fetchSubCourses();
     }, [subcourses_name]);
-    
+
 
 
 
@@ -114,7 +114,7 @@ const UpdateSyllabus = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-                
+
                 course_id: sub_course_id,
                 module_id: id,
                 title,
@@ -195,7 +195,7 @@ const UpdateSyllabus = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleUpdate}>
-                                        <Form.Group className="mb-3">
+                                            <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
@@ -247,7 +247,7 @@ const UpdateSyllabus = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

@@ -17,7 +17,7 @@ const AddRecognitionCategory = () => {
     const [preview, setPreview] = useState(null);
     const navigate = useNavigate();
 
-    
+
     // Function to convert image to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ const AddRecognitionCategory = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!title ||  !image) {
+        if (!title || !image) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -62,9 +62,9 @@ const AddRecognitionCategory = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-               id: recognitionCategory_id,
+                id: recognitionCategory_id,
                 title: title,
-                image:image,
+                image: image,
             };
 
             const response = await axios.post(`${BASE_URL}/add_recognitioncategory`, payload, {
@@ -79,7 +79,7 @@ const AddRecognitionCategory = () => {
                 navigate("/recognitioncategorydetails");
                 setRecognitionCategory_id("");
                 setTitle("");
-                
+
                 setImage(null);
                 setPreview(null);
             } else {
@@ -91,7 +91,7 @@ const AddRecognitionCategory = () => {
     };
 
 
-    
+
 
 
 
@@ -132,7 +132,9 @@ const AddRecognitionCategory = () => {
                                         <Form onSubmit={handleSubmit}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
+                                                />
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

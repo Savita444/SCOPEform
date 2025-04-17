@@ -107,8 +107,7 @@ const Addsyllabuspdf = () => {
                 setSubcourses_id("");
                 setSubcourses_name("");
                 setFile("");
-                setDesignation("");
-
+               
             } else {
                 toast.error("Failed to add syllabus pdf.");
             }

@@ -45,45 +45,45 @@ const RecognitionCategorydetails = () => {
 
   useEffect(() => {
     fetchrecognitioncategoryData();
-}, []);
+  }, []);
 
-const fetchrecognitioncategoryData = async () => {
-  setLoading(true);
-  try {
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-    const accessToken = localStorage.getItem("remember_token"); // Retrieve token
+  const fetchrecognitioncategoryData = async () => {
+    setLoading(true);
+    try {
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token"); // Retrieve token
 
-    if (!accessToken) {
-      console.error("No access token found in localStorage.");
-      toast.error("Unauthorized: No token available.");
-      setLoading(false);
-      return;
-    }
-
-    const response = await axios.get(`${BASE_URL}/get_recognitioncategory`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // Attach token
-        "Content-Type": "application/json"
+      if (!accessToken) {
+        console.error("No access token found in localStorage.");
+        toast.error("Unauthorized: No token available.");
+        setLoading(false);
+        return;
       }
-    });
 
-    const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    setrecognitioncategoryData(sortedData); // Set sorted data
-    setData(sortedData); // Update the SearchExportContext data
-    console.log("API Response:", response.data); // Debugging log
+      const response = await axios.get(`${BASE_URL}/get_recognitioncategory`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Attach token
+          "Content-Type": "application/json"
+        }
+      });
 
-    if (response.data?.status === "Success") {
-      setrecognitioncategoryData(response.data.data);
-    } else {
+      const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setrecognitioncategoryData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
+      console.log("API Response:", response.data); // Debugging log
+
+      if (response.data?.status === "Success") {
+        setrecognitioncategoryData(response.data.data);
+      } else {
+      }
+    } catch (err) {
+      console.error("Error fetching recognition category data:", err);
+      toast.error("Error fetching recognition category data. Please check the console.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error fetching recognition category data:", err);
-    toast.error("Error fetching recognition category data. Please check the console.");
-  } finally {
-    setLoading(false);
-  }
-};
-  
+  };
+
 
 
 
@@ -145,17 +145,17 @@ const fetchrecognitioncategoryData = async () => {
     });
   };
 
-  
+
 
 
 
   const handleAddRecognitionCategory = () => {
-   navigate("/addrecognitioncategory");
+    navigate("/addrecognitioncategory");
   };
 
 
 
-  
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
@@ -231,23 +231,26 @@ const fetchrecognitioncategoryData = async () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : recognitioncategoryData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : recognitioncategoryData}
                 pagination
-             
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

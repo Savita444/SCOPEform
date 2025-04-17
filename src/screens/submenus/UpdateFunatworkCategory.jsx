@@ -61,7 +61,7 @@ const UpdateFunatworkCategory = () => {
       const accessToken = localStorage.getItem("remember_token");
 
       const payload = {
-        id:funatworkCategory_id,
+        id: funatworkCategory_id,
         title: title,
         image
       };
@@ -142,37 +142,38 @@ const UpdateFunatworkCategory = () => {
                           placeholder="Enter title"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                       <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
-                                                                       <div
-                                                                           className="border p-4 text-center"
-                                                                           onChange={(e) => handleImageUpload(e.target.files[0])}
-                                                                           onDrop={handleDrop}
-                                                                           onDragOver={(e) => e.preventDefault()}
-                                                                       >
-                                                                           {preview ? (
-                                                                               <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                                                                           ) : (
-                                                                               <p>Drag & Drop image here or click to upload</p>
-                                                                           )}
-                                                                       </div>
-                                                                       <Form.Control
-                                                                           type="file"
-                                                                           onChange={async (e) => {
-                                                                               const file = e.target.files[0];
-                                                                               if (file && file.type.startsWith("image/")) {
-                                                                                   const base64 = await convertToBase64(file);
-                                                                                   setImage(base64);
-                                                                                   setPreview(URL.createObjectURL(file));
-                                                                               } else {
-                                                                                   toast.error("Only image files are allowed.");
-                                                                               }
-                                                                           }}
-                                                                       />
-                                                                   </Form.Group>
-                       
+                        <Form.Label>Upload Image (Drag and Drop or Click)</Form.Label>
+                        <div
+                          className="border p-4 text-center"
+                          onChange={(e) => handleImageUpload(e.target.files[0])}
+                          onDrop={handleDrop}
+                          onDragOver={(e) => e.preventDefault()}
+                        >
+                          {preview ? (
+                            <Image src={preview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                          ) : (
+                            <p>Drag & Drop image here or click to upload</p>
+                          )}
+                        </div>
+                        <Form.Control
+                          type="file"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file && file.type.startsWith("image/")) {
+                              const base64 = await convertToBase64(file);
+                              setImage(base64);
+                              setPreview(URL.createObjectURL(file));
+                            } else {
+                              toast.error("Only image files are allowed.");
+                            }
+                          }}
+                        />
+                      </Form.Group>
+
 
                       <div className="d-flex justify-content-center">
                         <Button variant="primary" className="fs-5" type="submit">Submit</Button>

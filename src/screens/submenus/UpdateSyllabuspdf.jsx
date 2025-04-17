@@ -119,7 +119,7 @@ const UpdateSyllabuspdf = () => {
                 setSubcourses_id("");
                 setSubcourses_name("");
                 setFile("");
-                setDesignation("");
+               
 
             } else {
                 toast.error("Failed to update syllabus pdf.");

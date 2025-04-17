@@ -50,7 +50,7 @@ const Googlereviewdetails = () => {
       const response = await axios.get(`${BASE_URL}/get_googleReview`);
 
       console.log("API Response:", response.data); // Debugging log
-      
+
       const sortedData = response.data.sort((a, b) => b.id - a.id);
       setreviewdata(sortedData); // Set sorted data
       setData(sortedData); // Update the SearchExportContext data
@@ -214,16 +214,19 @@ const Googlereviewdetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : reviewdata} // Use filtered data only when searching
+                data={searchQuery ? filteredData : reviewdata}
                 pagination
-
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>

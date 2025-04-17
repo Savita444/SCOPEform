@@ -234,6 +234,7 @@ const UpdateCourse = () => {
                           placeholder="Enter course name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
+                          maxLength={100}
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">

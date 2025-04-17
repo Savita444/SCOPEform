@@ -18,10 +18,28 @@ const ProgramfeesCategoryDetails = () => {
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
-    const [feescategory, setFeescategory] = useState([]); 
+    const [feescategory, setFeescategory] = useState([]);
     const navigate = useNavigate();
 
     const BASE_URL = "https://api.sumagotraining.in/public/api";
+
+    useEffect(() => {
+        fetchfeescategory();
+    }, [currentPage]); // Fetch data when page changes
+
+    useEffect(() => {
+        handleSearch(""); // Reset search when page changes
+    }, [currentPage]);
+
+
+    const [forceUpdate, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+        setForceUpdate((prev) => prev + 1);
+    }, [feescategory, filteredData]);
+
+
+
 
     useEffect(() => {
         fetchfeescategory();
@@ -41,7 +59,7 @@ const ProgramfeesCategoryDetails = () => {
 
             const sortedData = feescategorydata.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            setFeescategory(sortedData); 
+            setFeescategory(sortedData);
             setData(sortedData); // Update the SearchExportContext data
 
         } catch (err) {
@@ -104,7 +122,7 @@ const ProgramfeesCategoryDetails = () => {
     };
 
     const handleFeescategory = () => {
-     navigate("/addprogramfeescategory");
+        navigate("/addprogramfeescategory");
     };
 
     // const handleClose = () => {
@@ -199,14 +217,21 @@ const ProgramfeesCategoryDetails = () => {
                         </Card.Header>
                         <Card.Body>
                             <DataTable
+                                key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={filteredData.length > 0 ? filteredData : feescategory}
+                                data={searchQuery ? filteredData : feescategory}
                                 pagination
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
+                                }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
-                                onChangePage={(page) => setCurrentPage(page)}
-                                onChangeRowsPerPage={(rows) => setRowsPerPage(rows)}
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

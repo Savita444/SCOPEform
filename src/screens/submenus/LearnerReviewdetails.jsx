@@ -84,7 +84,7 @@ const LearnerReviewdetails = () => {
     }
   };
 
-  
+
 
 
 
@@ -144,30 +144,30 @@ const LearnerReviewdetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddLearnerReview = () => {
-   navigate("/addlearnerreview");
+    navigate("/addlearnerreview");
   };
 
 
 
- 
+
 
 
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      width:"100px",
+      width: "100px",
 
     },
     {
       name: "Title",
       selector: (row) => row.title || "N/A",
-      width:"300px",
+      width: "300px",
 
     },
     {
@@ -182,15 +182,15 @@ const LearnerReviewdetails = () => {
         ) : (
           "No Image"
         ),
-        width:"150px",
+      width: "150px",
 
-      },
+    },
     {
-        name: "Description",
-        selector: (row) => row.description || "N/A",
-        width:"400px",
+      name: "Description",
+      selector: (row) => row.description || "N/A",
+      width: "400px",
 
-      },
+    },
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),
@@ -244,23 +244,26 @@ const LearnerReviewdetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : learnerreviewData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : learnerreviewData}
                 pagination
-              
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

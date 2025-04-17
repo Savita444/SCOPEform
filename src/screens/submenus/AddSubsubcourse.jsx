@@ -20,7 +20,7 @@ const AddSubsubcourse = () => {
   const [banner, setBanner] = useState(null);
   const [back_image, setBack_image] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
-  const [backImagePreview, setBackImagePreview] = useState(null); 
+  const [backImagePreview, setBackImagePreview] = useState(null);
   const navigate = useNavigate();
   const BASE_URL = "https://api.sumagotraining.in/public/api";
 
@@ -140,170 +140,173 @@ const AddSubsubcourse = () => {
       </div>
 
       <Container>
-                             <Row className="justify-content-center">
-                                 <Col md={10}> 
-                                     <Accordion defaultActiveKey="0">
-                                         <Card className="mb-4" >
-                                             <Card.Header>
-                                                 <div className="d-flex justify-content-between align-items-center">
-                                                     <Container>
-                                                         <div className="text-start title-container">
-                                                             <b className="title-text fs-2">
-                                                                 ADD <span className="highlight">SUB-SUBCOURSE</span>
-                                                             </b>
-                                                         </div>
-                                                     </Container>
-                                                     <Button className="me-3 fs-5 text-nowrap"
-                                                         style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/subsubcoursedetails')}>
-                                                         Sub-subcourse Details
-                                                     </Button>
-                                                 </div>
-                                             </Card.Header>
-             
-                                             <Accordion.Collapse eventKey="0">
-                                                 <Card.Body>
-                <Form onSubmit={handleSubmit}>
-                  {/* Course Name */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Course Name</Form.Label>
-                    <Form.Select
-                      value={coursename}
-                      onChange={(e) => {
-                        const selectedCourse = courses.find((course) => course.name === e.target.value);
-                        setCoursename(selectedCourse?.name || "");
-                      }}
-                    >
-                      <option value="">-- Select Course --</option>
-                      {courses.map((course) => (
-                        <option key={course.id} value={course.name}>{course.name}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
+        <Row className="justify-content-center">
+          <Col md={10}>
+            <Accordion defaultActiveKey="0">
+              <Card className="mb-4" >
+                <Card.Header>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <Container>
+                      <div className="text-start title-container">
+                        <b className="title-text fs-2">
+                          ADD <span className="highlight">SUB-SUBCOURSE</span>
+                        </b>
+                      </div>
+                    </Container>
+                    <Button className="me-3 fs-5 text-nowrap"
+                      style={{ whiteSpace: "nowrap" }} variant="secondary" onClick={() => navigate('/subsubcoursedetails')}>
+                      Sub-subcourse Details
+                    </Button>
+                  </div>
+                </Card.Header>
 
-                  {/* Subcourse Name */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Select Subcourse</Form.Label>
-                    <Form.Select
-                      value={subcourses_name}
-                      onChange={(e) => {
-                        const selectedSubcourse = subCourses.find((sub) => sub.subcourses_name === e.target.value);
-                        setSubcourses_name(selectedSubcourse?.subcourses_name || "");
-                      }}
-                    >
-                      <option value="">-- Select Subcourse --</option>
-                      {subCourses.map((sub) => (
-                        <option key={sub.subcourses_id} value={sub.subcourses_name}>
-                          {sub.subcourses_name} ({sub.coursename})
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
+                <Accordion.Collapse eventKey="0">
+                  <Card.Body>
+                    <Form onSubmit={handleSubmit}>
+                      {/* Course Name */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Course Name</Form.Label>
+                        <Form.Select
+                          value={coursename}
+                          onChange={(e) => {
+                            const selectedCourse = courses.find((course) => course.name === e.target.value);
+                            setCoursename(selectedCourse?.name || "");
+                          }}
+                        >
+                          <option value="">-- Select Course --</option>
+                          {courses.map((course) => (
+                            <option key={course.id} value={course.name}>{course.name}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
 
-                  {/* Title */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </Form.Group>
+                      {/* Subcourse Name */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Select Subcourse</Form.Label>
+                        <Form.Select
+                          value={subcourses_name}
+                          onChange={(e) => {
+                            const selectedSubcourse = subCourses.find((sub) => sub.subcourses_name === e.target.value);
+                            setSubcourses_name(selectedSubcourse?.subcourses_name || "");
+                          }}
+                        >
+                          <option value="">-- Select Subcourse --</option>
+                          {subCourses.map((sub) => (
+                            <option key={sub.subcourses_id} value={sub.subcourses_name}>
+                              {sub.subcourses_name} ({sub.coursename})
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
 
-                  {/* Description */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      type="text"
-                      as="textarea"
-                      placeholder="Enter description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                  </Form.Group>
+                      {/* Title */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter title"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
+                        />
+                      </Form.Group>
 
-                  {/* Custom Text */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Custom Text</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter custom text"
-                      value={custome_text}
-                      onChange={(e) => setcustome_text(e.target.value)}
-                    />
-                  </Form.Group>
+                      {/* Description */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                          type="text"
+                          as="textarea"
+                          placeholder="Enter description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          maxLength={100}
+                        />
+                      </Form.Group>
 
-                  {/* Banner Upload */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Upload Banner Image (Drag and Drop or Click)</Form.Label>
-                    <div
-                      className="border p-4 text-center"
-                      onDrop={handleBannerDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                    >
-                      {bannerPreview ? (
-                        <Image src={bannerPreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                      ) : (
-                        <p>Drag & Drop image here or click to upload</p>
-                      )}
-                    </div>
-                    <Form.Control
-                      type="file"
-                      onChange={async (e) => {
-                        const file = e.target.files[0];
-                        if (file && file.type.startsWith("image/")) {
-                          const base64 = await convertToBase64(file);
-                          setBanner(base64);
-                          setBannerPreview(URL.createObjectURL(file));
-                        } else {
-                          toast.error("Only image files are allowed.");
-                        }
-                      }}
-                    />
-                  </Form.Group>
+                      {/* Custom Text */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Custom Text</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter custom text"
+                          value={custome_text}
+                          onChange={(e) => setcustome_text(e.target.value)}
+                          maxLength={100}
+                        />
+                      </Form.Group>
 
-                  {/* Background Image Upload */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Upload Back Image (Drag and Drop or Click)</Form.Label>
-                    <div
-                      className="border p-4 text-center"
-                      onDrop={handleBackImageDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                    >
-                      {backImagePreview ? (
-                        <Image src={backImagePreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
-                      ) : (
-                        <p>Drag & Drop image here or click to upload</p>
-                      )}
-                    </div>
-                    <Form.Control
-                      type="file"
-                      onChange={async (e) => {
-                        const file = e.target.files[0];
-                        if (file && file.type.startsWith("image/")) {
-                          const base64 = await convertToBase64(file);
-                          setBack_image(base64);
-                          setBackImagePreview(URL.createObjectURL(file));
-                        } else {
-                          toast.error("Only image files are allowed.");
-                        }
-                      }}
-                    />
-                  </Form.Group>
+                      {/* Banner Upload */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Upload Banner Image (Drag and Drop or Click)</Form.Label>
+                        <div
+                          className="border p-4 text-center"
+                          onDrop={handleBannerDrop}
+                          onDragOver={(e) => e.preventDefault()}
+                        >
+                          {bannerPreview ? (
+                            <Image src={bannerPreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                          ) : (
+                            <p>Drag & Drop image here or click to upload</p>
+                          )}
+                        </div>
+                        <Form.Control
+                          type="file"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file && file.type.startsWith("image/")) {
+                              const base64 = await convertToBase64(file);
+                              setBanner(base64);
+                              setBannerPreview(URL.createObjectURL(file));
+                            } else {
+                              toast.error("Only image files are allowed.");
+                            }
+                          }}
+                        />
+                      </Form.Group>
 
-                  {/* Buttons */}
-                  <div className="d-flex justify-content-center"> <Button variant="primary" className="fs-5" type="submit">Submit</Button>
-                    {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/subsubcoursedetails')}>Cancel</Button></div> */}
-</div>
-                </Form>
-                 </Card.Body>
-                                                                  </Accordion.Collapse>
-                                                              </Card>
-                                                          </Accordion>
-                                                      </Col>
-                                                  </Row>
-                                              </Container>
-                                          </div>
+                      {/* Background Image Upload */}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Upload Back Image (Drag and Drop or Click)</Form.Label>
+                        <div
+                          className="border p-4 text-center"
+                          onDrop={handleBackImageDrop}
+                          onDragOver={(e) => e.preventDefault()}
+                        >
+                          {backImagePreview ? (
+                            <Image src={backImagePreview} alt="Preview" thumbnail style={{ maxWidth: "200px" }} />
+                          ) : (
+                            <p>Drag & Drop image here or click to upload</p>
+                          )}
+                        </div>
+                        <Form.Control
+                          type="file"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file && file.type.startsWith("image/")) {
+                              const base64 = await convertToBase64(file);
+                              setBack_image(base64);
+                              setBackImagePreview(URL.createObjectURL(file));
+                            } else {
+                              toast.error("Only image files are allowed.");
+                            }
+                          }}
+                        />
+                      </Form.Group>
+
+                      {/* Buttons */}
+                      <div className="d-flex justify-content-center"> <Button variant="primary" className="fs-5" type="submit">Submit</Button>
+                        {/* <Button variant="secondary" className="ms-2" onClick={() => navigate('/subsubcoursedetails')}>Cancel</Button></div> */}
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </Accordion.Collapse>
+              </Card>
+            </Accordion>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

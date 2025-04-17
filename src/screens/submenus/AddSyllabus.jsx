@@ -17,7 +17,7 @@ const AddSyllabus = () => {
     const [syllabus_id, setSyllabus_id] = useState("");
     const [sub_course_id, setSubcourses_id] = useState("");
     const [subcourses_name, setSubcourses_name] = useState("");
-    
+
     const [coursename, setCoursename] = useState("");
     const [subCourses, setSubCourses] = useState([]);
 
@@ -34,7 +34,7 @@ const AddSyllabus = () => {
     const location = useLocation();
 
 
-    
+
     const fetchSubCourses = async () => {
         const accessToken = localStorage.getItem("remember_token");
         try {
@@ -110,7 +110,7 @@ const AddSyllabus = () => {
             const accessToken = localStorage.getItem("remember_token");
 
             const payload = {
-              
+
                 course_id: sub_course_id,
                 module_id: id,
                 title,
@@ -194,7 +194,7 @@ const AddSyllabus = () => {
                                 <Accordion.Collapse eventKey="0">
                                     <Card.Body>
                                         <Form onSubmit={handleSubmit}>
-                                        <Form.Group className="mb-3">
+                                            <Form.Group className="mb-3">
                                                 <Form.Label>Subcourse Name</Form.Label>
                                                 <Form.Select
                                                     value={subcourses_name}
@@ -243,7 +243,7 @@ const AddSyllabus = () => {
 
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Title</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                                <Form.Control type="text" placeholder="Enter Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100}/>
                                             </Form.Group>
 
                                             <Form.Group className="mb-3">

@@ -264,6 +264,7 @@ return (
                         placeholder="Enter subcourse name"
                         value={subcourses_name}
                         onChange={(e) => setSubcourses_name(e.target.value)}
+                        maxLength={100}
                     />
                 </Form.Group>
 

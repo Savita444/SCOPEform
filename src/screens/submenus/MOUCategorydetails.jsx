@@ -45,45 +45,45 @@ const MOUCategorydetails = () => {
 
   useEffect(() => {
     fetchmoucategoryData();
-}, []);
+  }, []);
 
-const fetchmoucategoryData = async () => {
-  setLoading(true);
-  try {
-    const BASE_URL = "https://api.sumagotraining.in/public/api";
-    const accessToken = localStorage.getItem("remember_token"); // Retrieve token
+  const fetchmoucategoryData = async () => {
+    setLoading(true);
+    try {
+      const BASE_URL = "https://api.sumagotraining.in/public/api";
+      const accessToken = localStorage.getItem("remember_token"); // Retrieve token
 
-    if (!accessToken) {
-      console.error("No access token found in localStorage.");
-      toast.error("Unauthorized: No token available.");
-      setLoading(false);
-      return;
-    }
-
-    const response = await axios.get(`${BASE_URL}/get_moucategory`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // Attach token
-        "Content-Type": "application/json"
+      if (!accessToken) {
+        console.error("No access token found in localStorage.");
+        toast.error("Unauthorized: No token available.");
+        setLoading(false);
+        return;
       }
-    });
 
-    const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    setmoucategoryData(sortedData); // Set sorted data
-    setData(sortedData); // Update the SearchExportContext data
-    console.log("API Response:", response.data); // Debugging log
+      const response = await axios.get(`${BASE_URL}/get_moucategory`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Attach token
+          "Content-Type": "application/json"
+        }
+      });
 
-    if (response.data?.status === "Success") {
-      setmoucategoryData(response.data.data);
-    } else {
+      const sortedData = response.data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setmoucategoryData(sortedData); // Set sorted data
+      setData(sortedData); // Update the SearchExportContext data
+      console.log("API Response:", response.data); // Debugging log
+
+      if (response.data?.status === "Success") {
+        setmoucategoryData(response.data.data);
+      } else {
+      }
+    } catch (err) {
+      console.error("Error fetching MOU category data:", err);
+      toast.error("Error fetching MOU category data. Please check the console.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error fetching MOU category data:", err);
-    toast.error("Error fetching MOU category data. Please check the console.");
-  } finally {
-    setLoading(false);
-  }
-};
-  
+  };
+
 
 
   const handleDelete = async (id) => {
@@ -142,17 +142,17 @@ const fetchmoucategoryData = async () => {
     });
   };
 
-  
+
 
 
 
   const handleAddMOUCategory = () => {
-   navigate("/addmoucategory");
+    navigate("/addmoucategory");
   };
 
 
 
-  
+
   const tableColumns = (currentPage, rowsPerPage) => [
     {
       name: "Sr. No.",
@@ -228,23 +228,26 @@ const fetchmoucategoryData = async () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : moucategoryData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : moucategoryData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };

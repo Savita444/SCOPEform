@@ -23,6 +23,22 @@ const ViewImplanttraining = () => {
         fetchProducts();
     }, []);
 
+     useEffect(() => {
+            fetchProducts();
+        }, [currentPage]); // Fetch data when page changes
+    
+
+    useEffect(() => {
+        handleSearch(""); // Reset search when page changes
+    }, [currentPage]);
+
+    const [forceUpdate, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+        setForceUpdate((prev) => prev + 1);
+    }, [products, filteredData]);
+
+
     const fetchProducts = async () => {
         setLoading(true);
 
@@ -36,14 +52,14 @@ const ViewImplanttraining = () => {
             });
             const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            setProducts(sortedData); 
+            setProducts(sortedData);
             setData(sortedData); // Update the SearchExportContext data
-     
-          } catch (error) {
+
+        } catch (error) {
             console.error("Error fetching products:", error);
         } finally {
             setLoading(false);
-          }
+        }
     };
 
     const formatDate = (dateString) => {
@@ -58,13 +74,13 @@ const ViewImplanttraining = () => {
             updated_at: formatDate(product.updated_at),
             dob: formatDate(product.dob),
         }));
-    
+
         const worksheet = XLSX.utils.json_to_sheet(formattedProducts);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Implant Training Details");
         XLSX.writeFile(workbook, "implant-training-details.xlsx");
     };
-    
+
     // Helper function to format date & time for Excel export
     const formatDateTime = (dateString) => {
         const dateObj = new Date(dateString);
@@ -72,7 +88,7 @@ const ViewImplanttraining = () => {
         const time = dateObj.toLocaleTimeString("en-GB", { hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' });
         return `${date} ${time}`;
     };
-    
+
 
 
     const tableColumns = (currentPage, rowsPerPage) => [
@@ -157,9 +173,9 @@ const ViewImplanttraining = () => {
             width: "200px",
         },
     ];
-    
-    
-    
+
+
+
 
     return (
         <Container fluid>
@@ -175,28 +191,35 @@ const ViewImplanttraining = () => {
                                     <SearchInput searchQuery={searchQuery} onSearch={handleSearch} showExportButton={false} />
                                 </Col>
                             </Row>
-                             <Row className="mt-3">
-                                            <Col className="d-flex justify-content-end">
-                                              <Button
-                                                variant="primary"
-                                                onClick={exportExcel}
-                                              >
-                                                <FaDownLong /> Export to Excel
-                                              </Button>
-                                            </Col>
-                                          </Row>
+                            <Row className="mt-3">
+                                <Col className="d-flex justify-content-end">
+                                    <Button
+                                        variant="primary"
+                                        onClick={exportExcel}
+                                    >
+                                        <FaDownLong /> Export to Excel
+                                    </Button>
+                                </Col>
+                            </Row>
                         </Card.Header>
 
                         <Card.Body>
-                            <DataTable
+                        <DataTable
+                                key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={filteredData.length > 0 ? filteredData : products}
+                                data={searchQuery ? filteredData : products}
                                 pagination
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
+                                }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
-                                onChangePage={(page) => setCurrentPage(page)}
-                                onChangeRowsPerPage={(rowsPerPage) => setRowsPerPage(rowsPerPage)}
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

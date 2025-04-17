@@ -268,21 +268,23 @@ const Coursedetails = () => {
             </Card.Header>
 
             <Card.Body>
-              <DataTable
-                key={forceUpdate}
-                columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : courses} // Use filtered data only when searching
-                pagination
-                paginationServer
-                paginationTotalRows={courses.length}
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
-                }}
-                responsive
-                striped
-                noDataComponent="No Data Available"
-              />
+            <DataTable
+                                key={forceUpdate}
+                                columns={tableColumns(currentPage, rowsPerPage)}
+                                data={searchQuery ? filteredData : courses}
+                                pagination
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
+                                }}
+                                responsive
+                                striped
+                                noDataComponent="Loading...."
+                            />
             </Card.Body>
           </Card>
         </Col>

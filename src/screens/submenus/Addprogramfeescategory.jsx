@@ -87,6 +87,7 @@ const AddProgramFeesCategory = () => {
                           placeholder="Enter category name"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
+                          maxLength={100}
                           required
                         />
                       </Form.Group>

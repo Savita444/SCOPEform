@@ -11,7 +11,7 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
- 
+
 
 
 const Bannerdetails = () => {
@@ -30,6 +30,11 @@ const Bannerdetails = () => {
 
     const location = useLocation();
     //   const [course_id, setCourseId] = useState(location.state?.course_id || "");
+
+
+
+
+
 
     useEffect(() => {
     }, [title]);
@@ -56,14 +61,14 @@ const Bannerdetails = () => {
         try {
             const BASE_URL = "https://api.sumagotraining.in/public/api";
             const accessToken = localStorage.getItem("remember_token");
-    
+
             const response = await axios.get(`${BASE_URL}/get_bannerImages`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
                 }
             });
-    
+
             const sortedData = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setbannerimagesData(sortedData); // Set sorted data
             setData(sortedData); // Update the SearchExportContext data
@@ -81,8 +86,8 @@ const Bannerdetails = () => {
             setLoading(false);
         }
     };
-    
-    
+
+
     useEffect(() => {
         fetchbannerimagesData();
     }, []);
@@ -90,7 +95,7 @@ const Bannerdetails = () => {
 
 
 
-  
+
 
 
     const handleDelete = async (id) => {
@@ -168,7 +173,7 @@ const Bannerdetails = () => {
             name: "Sr. No.",
             selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
         },
-       
+
         {
             name: "Image",
             cell: (row) =>
@@ -234,16 +239,19 @@ const Bannerdetails = () => {
                             <DataTable
                                 key={forceUpdate}
                                 columns={tableColumns(currentPage, rowsPerPage)}
-                                data={searchQuery ? filteredData : bannerimagesData} // Use filtered data only when searching
+                                data={searchQuery ? filteredData : bannerimagesData}
                                 pagination
-                              
-                                onChangePage={(page) => {
-                                    setCurrentPage(page);
-                                    handleSearch(""); // Reset search when changing pages
+                                paginationDefaultPage={currentPage}
+                                paginationPerPage={rowsPerPage}
+                                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                                onChangePage={(page) => setCurrentPage(page)}
+                                onChangeRowsPerPage={(newPerPage, page) => {
+                                    setRowsPerPage(newPerPage);
+                                    setCurrentPage(page); // Keep page in sync
                                 }}
                                 responsive
                                 striped
-                                noDataComponent="No Data Available"
+                                noDataComponent="Loading...."
                             />
                         </Card.Body>
                     </Card>

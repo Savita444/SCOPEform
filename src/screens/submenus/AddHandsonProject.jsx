@@ -82,7 +82,7 @@ const AddHandsonProject = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if ( !title || !desc || !category_name || !subcourses_name) {
+        if (!title || !desc || !category_name || !subcourses_name) {
             toast.error("Please fill in all required fields.");
             return;
         }
@@ -97,7 +97,7 @@ const AddHandsonProject = () => {
                 title,
                 desc,
                 category_name,
-                subcourse_details: [subcourses_name], 
+                subcourse_details: [subcourses_name],
 
             };
 
@@ -225,6 +225,7 @@ const AddHandsonProject = () => {
                                                     placeholder="Enter title"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
+                                                    maxLength={100}
                                                 />
                                             </Form.Group>
                                             <Form.Group className="mb-3">

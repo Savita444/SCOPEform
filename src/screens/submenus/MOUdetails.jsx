@@ -84,7 +84,7 @@ const MOUdetails = () => {
     }
   };
 
-  
+
 
   // const BASE_URL = "https://api.sumagotraining.in/public/api";
   // const fetchCourses = async () => {
@@ -168,12 +168,12 @@ const MOUdetails = () => {
     });
   };
 
-  
+
 
 
 
   const handleAddMOUdetails = () => {
-   navigate("/addmoudetails");
+    navigate("/addmoudetails");
   };
 
 
@@ -182,27 +182,27 @@ const MOUdetails = () => {
     {
       name: "Sr. No.",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      width:"100px",
+      width: "100px",
 
     },
     {
       name: "Category",
       selector: (row) => row.category_name || "N/A",
-      width:"100px",
+      width: "100px",
 
     },
     {
-        name: "Title",
-        selector: (row) => row.title || "N/A",
-        width:"200px",
-      
-      },
-      {
-        name: "Description",
-        selector: (row) => row.description || "N/A",
-        width:"400px",
+      name: "Title",
+      selector: (row) => row.title || "N/A",
+      width: "200px",
 
-      },
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description || "N/A",
+      width: "400px",
+
+    },
     {
       name: "Image",
       cell: (row) =>
@@ -215,14 +215,15 @@ const MOUdetails = () => {
         ) : (
           "No Image"
         ),
-        width:"120px",
+      width: "120px",
 
     },
     {
       name: "Status",
       selector: (row) => (row.is_active ? "Active" : "Inactive"),
-    
-      width:"120px",},
+
+      width: "120px",
+    },
     {
       name: "Actions",
       cell: (row) => (
@@ -241,8 +242,8 @@ const MOUdetails = () => {
           </OverlayTrigger>
         </div>
       ),
-    
-    },           
+
+    },
 
   ];
 
@@ -274,23 +275,26 @@ const MOUdetails = () => {
               <DataTable
                 key={forceUpdate}
                 columns={tableColumns(currentPage, rowsPerPage)}
-                data={searchQuery ? filteredData : moudetailsData} // Use filtered data only when searching
+                data={searchQuery ? filteredData : moudetailsData}
                 pagination
-               
-                onChangePage={(page) => {
-                  setCurrentPage(page);
-                  handleSearch(""); // Reset search when changing pages
+                paginationDefaultPage={currentPage}
+                paginationPerPage={rowsPerPage}
+                paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
+                onChangePage={(page) => setCurrentPage(page)}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setRowsPerPage(newPerPage);
+                  setCurrentPage(page); // Keep page in sync
                 }}
                 responsive
                 striped
-                noDataComponent="No Data Available"
+                noDataComponent="Loading...."
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-    
+
     </Container>
   );
 };
